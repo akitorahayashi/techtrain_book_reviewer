@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
         // 初期画面としてFirstViewControllerを設定
-        let rootViewController = UINavigationController(rootViewController: FirstViewController())
+        let rootViewController = UINavigationController(rootViewController: SelectAuthVC())
         window.rootViewController = rootViewController
         // 作成したウィンドウをアプリ全体のウィンドウとして設定
         self.window = window

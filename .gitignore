@@ -13,5 +13,16 @@ build/
 # CocoaPods関連
 Pods/
 
+# Firebase設定ファイル
+GoogleService-Info.plist
+
+# Firebase CLI
+.firebase/
+firebase-debug.log
+
+# キャッシュ関連
+*.cache
+*.tmp
+
 # その他
 *.log

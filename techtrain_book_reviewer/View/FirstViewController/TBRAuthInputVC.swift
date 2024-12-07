@@ -7,13 +7,13 @@
 
 import UIKit
 
-class g: UIViewController {
-    enum TBRAuthMode {
+class TBRAuthInputVC: UIViewController {
+    enum TBRInputAuthMode {
         case login
         case signUp
     }
     
-    private let mode: TBRAuthMode
+    private let mode: TBRInputAuthMode
     private let emailTextField = TBRInputField(placeholder: "email")
     private let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
     
@@ -37,7 +37,7 @@ class g: UIViewController {
     }()
     
     // カスタムイニシャライザ
-    init(mode: TBRAuthMode) {
+    init(mode: TBRInputAuthMode) {
         self.mode = mode
         super.init(nibName: nil, bundle: nil)
     }
@@ -49,7 +49,7 @@ class g: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupUI()
     }
     

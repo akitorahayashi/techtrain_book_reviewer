@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FirstViewController: UIViewController {
+class SelectAuthVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,7 +59,7 @@ class FirstViewController: UIViewController {
     @objc private func jumpToSignInView() {
         print("Sign In tapped")
         // サインインモードでビューコントローラを初期化
-        let authInputVC = TBRAuthInputView(mode: .signUp)
+        let authInputVC = TBRAuthInputVC(mode: .signUp)
         // ナビゲーションコントローラで画面遷移
         navigationController?.pushViewController(authInputVC, animated: true)
     }
@@ -67,7 +67,7 @@ class FirstViewController: UIViewController {
     @objc private func jumpToLogInView() {
         print("Log In tapped")
         // AuthInputView をサインインモードで初期化
-        let authInputVC = TBRAuthInputView(mode: .login)
+        let authInputVC = TBRAuthInputVC(mode: .login)
         // ナビゲーションコントローラで画面遷移
         navigationController?.pushViewController(authInputVC, animated: true)
     }
