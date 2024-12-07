@@ -26,7 +26,7 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" name="AccentColor"/>
-                        <color key="tintColor" name="AccentColor"/>
+                        <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="CAF-m4-VVN" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="ZB0-Gu-eGI"/>
                             <constraint firstItem="CAF-m4-VVN" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="fzz-i9-JWc"/>

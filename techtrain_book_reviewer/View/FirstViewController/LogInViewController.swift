@@ -8,9 +8,8 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-    private let emailTextField = UITextField()
-    private let passwordTextField = UITextField()
-    private let errorLabel = UILabel()
+    private let emailTextField = TBRInputField(placeholder: "email")
+    private let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,22 +19,20 @@ class LoginViewController: UIViewController {
     }
     
     private func setupUI() {
-        emailTextField.placeholder = "メールアドレス"
-        emailTextField.borderStyle = .roundedRect
+        // ログインボタン
+        let loginButton = TBRCardButton(title: "ログイン", action: handleLogin)
         
-        passwordTextField.placeholder = "パスワード"
-        passwordTextField.isSecureTextEntry = true
-        passwordTextField.borderStyle = .roundedRect
+        // クリアボタン
+        let clearButton = TBRCardButton(title: "クリア", action: handleClear)
         
-        let loginButton = UIButton(type: .system)
-        loginButton.setTitle("ログイン", for: .normal)
-        loginButton.addTarget(self, action: #selector(handleLogin), for: .touchUpInside)
+        // ボタンを並べるボタンバー
+        let buttonBar = UIStackView(arrangedSubviews: [clearButton, loginButton])
+        buttonBar.axis = .horizontal
+        buttonBar.spacing = 20
+        buttonBar.distribution = .fillEqually
         
-        errorLabel.textColor = .red
-        errorLabel.textAlignment = .center
-        errorLabel.numberOfLines = 0
-        
-        let stackView = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, loginButton, errorLabel])
+        // メインのスタックビュー
+        let stackView = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, UIView(), buttonBar])
         stackView.axis = .vertical
         stackView.spacing = 20
         
@@ -52,7 +49,7 @@ class LoginViewController: UIViewController {
     @objc private func handleLogin() {
         guard let email = emailTextField.text, validateEmail(email),
               let password = passwordTextField.text, validatePassword(password) else {
-            errorLabel.text = "入力エラー：メールアドレスまたはパスワードが不正です"
+            showAlert(title: "入力エラー", message: "メールアドレスまたはパスワードが不正です。")
             return
         }
         
@@ -61,9 +58,14 @@ class LoginViewController: UIViewController {
             if success {
                 self?.dismiss(animated: true, completion: nil)
             } else {
-                self?.errorLabel.text = "ログインエラー：認証に失敗しました"
+                self?.showAlert(title: "ログインエラー", message: "認証に失敗しました。")
             }
         }
+    }
+    
+    @objc private func handleClear() {
+        emailTextField.text = ""
+        passwordTextField.text = ""
     }
     
     private func validateEmail(_ email: String) -> Bool {
@@ -76,7 +78,14 @@ class LoginViewController: UIViewController {
     
     private func authenticateUser(email: String, password: String, completion: @escaping (Bool) -> Void) {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            completion(true) // 成功時
+            completion(true)
         }
+    }
+    
+    private func showAlert(title: String, message: String) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        alertController.addAction(okAction)
+        present(alertController, animated: true)
     }
 }

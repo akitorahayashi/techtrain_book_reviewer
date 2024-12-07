@@ -1,5 +1,5 @@
 //
-//  CardButton.swift
+//  TBRCardButton.swift
 //  techtrain_book_reviewer
 //
 //  Created by 林 明虎 on 2024/12/07.
@@ -7,8 +7,9 @@
 
 import UIKit
 
-class CardButton: UIView {
+class TBRCardButton: UIView {
     private let titleLabel = UILabel()
+
 
     init(title: String, action: @escaping () -> Void) {
         super.init(frame: .zero)
@@ -29,7 +30,7 @@ class CardButton: UIView {
         layer.shadowRadius = 4
 
         titleLabel.text = title
-        titleLabel.textColor = .systemBlue
+        titleLabel.textColor = .accent
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
 
@@ -42,19 +43,22 @@ class CardButton: UIView {
             titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
         ])
     }
+    
+    // メモリのアドレスをactionKeyとして使用
+    private static var actionKey: Void? = nil
 
     private func addTapGesture(action: @escaping () -> Void) {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         self.addGestureRecognizer(tapGesture)
         self.isUserInteractionEnabled = true
-        objc_setAssociatedObject(self, &actionKey, action, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        // メモリアドレスをキーとして保存
+        objc_setAssociatedObject(self, &TBRCardButton.actionKey, action, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
 
     @objc private func handleTap() {
-        if let action = objc_getAssociatedObject(self, &actionKey) as? () -> Void {
+        // メモリアドレスをキーとして動作を取得
+        if let action = objc_getAssociatedObject(self, &TBRCardButton.actionKey) as? () -> Void {
             action()
         }
     }
 }
-
-private var actionKey: UInt8 = 0

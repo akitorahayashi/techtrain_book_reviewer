@@ -19,5 +19,12 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorLightMode</key>
+		<string>#d25593</string>
+		<key>UIColorDarkMode</key>
+		<string>#d25593</string>
+	</dict>
 </dict>
 </plist>

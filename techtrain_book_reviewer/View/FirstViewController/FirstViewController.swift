@@ -19,13 +19,13 @@ class FirstViewController: UIViewController {
         titleLabel.text = "Book Reviewer"
         titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
         titleLabel.textAlignment = .center
-        titleLabel.textColor = .systemBlue
+        titleLabel.textColor = .accent
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         return titleLabel
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
         // タイトルラベルの作成
         let titleLabel = createTitleLabel()
@@ -36,10 +36,10 @@ class FirstViewController: UIViewController {
         ])
         
         // サインインボタン
-        let signInCard = CardButton(title: "Sign In", action: handleSignIn)
+        let signInCard = TBRCardButton(title: "Sign In", action: handleSignIn)
         
         // ログインボタン
-        let loginCard = CardButton(title: "Log In", action: handleLogIn)
+        let loginCard = TBRCardButton(title: "Log In", action: handleLogIn)
         
         // ボタンの配置
         let buttonStack = UIStackView(arrangedSubviews: [signInCard, loginCard])
