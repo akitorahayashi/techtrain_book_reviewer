@@ -8,19 +8,19 @@
 import UIKit
 
 class TBRCardButton: UIView {
-    private let titleLabel = UILabel()
-
-
+    let titleLabel = UILabel()
+    
+    
     init(title: String, action: @escaping () -> Void) {
         super.init(frame: .zero)
         setupUI(title: title)
         addTapGesture(action: action)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     private func setupUI(title: String) {
         backgroundColor = .systemGray6
         layer.cornerRadius = 12
@@ -28,12 +28,12 @@ class TBRCardButton: UIView {
         layer.shadowOpacity = 0.1
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 4
-
+        
         titleLabel.text = title
         titleLabel.textColor = .accent
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-
+        
         addSubview(titleLabel)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -45,20 +45,45 @@ class TBRCardButton: UIView {
     }
     
     // メモリのアドレスをactionKeyとして使用
-    private static var actionKey: Void? = nil
-
-    private func addTapGesture(action: @escaping () -> Void) {
+    static private var actionKey: Void? = nil
+    
+    func addTapGesture(action: @escaping () -> Void) {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
         self.addGestureRecognizer(tapGesture)
         self.isUserInteractionEnabled = true
         // メモリアドレスをキーとして保存
         objc_setAssociatedObject(self, &TBRCardButton.actionKey, action, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
-
+    
     @objc private func handleTap() {
         // メモリアドレスをキーとして動作を取得
         if let action = objc_getAssociatedObject(self, &TBRCardButton.actionKey) as? () -> Void {
             action()
+        }
+    }
+    
+    // タップに対して文字を薄くする処理
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        // タップ時に透明度をアニメーションで変更
+        UIView.animate(withDuration: 0.2) {
+            self.titleLabel.alpha = 0.5
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        // 元に戻すアニメーション
+        UIView.animate(withDuration: 0.2) {
+            self.titleLabel.alpha = 1.0
+        }
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        // キャンセル時も透明度を元に戻す
+        UIView.animate(withDuration: 0.2) {
+            self.titleLabel.alpha = 1.0
         }
     }
 }

@@ -36,13 +36,13 @@ class FirstViewController: UIViewController {
         ])
         
         // サインインボタン
-        let signInCard = TBRCardButton(title: "Sign In", action: handleSignIn)
+        let jumpToSignButton = TBRCardButton(title: "Sign In", action: jumpToSignInView)
         
         // ログインボタン
-        let loginCard = TBRCardButton(title: "Log In", action: handleLogIn)
+        let jumpToLogInButton = TBRCardButton(title: "Log In", action: jumpToLogInView)
         
         // ボタンの配置
-        let buttonStack = UIStackView(arrangedSubviews: [signInCard, loginCard])
+        let buttonStack = UIStackView(arrangedSubviews: [jumpToSignButton, jumpToLogInButton])
         buttonStack.axis = .vertical
         buttonStack.spacing = 16
         buttonStack.alignment = .fill
@@ -56,15 +56,19 @@ class FirstViewController: UIViewController {
         ])
     }
     
-    @objc private func handleSignIn() {
+    @objc private func jumpToSignInView() {
         print("Sign In tapped")
-        let signInVC = SignInViewController()
-        navigationController?.pushViewController(signInVC, animated: true)
+        // サインインモードでビューコントローラを初期化
+        let authInputVC = TBRAuthInputView(mode: .signUp)
+        // ナビゲーションコントローラで画面遷移
+        navigationController?.pushViewController(authInputVC, animated: true)
     }
     
-    @objc private func handleLogIn() {
+    @objc private func jumpToLogInView() {
         print("Log In tapped")
-        let loginVC = LoginViewController()
-        navigationController?.pushViewController(loginVC, animated: true)
+        // AuthInputView をサインインモードで初期化
+        let authInputVC = TBRAuthInputView(mode: .login)
+        // ナビゲーションコントローラで画面遷移
+        navigationController?.pushViewController(authInputVC, animated: true)
     }
 }
