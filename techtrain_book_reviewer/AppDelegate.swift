@@ -15,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("AppDelegate: アプリが起動しました")
         return true
     }
-
     // シーンセッションの作成時
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         print("AppDelegate: 新しいシーンセッションが作成されました")

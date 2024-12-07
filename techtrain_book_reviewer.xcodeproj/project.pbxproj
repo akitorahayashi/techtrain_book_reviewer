@@ -292,6 +292,7 @@
 				DEVELOPMENT_TEAM = 2A7R4ZP8WU;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = techtrain_book_reviewer/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Book Reviewer";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -319,6 +320,7 @@
 				DEVELOPMENT_TEAM = 2A7R4ZP8WU;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = techtrain_book_reviewer/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Book Reviewer";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
