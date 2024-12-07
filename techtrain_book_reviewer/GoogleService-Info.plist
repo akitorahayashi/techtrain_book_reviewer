@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBGgZdQodzTx-UUbOxXPNHlyk-1f6zdlVI</string>
+	<key>GCM_SENDER_ID</key>
+	<string>872584533627</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.akitorahayashi.techtrain-book-reviewer</string>
+	<key>PROJECT_ID</key>
+	<string>techtrain-book-reviewer</string>
+	<key>STORAGE_BUCKET</key>
+	<string>techtrain-book-reviewer.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:872584533627:ios:fed5978ba2939291b7b4de</string>
+</dict>
+</plist>
