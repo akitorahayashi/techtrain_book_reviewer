@@ -1,0 +1,17 @@
+# Xcode関連
+*.xcuserdatad
+*.xcscmblueprint
+*.xccheckout
+*.idea
+*.xcworkspace
+DerivedData/
+build/
+
+# macOS関連
+.DS_Store
+
+# CocoaPods関連
+Pods/
+
+# その他
+*.log
