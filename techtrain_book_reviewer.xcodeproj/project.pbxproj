@@ -7,10 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B3146532D04578F00C76011 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 1B3146522D04578F00C76011 /* FirebaseAnalytics */; };
-		74D37DE077544B433EF35E02 /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0B234CA9CCC407D793A3D2F /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */; };
-		E149C14E1C0C8BD83781E81B /* Pods_techtrain_book_reviewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 356C2CB8543DC6CAEDCB1C48 /* Pods_techtrain_book_reviewer.framework */; };
-		F53708166638C32E025BA286 /* Pods_techtrain_book_reviewerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 851E8B1D7DF35EFEF48D5408 /* Pods_techtrain_book_reviewerTests.framework */; };
+		A53F448B30649019F6255FEB /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D84D7C98AEADDCD95107A8D /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */; };
+		BB5222CD94D5D8900E289835 /* Pods_techtrain_book_reviewerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E06ADD83B9F41675D0C23D /* Pods_techtrain_book_reviewerTests.framework */; };
+		EA64D97D07F8272C5DB6533C /* Pods_techtrain_book_reviewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52AAEC69A9FC825639306236 /* Pods_techtrain_book_reviewer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,15 +33,15 @@
 		1B3E00CB2D04006B00ECDCB2 /* techtrain_book_reviewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = techtrain_book_reviewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B3E00E12D04006D00ECDCB2 /* techtrain_book_reviewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = techtrain_book_reviewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B3E00EB2D04006D00ECDCB2 /* techtrain_book_reviewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = techtrain_book_reviewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1FA3DE8BA89C9A3096822390 /* Pods-techtrain_book_reviewerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.release.xcconfig"; sourceTree = "<group>"; };
-		356C2CB8543DC6CAEDCB1C48 /* Pods_techtrain_book_reviewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		49CA99688EAA0575CE5BE496 /* Pods-techtrain_book_reviewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.release.xcconfig"; sourceTree = "<group>"; };
-		532F683AF1BF828D8372886B /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; sourceTree = "<group>"; };
-		7F620F786ABF0A00C4AC5807 /* Pods-techtrain_book_reviewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.debug.xcconfig"; sourceTree = "<group>"; };
-		83CEA6372A0FA93DB6FFEF4F /* Pods-techtrain_book_reviewerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.debug.xcconfig"; sourceTree = "<group>"; };
-		851E8B1D7DF35EFEF48D5408 /* Pods_techtrain_book_reviewerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9E6EA42C57DF02FF4B02E547 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		B0B234CA9CCC407D793A3D2F /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		3A172DFAB2231EE21C72831F /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		52AAEC69A9FC825639306236 /* Pods_techtrain_book_reviewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		685B261BFD95184F3EE8B931 /* Pods-techtrain_book_reviewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.debug.xcconfig"; sourceTree = "<group>"; };
+		74D34FDF0BADDDE8B7DB5FF5 /* Pods-techtrain_book_reviewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.release.xcconfig"; sourceTree = "<group>"; };
+		9A9FDF75A479A41B6B31B052 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		9D84D7C98AEADDCD95107A8D /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FDF128255CAB61D1459FD21 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		AE5486D2D8C828339E218B36 /* Pods-techtrain_book_reviewerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.release.xcconfig"; sourceTree = "<group>"; };
+		E0E06ADD83B9F41675D0C23D /* Pods_techtrain_book_reviewerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -66,15 +65,11 @@
 		};
 		1B3E00E42D04006D00ECDCB2 /* techtrain_book_reviewerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = techtrain_book_reviewerTests;
 			sourceTree = "<group>";
 		};
 		1B3E00EE2D04006D00ECDCB2 /* techtrain_book_reviewerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = techtrain_book_reviewerUITests;
 			sourceTree = "<group>";
 		};
@@ -85,8 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1B3146532D04578F00C76011 /* FirebaseAnalytics in Frameworks */,
-				E149C14E1C0C8BD83781E81B /* Pods_techtrain_book_reviewer.framework in Frameworks */,
+				EA64D97D07F8272C5DB6533C /* Pods_techtrain_book_reviewer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,7 +88,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F53708166638C32E025BA286 /* Pods_techtrain_book_reviewerTests.framework in Frameworks */,
+				BB5222CD94D5D8900E289835 /* Pods_techtrain_book_reviewerTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,7 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				74D37DE077544B433EF35E02 /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */,
+				A53F448B30649019F6255FEB /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -116,8 +110,8 @@
 				1B3E00E42D04006D00ECDCB2 /* techtrain_book_reviewerTests */,
 				1B3E00EE2D04006D00ECDCB2 /* techtrain_book_reviewerUITests */,
 				1B3E00CC2D04006B00ECDCB2 /* Products */,
-				31EC9C7F421924E6CADCE2C3 /* Pods */,
-				7A9E922BDFD6172BD256EAD3 /* Frameworks */,
+				77014FC84BFE441FC16C28C1 /* Pods */,
+				DB7153F178470D2C46F4CDDC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -131,26 +125,25 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		31EC9C7F421924E6CADCE2C3 /* Pods */ = {
+		77014FC84BFE441FC16C28C1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				7F620F786ABF0A00C4AC5807 /* Pods-techtrain_book_reviewer.debug.xcconfig */,
-				49CA99688EAA0575CE5BE496 /* Pods-techtrain_book_reviewer.release.xcconfig */,
-				9E6EA42C57DF02FF4B02E547 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */,
-				532F683AF1BF828D8372886B /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */,
-				83CEA6372A0FA93DB6FFEF4F /* Pods-techtrain_book_reviewerTests.debug.xcconfig */,
-				1FA3DE8BA89C9A3096822390 /* Pods-techtrain_book_reviewerTests.release.xcconfig */,
+				685B261BFD95184F3EE8B931 /* Pods-techtrain_book_reviewer.debug.xcconfig */,
+				74D34FDF0BADDDE8B7DB5FF5 /* Pods-techtrain_book_reviewer.release.xcconfig */,
+				3A172DFAB2231EE21C72831F /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */,
+				9FDF128255CAB61D1459FD21 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */,
+				9A9FDF75A479A41B6B31B052 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */,
+				AE5486D2D8C828339E218B36 /* Pods-techtrain_book_reviewerTests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		7A9E922BDFD6172BD256EAD3 /* Frameworks */ = {
+		DB7153F178470D2C46F4CDDC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				356C2CB8543DC6CAEDCB1C48 /* Pods_techtrain_book_reviewer.framework */,
-				B0B234CA9CCC407D793A3D2F /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */,
-				851E8B1D7DF35EFEF48D5408 /* Pods_techtrain_book_reviewerTests.framework */,
+				52AAEC69A9FC825639306236 /* Pods_techtrain_book_reviewer.framework */,
+				9D84D7C98AEADDCD95107A8D /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */,
+				E0E06ADD83B9F41675D0C23D /* Pods_techtrain_book_reviewerTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -176,9 +169,6 @@
 				1B3E00CD2D04006B00ECDCB2 /* techtrain_book_reviewer */,
 			);
 			name = techtrain_book_reviewer;
-			packageProductDependencies = (
-				1B3146522D04578F00C76011 /* FirebaseAnalytics */,
-			);
 			productName = techtrain_book_reviewer;
 			productReference = 1B3E00CB2D04006B00ECDCB2 /* techtrain_book_reviewer.app */;
 			productType = "com.apple.product-type.application";
@@ -260,9 +250,6 @@
 			);
 			mainGroup = 1B3E00C22D04006A00ECDCB2;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-				1B3146512D04578F00C76011 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1B3E00CC2D04006B00ECDCB2 /* Products */;
 			projectDirPath = "";
@@ -442,7 +429,7 @@
 /* Begin XCBuildConfiguration section */
 		1B3E00F52D04006D00ECDCB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7F620F786ABF0A00C4AC5807 /* Pods-techtrain_book_reviewer.debug.xcconfig */;
+			baseConfigurationReference = 685B261BFD95184F3EE8B931 /* Pods-techtrain_book_reviewer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -456,6 +443,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -471,7 +459,7 @@
 		};
 		1B3E00F62D04006D00ECDCB2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 49CA99688EAA0575CE5BE496 /* Pods-techtrain_book_reviewer.release.xcconfig */;
+			baseConfigurationReference = 74D34FDF0BADDDE8B7DB5FF5 /* Pods-techtrain_book_reviewer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -485,6 +473,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -535,7 +524,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -550,7 +539,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -598,7 +587,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -607,7 +596,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -619,7 +608,7 @@
 		};
 		1B3E00FA2D04006D00ECDCB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 83CEA6372A0FA93DB6FFEF4F /* Pods-techtrain_book_reviewerTests.debug.xcconfig */;
+			baseConfigurationReference = 9A9FDF75A479A41B6B31B052 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -639,7 +628,7 @@
 		};
 		1B3E00FB2D04006D00ECDCB2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1FA3DE8BA89C9A3096822390 /* Pods-techtrain_book_reviewerTests.release.xcconfig */;
+			baseConfigurationReference = AE5486D2D8C828339E218B36 /* Pods-techtrain_book_reviewerTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -659,7 +648,7 @@
 		};
 		1B3E00FD2D04006D00ECDCB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9E6EA42C57DF02FF4B02E547 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */;
+			baseConfigurationReference = 3A172DFAB2231EE21C72831F /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -677,7 +666,7 @@
 		};
 		1B3E00FE2D04006D00ECDCB2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 532F683AF1BF828D8372886B /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */;
+			baseConfigurationReference = 9FDF128255CAB61D1459FD21 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -733,25 +722,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		1B3146512D04578F00C76011 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.6.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		1B3146522D04578F00C76011 /* FirebaseAnalytics */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 1B3146512D04578F00C76011 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
-			productName = FirebaseAnalytics;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1B3E00C32D04006A00ECDCB2 /* Project object */;
 }

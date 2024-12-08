@@ -1,11 +1,12 @@
 # Define the minimum iOS version for the project
-# platform :ios, '16.0'
+platform :ios, '15.0'
 
 target 'techtrain_book_reviewer' do
   # Use dynamic frameworks (recommended for Firebase)
   use_frameworks!
 
   # Add Firebase/Auth pod
+  pod 'FirebaseAnalytics'
   pod 'Firebase/Auth'
 
   # Include additional targets if necessary
