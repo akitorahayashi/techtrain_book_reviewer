@@ -36,19 +36,19 @@ class SelectAuthVC: UIViewController {
         ])
         
         // サインインボタン
-        let jumpToSignButton = TBRCardButton(title: "Sign In", action: jumpToSignInView)
+        let jumpToSignInButton = TBRCardButton(title: "Sign In", action: jumpToSignInView)
         
         // ログインボタン
         let jumpToLogInButton = TBRCardButton(title: "Log In", action: jumpToLogInView)
         
         // ボタンの配置
-        let buttonStack = UIStackView(arrangedSubviews: [jumpToSignButton, jumpToLogInButton])
+        let buttonStack = UIStackView(arrangedSubviews: [jumpToSignInButton, jumpToLogInButton])
         buttonStack.axis = .vertical
         buttonStack.spacing = 16
         buttonStack.alignment = .fill
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(buttonStack)
-        buttonStack.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             buttonStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             buttonStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),

@@ -6,8 +6,6 @@ target 'techtrain_book_reviewer' do
   use_frameworks!
 
   # Add Firebase/Auth pod
-  pod 'FirebaseAnalytics'
-  pod 'Firebase/Auth'
 
   # Include additional targets if necessary
   target 'techtrain_book_reviewerTests' do

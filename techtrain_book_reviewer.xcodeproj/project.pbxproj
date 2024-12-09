@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A53F448B30649019F6255FEB /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D84D7C98AEADDCD95107A8D /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */; };
-		BB5222CD94D5D8900E289835 /* Pods_techtrain_book_reviewerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0E06ADD83B9F41675D0C23D /* Pods_techtrain_book_reviewerTests.framework */; };
-		EA64D97D07F8272C5DB6533C /* Pods_techtrain_book_reviewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52AAEC69A9FC825639306236 /* Pods_techtrain_book_reviewer.framework */; };
+		804B76ED87195F77C32ABF6D /* Pods_techtrain_book_reviewerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8D25B5ECA7A6ED4150765D36 /* Pods_techtrain_book_reviewerTests.framework */; };
+		8283C1633524D4C54B722059 /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0BCE2A34BE0D9F22BE64F833 /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */; };
+		C78F75751BAF5FD3100254BC /* Pods_techtrain_book_reviewer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0220D702E9F8C6ED368980CC /* Pods_techtrain_book_reviewer.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,18 +30,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0220D702E9F8C6ED368980CC /* Pods_techtrain_book_reviewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0B82B7997B72A0CBB06E5D83 /* Pods-techtrain_book_reviewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.debug.xcconfig"; sourceTree = "<group>"; };
+		0BCE2A34BE0D9F22BE64F833 /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B3E00CB2D04006B00ECDCB2 /* techtrain_book_reviewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = techtrain_book_reviewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B3E00E12D04006D00ECDCB2 /* techtrain_book_reviewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = techtrain_book_reviewerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1B3E00EB2D04006D00ECDCB2 /* techtrain_book_reviewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = techtrain_book_reviewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		3A172DFAB2231EE21C72831F /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		52AAEC69A9FC825639306236 /* Pods_techtrain_book_reviewer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		685B261BFD95184F3EE8B931 /* Pods-techtrain_book_reviewer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.debug.xcconfig"; sourceTree = "<group>"; };
-		74D34FDF0BADDDE8B7DB5FF5 /* Pods-techtrain_book_reviewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.release.xcconfig"; sourceTree = "<group>"; };
-		9A9FDF75A479A41B6B31B052 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.debug.xcconfig"; sourceTree = "<group>"; };
-		9D84D7C98AEADDCD95107A8D /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		9FDF128255CAB61D1459FD21 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; sourceTree = "<group>"; };
-		AE5486D2D8C828339E218B36 /* Pods-techtrain_book_reviewerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.release.xcconfig"; sourceTree = "<group>"; };
-		E0E06ADD83B9F41675D0C23D /* Pods_techtrain_book_reviewerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C4895452ECC2965F50D0E6D /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig"; sourceTree = "<group>"; };
+		33035CF6AC92F12BBBBAAD27 /* Pods-techtrain_book_reviewer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer.release.xcconfig"; sourceTree = "<group>"; };
+		8D25B5ECA7A6ED4150765D36 /* Pods_techtrain_book_reviewerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_techtrain_book_reviewerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC8FBD92191D1704567A3F79 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E46394D858AA9F87043DA51F /* Pods-techtrain_book_reviewerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewerTests.release.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewerTests/Pods-techtrain_book_reviewerTests.release.xcconfig"; sourceTree = "<group>"; };
+		FC4151E9731A4EB82722534E /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; path = "Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,11 +65,15 @@
 		};
 		1B3E00E42D04006D00ECDCB2 /* techtrain_book_reviewerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = techtrain_book_reviewerTests;
 			sourceTree = "<group>";
 		};
 		1B3E00EE2D04006D00ECDCB2 /* techtrain_book_reviewerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = techtrain_book_reviewerUITests;
 			sourceTree = "<group>";
 		};
@@ -80,7 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA64D97D07F8272C5DB6533C /* Pods_techtrain_book_reviewer.framework in Frameworks */,
+				C78F75751BAF5FD3100254BC /* Pods_techtrain_book_reviewer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB5222CD94D5D8900E289835 /* Pods_techtrain_book_reviewerTests.framework in Frameworks */,
+				804B76ED87195F77C32ABF6D /* Pods_techtrain_book_reviewerTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,7 +100,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A53F448B30649019F6255FEB /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */,
+				8283C1633524D4C54B722059 /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,7 +115,7 @@
 				1B3E00EE2D04006D00ECDCB2 /* techtrain_book_reviewerUITests */,
 				1B3E00CC2D04006B00ECDCB2 /* Products */,
 				77014FC84BFE441FC16C28C1 /* Pods */,
-				DB7153F178470D2C46F4CDDC /* Frameworks */,
+				BE5DF0FA358E8A8EAEBEB5BC /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -128,22 +132,22 @@
 		77014FC84BFE441FC16C28C1 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				685B261BFD95184F3EE8B931 /* Pods-techtrain_book_reviewer.debug.xcconfig */,
-				74D34FDF0BADDDE8B7DB5FF5 /* Pods-techtrain_book_reviewer.release.xcconfig */,
-				3A172DFAB2231EE21C72831F /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */,
-				9FDF128255CAB61D1459FD21 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */,
-				9A9FDF75A479A41B6B31B052 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */,
-				AE5486D2D8C828339E218B36 /* Pods-techtrain_book_reviewerTests.release.xcconfig */,
+				0B82B7997B72A0CBB06E5D83 /* Pods-techtrain_book_reviewer.debug.xcconfig */,
+				33035CF6AC92F12BBBBAAD27 /* Pods-techtrain_book_reviewer.release.xcconfig */,
+				FC4151E9731A4EB82722534E /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */,
+				1C4895452ECC2965F50D0E6D /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */,
+				AC8FBD92191D1704567A3F79 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */,
+				E46394D858AA9F87043DA51F /* Pods-techtrain_book_reviewerTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
 		};
-		DB7153F178470D2C46F4CDDC /* Frameworks */ = {
+		BE5DF0FA358E8A8EAEBEB5BC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				52AAEC69A9FC825639306236 /* Pods_techtrain_book_reviewer.framework */,
-				9D84D7C98AEADDCD95107A8D /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */,
-				E0E06ADD83B9F41675D0C23D /* Pods_techtrain_book_reviewerTests.framework */,
+				0220D702E9F8C6ED368980CC /* Pods_techtrain_book_reviewer.framework */,
+				0BCE2A34BE0D9F22BE64F833 /* Pods_techtrain_book_reviewer_techtrain_book_reviewerUITests.framework */,
+				8D25B5ECA7A6ED4150765D36 /* Pods_techtrain_book_reviewerTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -155,11 +159,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1B3E00F42D04006D00ECDCB2 /* Build configuration list for PBXNativeTarget "techtrain_book_reviewer" */;
 			buildPhases = (
-				32B8BDF0DE1A065EF73A3D24 /* [CP] Check Pods Manifest.lock */,
+				D72E1B22AA020F80E088605E /* [CP] Check Pods Manifest.lock */,
 				1B3E00C72D04006B00ECDCB2 /* Sources */,
 				1B3E00C82D04006B00ECDCB2 /* Frameworks */,
 				1B3E00C92D04006B00ECDCB2 /* Resources */,
-				1739250387F030AC29360D98 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -177,7 +180,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1B3E00F92D04006D00ECDCB2 /* Build configuration list for PBXNativeTarget "techtrain_book_reviewerTests" */;
 			buildPhases = (
-				718355D6EC50460B24332DB8 /* [CP] Check Pods Manifest.lock */,
+				206DDD816E8D642D35B5544C /* [CP] Check Pods Manifest.lock */,
 				1B3E00DD2D04006D00ECDCB2 /* Sources */,
 				1B3E00DE2D04006D00ECDCB2 /* Frameworks */,
 				1B3E00DF2D04006D00ECDCB2 /* Resources */,
@@ -199,11 +202,10 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1B3E00FC2D04006D00ECDCB2 /* Build configuration list for PBXNativeTarget "techtrain_book_reviewerUITests" */;
 			buildPhases = (
-				2B28065D9D80F257B4595443 /* [CP] Check Pods Manifest.lock */,
+				ED736437CD9E96B1938BBD1F /* [CP] Check Pods Manifest.lock */,
 				1B3E00E72D04006D00ECDCB2 /* Sources */,
 				1B3E00E82D04006D00ECDCB2 /* Frameworks */,
 				1B3E00E92D04006D00ECDCB2 /* Resources */,
-				574F7E3B85D548300743D109 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -287,24 +289,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1739250387F030AC29360D98 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-techtrain_book_reviewer/Pods-techtrain_book_reviewer-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		2B28065D9D80F257B4595443 /* [CP] Check Pods Manifest.lock */ = {
+		206DDD816E8D642D35B5544C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -319,14 +304,14 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-techtrain_book_reviewerTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		32B8BDF0DE1A065EF73A3D24 /* [CP] Check Pods Manifest.lock */ = {
+		D72E1B22AA020F80E088605E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -348,24 +333,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		574F7E3B85D548300743D109 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		718355D6EC50460B24332DB8 /* [CP] Check Pods Manifest.lock */ = {
+		ED736437CD9E96B1938BBD1F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -380,7 +348,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-techtrain_book_reviewerTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -429,7 +397,7 @@
 /* Begin XCBuildConfiguration section */
 		1B3E00F52D04006D00ECDCB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 685B261BFD95184F3EE8B931 /* Pods-techtrain_book_reviewer.debug.xcconfig */;
+			baseConfigurationReference = 0B82B7997B72A0CBB06E5D83 /* Pods-techtrain_book_reviewer.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -459,7 +427,7 @@
 		};
 		1B3E00F62D04006D00ECDCB2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 74D34FDF0BADDDE8B7DB5FF5 /* Pods-techtrain_book_reviewer.release.xcconfig */;
+			baseConfigurationReference = 33035CF6AC92F12BBBBAAD27 /* Pods-techtrain_book_reviewer.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -608,7 +576,7 @@
 		};
 		1B3E00FA2D04006D00ECDCB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A9FDF75A479A41B6B31B052 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */;
+			baseConfigurationReference = AC8FBD92191D1704567A3F79 /* Pods-techtrain_book_reviewerTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -628,7 +596,7 @@
 		};
 		1B3E00FB2D04006D00ECDCB2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AE5486D2D8C828339E218B36 /* Pods-techtrain_book_reviewerTests.release.xcconfig */;
+			baseConfigurationReference = E46394D858AA9F87043DA51F /* Pods-techtrain_book_reviewerTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -648,7 +616,7 @@
 		};
 		1B3E00FD2D04006D00ECDCB2 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A172DFAB2231EE21C72831F /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */;
+			baseConfigurationReference = FC4151E9731A4EB82722534E /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -666,7 +634,7 @@
 		};
 		1B3E00FE2D04006D00ECDCB2 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9FDF128255CAB61D1459FD21 /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */;
+			baseConfigurationReference = 1C4895452ECC2965F50D0E6D /* Pods-techtrain_book_reviewer-techtrain_book_reviewerUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
