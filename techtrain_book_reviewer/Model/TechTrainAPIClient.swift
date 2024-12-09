@@ -22,9 +22,11 @@ class TechTrainAPIClient {
         to endpoint: String,
         method: String,
         parameters: [String: Any]?,
+        headers: [String: String]? = nil,
         completion: @escaping (Result<Data, APIError>) -> Void
     ) {
         guard let url = URL(string: baseURL + endpoint) else {
+            print("URLが無効: \(baseURL + endpoint)")
             completion(.failure(.invalidURL))
             return
         }
@@ -33,43 +35,68 @@ class TechTrainAPIClient {
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        if let headers = headers {
+            for (key, value) in headers {
+                request.setValue(value, forHTTPHeaderField: key)
+            }
+        }
+        
         if let parameters = parameters {
             do {
                 request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
             } catch {
+                print("パラメータのエンコードエラー: \(error)")
                 completion(.failure(.networkError(error)))
                 return
             }
         }
         
+        print("リクエスト送信: \(url)")
+        
         session.dataTask(with: request) { data, response, error in
             if let error = error {
+                print("リクエストエラー: \(error)")
                 completion(.failure(.networkError(error)))
                 return
             }
             
-            guard let httpResponse = response as? HTTPURLResponse, let data = data else {
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("HTTPレスポンスが無効")
                 completion(.failure(.unknown))
                 return
             }
             
+            print("HTTPステータスコード: \(httpResponse.statusCode)")
+            
+            guard let data = data else {
+                print("レスポンスデータが空")
+                completion(.failure(.unknown))
+                return
+            }
+            
+            print("レスポンスデータ取得成功")
+            
             switch httpResponse.statusCode {
             case 200...299:
                 completion(.success(data))
-                
             default:
                 do {
-                    let errorResponse = try JSONSerialization.jsonObject(with: data) as? [String: Any]
-                    let errorCode = errorResponse?["ErrorCode"] as? Int ?? httpResponse.statusCode
-                    let messageJP = errorResponse?["ErrorMessageJP"] as? String ?? "不明なエラー"
-                    let messageEN = errorResponse?["ErrorMessageEN"] as? String ?? "Unknown error"
-                    completion(.failure(.serverError(statusCode: errorCode, messageJP: messageJP, messageEN: messageEN)))
+                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                        print("エラーJSONレスポンス: \(json)")
+                    }
                 } catch {
-                    completion(.failure(.decodingError))
+                    print("エラーJSONレスポンスの解析失敗")
                 }
+                completion(.failure(.serverError(
+                    statusCode: httpResponse.statusCode,
+                    messageJP: "エラーが発生しました",
+                    messageEN: "An error occurred"
+                )))
             }
         }.resume()
     }
+
+
     
     enum APIError: Error {
         case invalidURL

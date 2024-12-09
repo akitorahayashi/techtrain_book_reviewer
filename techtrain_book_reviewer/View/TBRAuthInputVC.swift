@@ -58,8 +58,8 @@ class TBRAuthInputVC: UIViewController {
         
         // `signUp` の場合のみ名前フィールドを追加
         let inputFields: [UIView] = (authMode == .signUp)
-            ? [nameTextField, emailTextField, passwordTextField]
-            : [emailTextField, passwordTextField]
+        ? [nameTextField, emailTextField, passwordTextField]
+        : [emailTextField, passwordTextField]
         
         let stackView = UIStackView(arrangedSubviews: inputFields + [buttonStackView])
         stackView.axis = .vertical
@@ -85,13 +85,13 @@ class TBRAuthInputVC: UIViewController {
     private func authenticate() {
         guard let email = emailTextField.text, !email.isEmpty,
               let password = passwordTextField.text, !password.isEmpty else {
-            showAlert(title: "入力エラー", message: "メールアドレスまたはパスワードを入力してください。")
+            showSingleOptionAlert(title: "入力エラー", message: "メールアドレスまたはパスワードを入力してください。")
             return
         }
         
         if authMode == .signUp {
             guard let name = nameTextField.text, !name.isEmpty else {
-                showAlert(title: "入力エラー", message: "名前を入力してください。")
+                showSingleOptionAlert(title: "入力エラー", message: "名前を入力してください。")
                 return
             }
             
@@ -101,10 +101,10 @@ class TBRAuthInputVC: UIViewController {
                 DispatchQueue.main.async {
                     self?.hideLoading()
                     switch result {
-                    case .success:
-                        self?.showAlert(title: "成功", message: "登録しました！")
+                    case .success(let token):
+                        self?.fetchUserProfileAndAlert(token: token)
                     case .failure(let error):
-                        self?.showAlert(title: "エラー", message: error.localizedDescription)
+                        self?.showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
                     }
                 }
             }
@@ -115,19 +115,45 @@ class TBRAuthInputVC: UIViewController {
                 DispatchQueue.main.async {
                     self?.hideLoading()
                     switch result {
-                    case .success:
-                        self?.showAlert(title: "成功", message: "ログインしました！")
+                    case .success(let token):
+                        self?.fetchUserProfileAndAlert(token: token)
                     case .failure(let error):
-                        self?.showAlert(title: "エラー", message: error.localizedDescription)
+                        self?.showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
                     }
                 }
             }
         }
     }
     
-    private func showAlert(title: String, message: String) {
+    private func fetchUserProfileAndAlert(token: String) {
+        let userProfileManager = TBRUserProfileManager()
+        userProfileManager.fetchUserProfile(withToken: token) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let tbrUser):
+                    // アラートを作成
+                    let alert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+                        self?.navigateToHomeVC(tbrUser: tbrUser)
+                    }))
+                    
+                    self?.present(alert, animated: true, completion: nil)
+                case .failure(let error):
+                    self?.showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
+                }
+            }
+        }
+    }
+    
+    private func showSingleOptionAlert(title: String, message: String) {
+        // アラートを作成
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in}))
+        present(alert, animated: true, completion: nil)
+    }
+    
+    private func navigateToHomeVC(tbrUser: TBRUser) {
+        let homeVC = HomeViewController(tbrUser: tbrUser)
+        navigationController?.pushViewController(homeVC, animated: true)
     }
 }

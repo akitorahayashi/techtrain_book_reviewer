@@ -22,7 +22,7 @@ class TBREmailAuthService {
     func authenticate(
         email: String,
         password: String,
-        name: String? = nil, // 名前をオプションとして追加
+        name: String? = nil, // `signUp` の場合は名前がある
         authMode: AuthMode,
         completion: @escaping (Result<String, TechTrainAPIClient.APIError>) -> Void
     ) {
