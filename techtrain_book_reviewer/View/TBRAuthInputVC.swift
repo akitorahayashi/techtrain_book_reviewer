@@ -8,18 +8,19 @@
 import UIKit
 
 class TBRAuthInputVC: UIViewController {
-    enum TBRInputAuthMode {
+    enum EmailAuthMode {
         case login
         case signUp
     }
     
-    private let mode: TBRInputAuthMode
+    private let authMode: EmailAuthMode
     private let emailTextField = TBRInputField(placeholder: "メールアドレス")
     private let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
-    private let authService = TBREmailAuthService()
+    private let nameTextField = TBRInputField(placeholder: "名前") // 名前入力フィールド
+    private let authService: TBREmailAuthService
     
     private lazy var actionButton: TBRCardButton = {
-        let title = (mode == .login) ? "ログイン" : "登録"
+        let title = (authMode == .login) ? "ログイン" : "登録"
         return TBRCardButton(title: title) { [weak self] in
             self?.authenticate()
         }
@@ -31,8 +32,9 @@ class TBRAuthInputVC: UIViewController {
         }
     }()
     
-    init(mode: TBRInputAuthMode) {
-        self.mode = mode
+    init(authMode: EmailAuthMode, authService: TBREmailAuthService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)) {
+        self.authMode = authMode
+        self.authService = authService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -54,7 +56,12 @@ class TBRAuthInputVC: UIViewController {
         buttonStackView.spacing = 16
         buttonStackView.distribution = .fillEqually
         
-        let stackView = UIStackView(arrangedSubviews: [emailTextField, passwordTextField, buttonStackView])
+        // `signUp` の場合のみ名前フィールドを追加
+        let inputFields: [UIView] = (authMode == .signUp)
+            ? [nameTextField, emailTextField, passwordTextField]
+            : [emailTextField, passwordTextField]
+        
+        let stackView = UIStackView(arrangedSubviews: inputFields + [buttonStackView])
         stackView.axis = .vertical
         stackView.spacing = 20
         stackView.alignment = .fill
@@ -70,15 +77,9 @@ class TBRAuthInputVC: UIViewController {
     }
     
     private func clearInputFields() {
+        nameTextField.text = ""
         emailTextField.text = ""
         passwordTextField.text = ""
-    }
-    
-    private func showAlert(title: String, message: String) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default)
-        alertController.addAction(okAction)
-        present(alertController, animated: true)
     }
     
     private func authenticate() {
@@ -87,27 +88,46 @@ class TBRAuthInputVC: UIViewController {
             showAlert(title: "入力エラー", message: "メールアドレスまたはパスワードを入力してください。")
             return
         }
-
-        showLoading() // 操作を無効化し、ローディング表示を開始
-
-        let authMode: TBREmailAuthService.AuthMode = (mode == .login) ? .login : .signUp
-        authService.authenticate(email: email, password: password, mode: authMode) { [weak self] result in
-            DispatchQueue.main.async {
-                self?.hideLoading() // 操作を有効化し、ローディング表示を終了
-                switch result {
-                case .success:
-                    self?.showAlert(title: "成功", message: (authMode == .login) ? "ログインしました！" : "登録しました！")
-                case .failure(let error):
-                    if error == .emailNotVerified {
-                        self?.authService.showResendVerificationAlert(on: self!, email: email)
-                    } else {
+        
+        if authMode == .signUp {
+            guard let name = nameTextField.text, !name.isEmpty else {
+                showAlert(title: "入力エラー", message: "名前を入力してください。")
+                return
+            }
+            
+            showLoading()
+            
+            authService.authenticate(email: email, password: password, name: name, authMode: .signUp) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.hideLoading()
+                    switch result {
+                    case .success:
+                        self?.showAlert(title: "成功", message: "登録しました！")
+                    case .failure(let error):
+                        self?.showAlert(title: "エラー", message: error.localizedDescription)
+                    }
+                }
+            }
+        } else {
+            showLoading()
+            
+            authService.authenticate(email: email, password: password, authMode: .login) { [weak self] result in
+                DispatchQueue.main.async {
+                    self?.hideLoading()
+                    switch result {
+                    case .success:
+                        self?.showAlert(title: "成功", message: "ログインしました！")
+                    case .failure(let error):
                         self?.showAlert(title: "エラー", message: error.localizedDescription)
                     }
                 }
             }
         }
     }
-
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
 }
-
-

@@ -59,7 +59,7 @@ class SelectAuthVC: UIViewController {
     @objc private func jumpToSignInView() {
         print("Sign In tapped")
         // サインインモードでビューコントローラを初期化
-        let authInputVC = TBRAuthInputVC(mode: .signUp)
+        let authInputVC = TBRAuthInputVC(authMode: .signUp)
         // ナビゲーションコントローラで画面遷移
         navigationController?.pushViewController(authInputVC, animated: true)
     }
@@ -67,7 +67,7 @@ class SelectAuthVC: UIViewController {
     @objc private func jumpToLogInView() {
         print("Log In tapped")
         // AuthInputView をサインインモードで初期化
-        let authInputVC = TBRAuthInputVC(mode: .login)
+        let authInputVC = TBRAuthInputVC(authMode: .login)
         // ナビゲーションコントローラで画面遷移
         navigationController?.pushViewController(authInputVC, animated: true)
     }

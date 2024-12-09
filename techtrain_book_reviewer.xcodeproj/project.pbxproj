@@ -65,15 +65,11 @@
 		};
 		1B3E00E42D04006D00ECDCB2 /* techtrain_book_reviewerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = techtrain_book_reviewerTests;
 			sourceTree = "<group>";
 		};
 		1B3E00EE2D04006D00ECDCB2 /* techtrain_book_reviewerUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = techtrain_book_reviewerUITests;
 			sourceTree = "<group>";
 		};
