@@ -90,8 +90,7 @@ class AuthInputVC: UIViewController {
                 case .success(let tbrUser):
                     let alert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                        // fetchが成功していたらnilではない
-                        self?.navigateToHomeVC(tbrUser: UserProfileService.yourAccount!)
+                        self?.navigateToHomeVC()
                     }))
                     self?.present(alert, animated: true, completion: nil)
                 case .failure(let error):
@@ -107,8 +106,8 @@ class AuthInputVC: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func navigateToHomeVC(tbrUser: TBRUser) {
-        let homeVC = HomeViewController(tbrUser: tbrUser)
+    private func navigateToHomeVC() {
+        let homeVC = HomeViewController()
         navigationController?.pushViewController(homeVC, animated: true)
     }
 }
