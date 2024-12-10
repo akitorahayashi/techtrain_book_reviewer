@@ -15,7 +15,7 @@ class TBRAuthInputView: UIView {
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton
     
-    init(authMode: TBRAuthInputVC.EmailAuthMode, actionButtonAction: @escaping () -> Void, clearButtonAction: @escaping () -> Void) {
+    init(authMode: AuthInputVC.EmailAuthMode, actionButtonAction: @escaping () -> Void, clearButtonAction: @escaping () -> Void) {
         let actionTitle = (authMode == .login) ? "ログイン" : "登録"
         self.actionButton = TBRCardButton(title: actionTitle, action: actionButtonAction)
         self.clearButton = TBRCardButton(title: "クリア", action: clearButtonAction)
@@ -27,7 +27,7 @@ class TBRAuthInputView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI(authMode: TBRAuthInputVC.EmailAuthMode) {
+    private func setupUI(authMode: AuthInputVC.EmailAuthMode) {
         backgroundColor = .white
         
         // ボタンスタックビュー

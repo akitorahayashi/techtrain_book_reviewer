@@ -7,8 +7,16 @@
 
 
 import Foundation
+import Combine
 
-class TBRUserProfileService {
+class UserProfileService {
+    static var yourAccountPublisher = CurrentValueSubject<TBRUser?, Never>(nil)
+    
+    static var yourAccount: TBRUser? {
+        get { yourAccountPublisher.value }
+        set { yourAccountPublisher.send(newValue) }
+    }
+    
     private let apiClient: TechTrainAPIClient
     
     init(apiClient: TechTrainAPIClient = .shared) {
@@ -17,7 +25,7 @@ class TBRUserProfileService {
     
     func fetchUserProfile(
         withToken token: String,
-        completion: @escaping (Result<TBRUser, TechTrainAPIClient.APIError>) -> Void
+        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
     ) {
         let endpoint = "/users"
         
@@ -39,7 +47,12 @@ class TBRUserProfileService {
                        let name = json["name"] as? String,
                        let iconUrl = json["iconUrl"] as? String? {
                         let user = TBRUser(token: token, name: name, iconUrl: iconUrl)
-                        completion(.success(user))
+                        
+                        // 静的プロパティに格納
+                        UserProfileService.yourAccount = user
+                        
+                        // 成功として通知
+                        completion(.success(()))
                     } else {
                         print("JSON解析失敗: \(String(data: data, encoding: .utf8) ?? "データなし")")
                         completion(.failure(.decodingError))
@@ -58,5 +71,4 @@ class TBRUserProfileService {
             }
         }
     }
-
 }
