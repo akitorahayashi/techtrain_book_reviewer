@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TBRAuthInputVC: UIViewController {
+class AuthInputVC: UIViewController {
     enum EmailAuthMode {
         case login
         case signUp
@@ -54,7 +54,7 @@ class TBRAuthInputVC: UIViewController {
             }
 
             showLoading()
-            authService.authenticate(email: email, password: password, name: name, authMode: .signUp) { [weak self] result in
+            authService.authenticate(email: email, password: password, signUpName: name, authMode: .signUp) { [weak self] result in
                 let mappedResult = result.mapError { $0 as Error }
                 DispatchQueue.main.async {
                     self?.handleAuthResult(mappedResult)
@@ -83,14 +83,14 @@ class TBRAuthInputVC: UIViewController {
     }
     
     private func fetchUserProfileAndAlert(token: String) {
-        let userProfileManager = TBRUserProfileManager()
-        userProfileManager.fetchUserProfile(withToken: token) { [weak self] result in
+        let userProfileService = UserProfileService()
+        userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let tbrUser):
                     let alert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                        self?.navigateToHomeVC(tbrUser: tbrUser)
+                        self?.navigateToHomeVC()
                     }))
                     self?.present(alert, animated: true, completion: nil)
                 case .failure(let error):
@@ -106,8 +106,8 @@ class TBRAuthInputVC: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func navigateToHomeVC(tbrUser: TBRUser) {
-        let homeVC = HomeViewController(tbrUser: tbrUser)
+    private func navigateToHomeVC() {
+        let homeVC = HomeViewController()
         navigationController?.pushViewController(homeVC, animated: true)
     }
 }

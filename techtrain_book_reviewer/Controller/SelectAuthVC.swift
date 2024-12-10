@@ -22,13 +22,13 @@ class SelectAuthVC: UIViewController {
     
     private func jumpToSignUpView() {
         print("Sign Up tapped")
-        let authInputVC = TBRAuthInputVC(authMode: .signUp)
+        let authInputVC = AuthInputVC(authMode: .signUp)
         navigationController?.pushViewController(authInputVC, animated: true)
     }
     
     private func jumpToLogInView() {
         print("Log In tapped")
-        let authInputVC = TBRAuthInputVC(authMode: .login)
+        let authInputVC = AuthInputVC(authMode: .login)
         navigationController?.pushViewController(authInputVC, animated: true)
     }
 }
