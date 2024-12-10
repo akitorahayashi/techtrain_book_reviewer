@@ -103,6 +103,7 @@ class TechTrainAPIClient {
         case networkError(Error)
         case serverError(statusCode: Int, messageJP: String, messageEN: String)
         case decodingError
+        case keychainSaveError(String)
         case unknown
         
         var localizedDescription: String {
@@ -115,9 +116,12 @@ class TechTrainAPIClient {
                 return "サーバーエラーが発生しました (\(statusCode)):\nJP: \(messageJP)\nEN: \(messageEN)"
             case .decodingError:
                 return "データの解読に失敗しました。"
+            case .keychainSaveError(let description):
+                return "Keychain 保存エラーが発生しました: \(description)"
             case .unknown:
                 return "不明なエラーが発生しました。"
             }
         }
     }
+
 }

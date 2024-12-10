@@ -14,26 +14,20 @@ class TBREmailAuthService {
         self.apiClient = apiClient
     }
     
-    enum AuthMode {
-        case login
-        case signUp
-    }
-    
     func authenticate(
         email: String,
         password: String,
         signUpName: String? = nil, // `signUp` の場合は名前がある
-        authMode: AuthMode,
         completion: @escaping (Result<String, TechTrainAPIClient.APIError>) -> Void
     ) {
-        let endpoint = authMode == .login ? "/signin" : "/users" // `users` はサインアップ用エンドポイント
+        let endpoint = signUpName == nil ? "/signin" : "/users" // `users` はサインアップ用エンドポイント
         var parameters: [String: Any] = [
             "email": email,
             "password": password
         ]
         
         // `signUp` の場合は名前を追加
-        if authMode == .signUp, let name = signUpName {
+        if let name = signUpName {
             parameters["name"] = name
         }
         
@@ -44,7 +38,13 @@ class TBREmailAuthService {
                     // レスポンスからトークンを取得
                     if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                        let token = json["token"] as? String {
-                        completion(.success(token))
+                        // トークンを Keychain に保存
+                        let tokenData = Data(token.utf8)
+                        if SecureTokenService.shared.save(key: "authToken", data: tokenData) {
+                            completion(.success(token))
+                        } else {
+                            completion(.failure(.keychainSaveError("Keychainへのトークン保存に失敗しました。")))
+                        }
                     } else {
                         completion(.failure(.decodingError))
                     }

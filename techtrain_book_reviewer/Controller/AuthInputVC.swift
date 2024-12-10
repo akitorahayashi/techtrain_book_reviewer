@@ -59,14 +59,14 @@ class AuthInputVC: UIViewController {
             }
 
             showLoading()
-            authService.authenticate(email: email, password: password, signUpName: cleanedName, authMode: .signUp) { [weak self] result in
+            authService.authenticate(email: email, password: password, signUpName: cleanedName) { [weak self] result in
                 DispatchQueue.main.async {
                     self?.handleAuthResult(result.mapError { $0 as Error })
                 }
             }
         } else {
             showLoading()
-            authService.authenticate(email: email, password: password, authMode: .login) { [weak self] result in
+            authService.authenticate(email: email, password: password) { [weak self] result in
                 DispatchQueue.main.async {
                     self?.handleAuthResult(result.mapError { $0 as Error })
                 }
@@ -79,7 +79,7 @@ class AuthInputVC: UIViewController {
         case .success(let token):
             fetchUserProfileAndAlert(token: token)
         case .failure(let error):
-            hideLoading() // エラー時はここでローディングを終了
+            hideLoading()
             showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
         }
     }
@@ -89,7 +89,7 @@ class AuthInputVC: UIViewController {
 
         userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
             DispatchQueue.main.async {
-                self?.hideLoading() // プロファイル取得完了時にローディングを終了
+                self?.hideLoading()
 
                 switch result {
                 case .success:
