@@ -49,60 +49,64 @@ class AuthInputVC: UIViewController {
 
         if authMode == .signUp {
             let userProfileService = UserProfileService()
-            let cleanedName: String? = userProfileService.validateAndCleanName(authInputView.nameTextField.text)
-            guard let name = cleanedName, !name.isEmpty else {
+            guard let cleanedName = userProfileService.validateAndCleanName(authInputView.nameTextField.text),
+                  !cleanedName.isEmpty else {
                 showSingleOptionAlert(
-                        title: "入力エラー",
-                        message: "名前は10文字以下で空白以外の文字を含めてください。"
-                    )
+                    title: "入力エラー",
+                    message: "名前は10文字以下で空白以外の文字を含めてください。"
+                )
                 return
             }
 
             showLoading()
-            authService.authenticate(email: email, password: password, signUpName: name, authMode: .signUp) { [weak self] result in
-                let mappedResult = result.mapError { $0 as Error }
+            authService.authenticate(email: email, password: password, signUpName: cleanedName, authMode: .signUp) { [weak self] result in
                 DispatchQueue.main.async {
-                    self?.handleAuthResult(mappedResult)
+                    self?.handleAuthResult(result.mapError { $0 as Error })
                 }
             }
         } else {
             showLoading()
             authService.authenticate(email: email, password: password, authMode: .login) { [weak self] result in
-                let mappedResult = result.mapError { $0 as Error }
                 DispatchQueue.main.async {
-                    self?.handleAuthResult(mappedResult)
+                    self?.handleAuthResult(result.mapError { $0 as Error })
                 }
             }
         }
     }
 
-    
     private func handleAuthResult(_ result: Result<String, Error>) {
-        hideLoading()
         switch result {
         case .success(let token):
             fetchUserProfileAndAlert(token: token)
         case .failure(let error):
+            hideLoading() // エラー時はここでローディングを終了
             showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
         }
     }
     
     private func fetchUserProfileAndAlert(token: String) {
         let userProfileService = UserProfileService()
+
         userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
             DispatchQueue.main.async {
+                self?.hideLoading() // プロファイル取得完了時にローディングを終了
+
                 switch result {
-                case .success(let tbrUser):
-                    let alert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                        self?.navigateToHomeVC()
-                    }))
-                    self?.present(alert, animated: true, completion: nil)
+                case .success:
+                    self?.showSuccessAlert()
                 case .failure(let error):
                     self?.showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
                 }
             }
         }
+    }
+    
+    private func showSuccessAlert() {
+        let alert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+            self?.navigateToHomeVC()
+        }))
+        present(alert, animated: true, completion: nil)
     }
     
     private func showSingleOptionAlert(title: String, message: String) {
