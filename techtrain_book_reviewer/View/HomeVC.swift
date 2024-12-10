@@ -25,74 +25,122 @@ class HomeViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.backgroundColor = .white
-        title = "ホーム"
+        view.backgroundColor = .systemBackground
+        title = "Book Reviewer"
         
-        // 左端にユーザー名を表示
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: tbrUser.name, style: .plain, target: nil, action: nil)
+        // NavigationBarのタイトルの色を.accentに設定
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.accent,
+            .font: UIFont.systemFont(ofSize: 20, weight: .bold)
+        ]
         
-        // 右端に「Account設定」ボタンを追加
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Account設定", style: .plain, target: self, action: #selector(accountSettingsTapped))
+        // 左のBackボタンを非表示
+        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
+        
+        navigationItem.rightBarButtonItem = setupUserIcon()
+        
+        
+        // ユーザー名を左上に表示
+        let titleLabel = UILabel()
+        titleLabel.text = tbrUser.name
+        titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+        titleLabel.textAlignment = .left
+        titleLabel.textColor = .accent
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(titleLabel)
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
+        ])
     }
     
-    @objc private func accountSettingsTapped() {
-        // アラートを表示
-        let alert = UIAlertController(title: "Account設定", message: "アカウントの操作を選択してください", preferredStyle: .actionSheet)
+    private func setupUserIcon() -> UIBarButtonItem {
+        // UIButtonを作成
+        let button = UIButton(type: .custom)
+
+        // アイコン画像を設定
+        if let iconUrlString = tbrUser.iconUrl, let iconUrl = URL(string: iconUrlString) {
+            DispatchQueue.global().async {
+                if let data = try? Data(contentsOf: iconUrl), let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        button.setImage(image, for: .normal)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        button.setImage(UIImage(systemName: "person.circle"), for: .normal)
+                        button.tintColor = .accent
+                    }
+                }
+            }
+        } else {
+            button.setImage(UIImage(systemName: "person.circle"), for: .normal)
+            button.tintColor = .accent
+        }
         
-        // 名前変更の選択肢
-        alert.addAction(UIAlertAction(title: "名前を変更する", style: .default, handler: { [weak self] _ in
+        button.layer.cornerRadius = 18
+        button.clipsToBounds = true
+
+        // タップイベントを追加
+        button.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
+
+        // UIButtonをUIBarButtonItemにラップして返す
+        return UIBarButtonItem(customView: button)
+    }
+
+    
+    
+    @objc private func userIconTapped() {
+        // ドロワーを表示
+        let alert = UIAlertController(title: "アカウント設定", message: nil, preferredStyle: .actionSheet)
+        
+        // 名前変更
+        alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
             self?.changeUserName()
         }))
         
-        // ログアウトの選択肢
+        // ログアウト
         alert.addAction(UIAlertAction(title: "ログアウト", style: .default, handler: { [weak self] _ in
             self?.logout()
         }))
         
-        // アカウント削除の選択肢
-        alert.addAction(UIAlertAction(title: "アカウントを削除する", style: .destructive, handler: { [weak self] _ in
+        // アカウント削除
+        alert.addAction(UIAlertAction(title: "アカウントを削除", style: .destructive, handler: { [weak self] _ in
             self?.deleteAccount()
         }))
         
-        // キャンセルボタン
+        // キャンセル
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
         
-        // アラートを表示
-        present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
     
     private func changeUserName() {
-        // 名前変更のためのアラート
         let alert = UIAlertController(title: "名前を変更", message: "新しい名前を入力してください", preferredStyle: .alert)
         alert.addTextField { textField in
             textField.placeholder = "新しい名前"
         }
         alert.addAction(UIAlertAction(title: "変更", style: .default, handler: { [weak self] _ in
             if let newName = alert.textFields?.first?.text, !newName.isEmpty {
-                // 名前変更のロジックを追加
+                self?.tbrUser.name = newName
+                self?.setupUI()
             }
         }))
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-        
-        present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
     
     private func logout() {
-        // ログアウト処理（仮）
         print("ログアウトしました")
         navigationController?.popToRootViewController(animated: true)
     }
     
     private func deleteAccount() {
-        // アカウント削除の確認
         let alert = UIAlertController(title: "アカウント削除", message: "本当にアカウントを削除しますか？この操作は取り消せません。", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "削除", style: .destructive, handler: { [weak self] _ in
-            // アカウント削除処理（仮）
             print("アカウントを削除しました")
             self?.navigationController?.popToRootViewController(animated: true)
         }))
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-        
-        present(alert, animated: true, completion: nil)
+        present(alert, animated: true)
     }
 }
