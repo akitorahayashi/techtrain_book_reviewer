@@ -8,13 +8,11 @@
 import UIKit
 
 class HomeView: UIView {
-    private let tbrUser: TBRUser
+    let yourAccount: TBRUser
+    private let nameLabel = UILabel()
     
-    private let titleLabel = UILabel()
-    let userIconButton = UIButton(type: .custom)
-    
-    init(tbrUser: TBRUser) {
-        self.tbrUser = tbrUser
+    init(yourAccount: TBRUser) {
+        self.yourAccount = yourAccount
         super.init(frame: .zero)
         setupUI()
     }
@@ -26,34 +24,38 @@ class HomeView: UIView {
     private func setupUI() {
         backgroundColor = .systemBackground
         
-        // ユーザー名を左上に表示
-        titleLabel.text = tbrUser.name
-        titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
-        titleLabel.textAlignment = .left
-        titleLabel.textColor = .accent
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(titleLabel)
+        
+        // ユーザー名ラベルの設定
+        nameLabel.font = UIFont.systemFont(ofSize: 32, weight: .bold)
+        nameLabel.textColor = .accent
+        nameLabel.text = yourAccount.name
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(nameLabel)
         
         NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16)
+            nameLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            nameLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16)
         ])
-        
-        // ユーザーアイコンを右上に表示
-        setupUserIcon()
+    }
+    // 名前を更新をLabelに反映するメソッド
+    func updateUserName(_ name: String) {
+        nameLabel.text = name
     }
     
-    private func setupUserIcon() {
-        if let iconUrlString = tbrUser.iconUrl, let iconUrl = URL(string: iconUrlString) {
+    // NavigationBarの右上のボタンを提供
+    func createUserIconButton() -> UIButton {
+        let userIconButton = UIButton(type: .custom)
+        
+        if let iconUrlString = yourAccount.iconUrl, let iconUrl = URL(string: iconUrlString) {
             DispatchQueue.global().async {
                 if let data = try? Data(contentsOf: iconUrl), let image = UIImage(data: data) {
                     DispatchQueue.main.async {
-                        self.userIconButton.setImage(image, for: .normal)
+                        userIconButton.setImage(image, for: .normal)
                     }
                 } else {
                     DispatchQueue.main.async {
-                        self.userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
-                        self.userIconButton.tintColor = .accent
+                        userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
+                        userIconButton.tintColor = .accent
                     }
                 }
             }
@@ -65,17 +67,9 @@ class HomeView: UIView {
         userIconButton.layer.cornerRadius = 18
         userIconButton.clipsToBounds = true
         userIconButton.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(userIconButton)
+        userIconButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
+        userIconButton.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
-        NSLayoutConstraint.activate([
-            userIconButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            userIconButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
-            userIconButton.widthAnchor.constraint(equalToConstant: 36),
-            userIconButton.heightAnchor.constraint(equalToConstant: 36)
-        ])
-    }
-    
-    func updateUserName(_ name: String) {
-        titleLabel.text = name
+        return userIconButton
     }
 }

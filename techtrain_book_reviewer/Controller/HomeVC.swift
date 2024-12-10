@@ -10,7 +10,7 @@ import Combine
 
 class HomeViewController: UIViewController {
     private var homeView: HomeView?
-    private var cancellables = Set<AnyCancellable>() // Combineの購読を管理
+    private var cancellables = Set<AnyCancellable>()
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -21,51 +21,15 @@ class HomeViewController: UIViewController {
     }
 
     override func loadView() {
-        // UserProfileService.yourAccountがnilの場合にエラー処理
         guard let user = UserProfileService.yourAccount else {
             showErrorAndExit()
             return
         }
-        homeView = HomeView(tbrUser: user)
+        homeView = HomeView(yourAccount: user)
         view = homeView
     }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupNavigationBar()
-        setupActions()
-        bindUserProfileService()
-    }
-
-    private func setupNavigationBar() {
-        title = "Book Reviewer"
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.accent,
-            .font: UIFont.systemFont(ofSize: 20, weight: .bold)
-        ]
-
-        navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
-    }
-
-    private func setupActions() {
-        homeView?.userIconButton.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
-    }
-
-    private func bindUserProfileService() {
-        // UserProfileService.yourAccountPublisherを監視してUIを更新
-        UserProfileService.yourAccountPublisher
-            .receive(on: DispatchQueue.main) // メインスレッドで受信
-            .sink { [weak self] user in
-                guard let self = self else { return }
-                if let user = user {
-                    self.homeView?.updateUserName(user.name)
-                } else {
-                    self.showErrorAndExit()
-                }
-            }
-            .store(in: &cancellables)
-    }
-
+    
+    
     private func showErrorAndExit() {
         let alert = UIAlertController(
             title: "エラー",
@@ -76,6 +40,45 @@ class HomeViewController: UIViewController {
             self?.navigationController?.popToRootViewController(animated: true)
         }))
         present(alert, animated: true)
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupNavigationBar()
+        bindUserProfileService()
+    }
+
+    private func setupNavigationBar() {
+        title = "Book Reviewer"
+        navigationController?.navigationBar.titleTextAttributes = [
+            .foregroundColor: UIColor.accent,
+            .font: UIFont.systemFont(ofSize: 20, weight: .bold)
+        ]
+        
+        // 左側のBackするためのボタンを消す
+        navigationItem.hidesBackButton = true
+        
+        // 右側のアカウント管理のボタンを設定する
+        let userIconButton = homeView?.createUserIconButton()
+        userIconButton?.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
+
+        let userIconBarButtonItem = UIBarButtonItem(customView: userIconButton!)
+        navigationItem.rightBarButtonItem = userIconBarButtonItem
+    }
+
+    private func bindUserProfileService() {
+        UserProfileService.yourAccountPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] user in
+                guard let self = self else { return }
+                if let user = user {
+                    // HomeViewのnameLabelを更新
+                    self.homeView?.updateUserName(user.name)
+                } else {
+                    self.showErrorAndExit()
+                }
+            }
+            .store(in: &cancellables)
     }
 
     @objc private func userIconTapped() {
@@ -97,7 +100,7 @@ class HomeViewController: UIViewController {
 
         present(alert, animated: true)
     }
-
+    
     private func changeUserName() {
         let alert = UIAlertController(title: "名前を変更", message: "新しい名前を入力してください", preferredStyle: .alert)
         alert.addTextField { textField in
@@ -132,3 +135,5 @@ class HomeViewController: UIViewController {
         present(alert, animated: true)
     }
 }
+
+
