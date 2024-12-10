@@ -13,18 +13,61 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // シーンがアプリと連携されるときに呼び出されるメソッド
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        print("SceneDelegate: scene(_:willConnectTo:options:) - シーンがアプリに接続されました")
+        print("SceneDelegate: シーンがアプリに接続されました")
         
-        // シーンがUIWindowSceneであることを確認
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        // 初期画面としてFirstViewControllerを設定
-        let rootViewController = UINavigationController(rootViewController: SelectAuthVC())
-        window.rootViewController = rootViewController
-        // 作成したウィンドウをアプリ全体のウィンドウとして設定
         self.window = window
-        // ウィンドウを表示
+        
+        // Launch Screen と同じ背景色を設定
+        window.backgroundColor = UIColor.systemBackground // 適宜変更
         window.makeKeyAndVisible()
+        
+        // トークン読み取りと画面遷移処理
+        handleTokenAndProceed()
+    }
+    
+    private func handleTokenAndProceed() {
+        if let tokenData = SecureTokenService.shared.load(),
+           let token = String(data: tokenData, encoding: .utf8) {
+            print("SceneDelegate: トークンを読み取りました: \(token)")
+            
+            let userProfileService = UserProfileService()
+            userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success:
+                        print("SceneDelegate: Profile取得成功")
+                        self?.showHomeScreen()
+                    case .failure:
+                        print("SceneDelegate: Profile取得失敗")
+                        let _ = SecureTokenService.shared.delete()
+                        self?.showAuthScreen()
+                    }
+                }
+            }
+        } else {
+            print("SceneDelegate: トークンが見つかりません")
+            showAuthScreen()
+        }
+    }
+    
+    private func showAuthScreen() {
+        // サインアップ/ログイン画面を表示
+        let navigationController = UINavigationController(rootViewController: SelectAuthVC())
+        window?.rootViewController = navigationController
+    }
+    
+    private func showHomeScreen() {
+        // SelectAuthVC をルートとして設定
+        let selectAuthVC = SelectAuthVC()
+        let navigationController = UINavigationController(rootViewController: selectAuthVC)
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
+        
+        // SelectAuthVC から HomeViewController に遷移
+        let homeVC = HomeViewController()
+        navigationController.pushViewController(homeVC, animated: false)
     }
     
     // シーンが切断されたときに呼び出される（リソース解放などに使用可能）

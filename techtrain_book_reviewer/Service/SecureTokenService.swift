@@ -10,29 +10,36 @@ import Security
 
 class SecureTokenService {
     static let shared = SecureTokenService()
+    let tokenKey = "\(String(describing: Bundle.main.bundleIdentifier)).authToken"
     private init() {}
     
     private let service = Bundle.main.bundleIdentifier ?? "com.akitorahayashi.techtrain-book-reviewer"
     
-    func save(key: String, data: Data) -> Bool {
-        _ = delete(key: key) // 結果は無視
+    func save(data: Data) -> Bool {
+        let _ = delete() // 既存データの削除
         
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
+            kSecAttrAccount as String: tokenKey,
             kSecValueData as String: data
         ]
         
         let status = SecItemAdd(query as CFDictionary, nil)
-        return status == errSecSuccess
+        if status == errSecSuccess {
+            print("SecureTokenService: データを保存しました")
+            return true
+        } else {
+            print("SecureTokenService: データ保存に失敗しました（ステータスコード: \(status)）")
+            return false
+        }
     }
     
-    func load(key: String) -> Data? {
+    func load() -> Data? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: key,
+            kSecAttrAccount as String: tokenKey,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
@@ -40,18 +47,29 @@ class SecureTokenService {
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
-        guard status == errSecSuccess else { return nil }
-        return result as? Data
+        if status == errSecSuccess {
+            print("SecureTokenService: データを読み取りました")
+            return result as? Data
+        } else {
+            print("SecureTokenService: データ読み取りに失敗しました（ステータスコード: \(status)）")
+            return nil
+        }
     }
     
-    func delete(key: String) -> Bool {
+    func delete() -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: key
+            kSecAttrAccount as String: tokenKey
         ]
         
         let status = SecItemDelete(query as CFDictionary)
-        return status == errSecSuccess
+        if status == errSecSuccess {
+            print("SecureTokenService: データを削除しました")
+            return true
+        } else {
+            print("SecureTokenService: データ削除に失敗しました（ステータスコード: \(status)）")
+            return false
+        }
     }
 }
