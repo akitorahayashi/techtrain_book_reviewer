@@ -9,6 +9,7 @@ import UIKit
 
 class HomeViewController: UIViewController {
     private var tbrUser: TBRUser
+    private var homeView: HomeView!
     
     init(tbrUser: TBRUser) {
         self.tbrUser = tbrUser
@@ -19,96 +20,46 @@ class HomeViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
+    override func loadView() {
+        homeView = HomeView(tbrUser: tbrUser)
+        view = homeView
     }
     
-    private func setupUI() {
-        view.backgroundColor = .systemBackground
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupNavigationBar()
+        setupActions()
+    }
+    
+    private func setupNavigationBar() {
         title = "Book Reviewer"
-        
-        // NavigationBarのタイトルの色を.accentに設定
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.accent,
             .font: UIFont.systemFont(ofSize: 20, weight: .bold)
         ]
         
-        // 左のBackボタンを非表示
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: UIView())
-        
-        navigationItem.rightBarButtonItem = setupUserIcon()
-        
-        
-        // ユーザー名を左上に表示
-        let titleLabel = UILabel()
-        titleLabel.text = tbrUser.name
-        titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
-        titleLabel.textAlignment = .left
-        titleLabel.textColor = .accent
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(titleLabel)
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16)
-        ])
     }
     
-    private func setupUserIcon() -> UIBarButtonItem {
-        // UIButtonを作成
-        let button = UIButton(type: .custom)
-
-        // アイコン画像を設定
-        if let iconUrlString = tbrUser.iconUrl, let iconUrl = URL(string: iconUrlString) {
-            DispatchQueue.global().async {
-                if let data = try? Data(contentsOf: iconUrl), let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        button.setImage(image, for: .normal)
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        button.setImage(UIImage(systemName: "person.circle"), for: .normal)
-                        button.tintColor = .accent
-                    }
-                }
-            }
-        } else {
-            button.setImage(UIImage(systemName: "person.circle"), for: .normal)
-            button.tintColor = .accent
-        }
-        
-        button.layer.cornerRadius = 18
-        button.clipsToBounds = true
-
-        // タップイベントを追加
-        button.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
-
-        // UIButtonをUIBarButtonItemにラップして返す
-        return UIBarButtonItem(customView: button)
+    private func setupActions() {
+        homeView.userIconButton.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
     }
-
-    
     
     @objc private func userIconTapped() {
-        // ドロワーを表示
         let alert = UIAlertController(title: "アカウント設定", message: nil, preferredStyle: .actionSheet)
         
-        // 名前変更
         alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
             self?.changeUserName()
         }))
         
-        // ログアウト
         alert.addAction(UIAlertAction(title: "ログアウト", style: .default, handler: { [weak self] _ in
             self?.logout()
         }))
         
-        // アカウント削除
         alert.addAction(UIAlertAction(title: "アカウントを削除", style: .destructive, handler: { [weak self] _ in
             self?.deleteAccount()
         }))
         
-        // キャンセル
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
         
         present(alert, animated: true)
@@ -122,7 +73,7 @@ class HomeViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "変更", style: .default, handler: { [weak self] _ in
             if let newName = alert.textFields?.first?.text, !newName.isEmpty {
                 self?.tbrUser.name = newName
-                self?.setupUI()
+                self?.homeView.updateUserName(newName)
             }
         }))
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))

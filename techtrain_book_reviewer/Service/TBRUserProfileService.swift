@@ -1,13 +1,14 @@
 //
-//  TBRUserProfileManager.swift
+//  TBRUserProfileService.swift
 //  techtrain_book_reviewer
 //
-//  Created by 林 明虎 on 2024/12/09.
+//  Created by 林 明虎 on 2024/12/10.
 //
+
 
 import Foundation
 
-class TBRUserProfileManager {
+class TBRUserProfileService {
     private let apiClient: TechTrainAPIClient
     
     init(apiClient: TechTrainAPIClient = .shared) {
