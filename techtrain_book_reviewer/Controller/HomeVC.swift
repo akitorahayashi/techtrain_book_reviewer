@@ -107,12 +107,52 @@ class HomeViewController: UIViewController {
             textField.placeholder = "新しい名前"
         }
         alert.addAction(UIAlertAction(title: "変更", style: .default, handler: { [weak self] _ in
+            guard let self = self else { return }
             if let newName = alert.textFields?.first?.text, !newName.isEmpty {
-                UserProfileService.yourAccount?.name = newName
-                UserProfileService.yourAccountPublisher.send(UserProfileService.yourAccount)
+                // 名前をバリデーション
+                guard let cleanedName = UserProfileService().validateAndCleanName(newName) else {
+                    self.showAlert(title: "エラー", message: "無効な名前です。再度入力してください。")
+                    return
+                }
+                
+                // ローディング表示
+                self.showLoading()
+                
+                // トークン取得
+                guard let token = UserProfileService.yourAccount?.token else {
+                    self.hideLoading()
+                    self.showAlert(title: "エラー", message: "認証情報が無効です。ログインし直してください。")
+                    self.logout()
+                    return
+                }
+                
+                // サーバーに名前変更リクエストを送信
+                UserProfileService().updateUserName(withToken: token, newName: cleanedName) { result in
+                    DispatchQueue.main.async {
+                        self.hideLoading() // ローディングを非表示
+                        
+                        switch result {
+                        case .success:
+                            print("名前の変更に成功しました")
+                            UserProfileService.yourAccount?.name = cleanedName
+                            UserProfileService.yourAccountPublisher.send(UserProfileService.yourAccount)
+                            self.showAlert(title: "成功", message: "名前が変更されました。")
+                        case .failure(let error):
+                            print("名前の変更に失敗しました: \(error.localizedDescription)")
+                            self.showAlert(title: "エラー", message: "名前の変更に失敗しました。再度お試しください。")
+                        }
+                    }
+                }
             }
         }))
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
+        present(alert, animated: true)
+    }
+
+    
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true)
     }
 
