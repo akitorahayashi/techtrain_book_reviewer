@@ -48,8 +48,13 @@ class AuthInputVC: UIViewController {
         }
 
         if authMode == .signUp {
-            guard let name = authInputView.nameTextField.text, !name.isEmpty else {
-                showSingleOptionAlert(title: "入力エラー", message: "名前を入力してください。")
+            let userProfileService = UserProfileService()
+            let cleanedName: String? = userProfileService.validateAndCleanName(authInputView.nameTextField.text)
+            guard let name = cleanedName, !name.isEmpty else {
+                showSingleOptionAlert(
+                        title: "入力エラー",
+                        message: "名前は10文字以下で空白以外の文字を含めてください。"
+                    )
                 return
             }
 
