@@ -23,6 +23,16 @@ class UserProfileService {
         self.apiClient = apiClient
     }
     
+    func validateAndCleanName(_ name: String?) -> String? {
+        guard let name = name?.replacingOccurrences(of: " ", with: ""), // すべての空白を削除
+              !name.isEmpty, // 空白のみでないことを確認
+              name.count <= 10 // 10文字以下であることを確認
+        else {
+            return nil // 無効な名前の場合はnilを返す
+        }
+        return name // 有効な名前を返す
+    }
+    
     func fetchUserProfile(
         withToken token: String,
         completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
