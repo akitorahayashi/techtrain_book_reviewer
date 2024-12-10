@@ -33,6 +33,33 @@ class UserProfileService {
         return name // 有効な名前を返す
     }
     
+    func updateUserName(
+        withToken token: String,
+        newName: String,
+        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
+    ) {
+        let endpoint = "/users"
+        
+        let headers = [
+            "Authorization": "Bearer \(token)"
+        ]
+        
+        let parameters = [
+            "name": newName
+        ]
+        
+        apiClient.makeRequest(to: endpoint, method: "PUT", parameters: parameters, headers: headers) { result in
+            switch result {
+            case .success:
+                print("UserProfileService: ユーザー名の更新に成功しました")
+                completion(.success(()))
+            case .failure(let error):
+                print("UserProfileService: ユーザー名の更新に失敗しました - \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
+    }
+    
     func fetchUserProfile(
         withToken token: String,
         completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
