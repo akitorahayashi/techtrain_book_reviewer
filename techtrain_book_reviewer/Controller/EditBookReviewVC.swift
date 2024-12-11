@@ -86,6 +86,24 @@ class EditBookReviewViewController: UIViewController {
             return
         }
         
+        // 入力値のバリデーション
+        if isBlank(text: title) {
+            showError(message: "タイトルを入力してください。")
+            return
+        }
+        if isBlank(text: url) {
+            showError(message: "URLを入力してください。")
+            return
+        }
+        if isBlank(text: detail) {
+            showError(message: "詳細を入力してください。")
+            return
+        }
+        if isBlank(text: review) {
+            showError(message: "レビューを入力してください。")
+            return
+        }
+        
         BookReviewService.shared.updateBookReview(
             id: bookReviewId,
             title: title,
@@ -105,6 +123,13 @@ class EditBookReviewViewController: UIViewController {
             }
         }
     }
+
+    // MARK: - バリデーション用ヘルパー
+    private func isBlank(text: String?) -> Bool {
+        guard let text = text else { return true }
+        return text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     
     // MARK: - Show Error
     private func showError(message: String) {
