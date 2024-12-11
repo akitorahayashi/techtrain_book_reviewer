@@ -31,30 +31,28 @@ class EditBookReviewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupUI()
+        setupActions()
+        fetchBookDetails()
     }
     
-    private func setupUI() {
-        fetchBookDetails()
-        
+    // MARK: - Setup Actions
+    private func setupActions() {
         editView.saveButton.addTapGesture { [weak self] in
             self?.saveReview()
         }
         editView.cancelButton.addTapGesture { [weak self] in
-            self?.dismiss(animated: true, completion: nil)
+            self?.navigationController?.popViewController(animated: true)
         }
     }
     
+    // MARK: - Fetch Book Details
     private func fetchBookDetails() {
         guard let token = UserProfileService.yourAccount?.token else {
             showError(message: "認証情報が見つかりません。再度ログインしてください。")
             return
         }
         
-        BookReviewService.shared.fetchBookReview(
-            id: bookReviewId,
-            token: token
-        ) { [weak self] result in
+        BookReviewService.shared.fetchBookReview(id: bookReviewId, token: token) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let bookReview):
@@ -69,10 +67,11 @@ class EditBookReviewViewController: UIViewController {
     private func populateFields(with bookReview: BookReview) {
         editView.titleTextField.text = bookReview.title
         editView.urlTextField.text = bookReview.url
-        editView.detailTextField.text = bookReview.detail
-        editView.reviewTextField.text = bookReview.review
+        editView.detailInputField.text = bookReview.detail
+        editView.reviewInputField.text = bookReview.review
     }
     
+    // MARK: - Save Review
     private func saveReview() {
         guard let token = UserProfileService.yourAccount?.token else {
             showError(message: "認証情報が見つかりません。再度ログインしてください。")
@@ -81,8 +80,9 @@ class EditBookReviewViewController: UIViewController {
         
         guard let title = editView.titleTextField.text,
               let url = editView.urlTextField.text,
-              let detail = editView.detailTextField.text,
-              let review = editView.reviewTextField.text else {
+              let detail = editView.detailInputField.text,
+              let review = editView.reviewInputField.text else {
+            showError(message: "全てのフィールドを正しく入力してください。")
             return
         }
         
@@ -97,7 +97,7 @@ class EditBookReviewViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success:
-                    self?.onSaveCompletion?() // 完了クロージャを呼び出す
+                    self?.onSaveCompletion?() // 保存成功後のコールバック
                     self?.navigationController?.popViewController(animated: true)
                 case .failure(let error):
                     self?.showError(message: "保存に失敗しました。エラー: \(error.localizedDescription)")
@@ -106,9 +106,11 @@ class EditBookReviewViewController: UIViewController {
         }
     }
     
+    // MARK: - Show Error
     private func showError(message: String) {
         let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
 }
+

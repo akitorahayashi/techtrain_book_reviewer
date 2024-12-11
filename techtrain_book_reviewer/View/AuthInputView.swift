@@ -10,7 +10,7 @@ import UIKit
 class TBRAuthInputView: UIView {
     let emailTextField = TBRInputField(placeholder: "メールアドレス")
     let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
-    let nameTextField = TBRInputField(placeholder: "名前") // 名前入力フィールド
+    let nameTextField = TBRInputField(placeholder: "名前")
     
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton

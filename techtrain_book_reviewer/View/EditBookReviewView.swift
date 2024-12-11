@@ -10,8 +10,31 @@ import UIKit
 class EditBookReviewView: UIView {
     let titleTextField = TBRInputField(placeholder: "タイトル")
     let urlTextField = TBRInputField(placeholder: "URL")
-    let detailTextField = TBRInputField(placeholder: "詳細")
-    let reviewTextField = TBRInputField(placeholder: "レビュー")
+    
+    // 新しいデザインの入力フィールド
+    let detailInputField: UITextView = {
+        let textView = UITextView()
+        textView.layer.borderWidth = 1.0
+        textView.layer.borderColor = UIColor.systemGray5.cgColor
+        textView.layer.cornerRadius = 5.0
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.isScrollEnabled = false
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        return textView
+    }()
+    
+    let reviewInputField: UITextView = {
+        let textView = UITextView()
+        textView.layer.borderWidth = 1.0
+        textView.layer.borderColor = UIColor.systemGray5.cgColor
+        textView.layer.cornerRadius = 5.0
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.isScrollEnabled = false
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        return textView
+    }()
     
     let saveButton: TBRCardButton
     let cancelButton: TBRCardButton
@@ -37,7 +60,7 @@ class EditBookReviewView: UIView {
         buttonStackView.distribution = .fillEqually
         
         // フィールドとボタンを含むスタックビュー
-        let inputFields: [UIView] = [titleTextField, urlTextField, detailTextField, reviewTextField]
+        let inputFields: [UIView] = [titleTextField, urlTextField, detailInputField, reviewInputField]
         
         let stackView = UIStackView(arrangedSubviews: inputFields + [buttonStackView])
         stackView.axis = .vertical
@@ -52,5 +75,9 @@ class EditBookReviewView: UIView {
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
         ])
+        
+        // Set fixed heights for UITextView
+        detailInputField.heightAnchor.constraint(equalToConstant: 90).isActive = true
+        reviewInputField.heightAnchor.constraint(equalToConstant: 90).isActive = true
     }
 }
