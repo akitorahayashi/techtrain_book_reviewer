@@ -30,12 +30,12 @@ class CreateReviewViewController: UIViewController {
     
     @objc private func submitButtonTapped() {
         guard
-            let title = createReviewView.titleInputField.text, !title.isEmpty,
-            let url = createReviewView.urlInputField.text, !url.isEmpty,
-            let detail = createReviewView.detailInputField.text, !detail.isEmpty,
-            let review = createReviewView.reviewInputField.text, !review.isEmpty
+            let title = createReviewView.titleInputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !title.isEmpty,
+            let url = createReviewView.urlInputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !url.isEmpty,
+            let detail = createReviewView.detailInputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !detail.isEmpty,
+            let review = createReviewView.reviewInputField.text?.trimmingCharacters(in: .whitespacesAndNewlines), !review.isEmpty
         else {
-            showAlert(title: "エラー", message: "すべてのフィールドを入力してください。")
+            showAlert(title: "エラー", message: "すべてのフィールドに有効な値を入力してください。")
             return
         }
         
@@ -54,12 +54,20 @@ class CreateReviewViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success:
+                    self?.clearAllFields() // 成功した場合に入力欄をクリア
                     self?.showAlert(title: "成功", message: "レビューが投稿されました。")
                 case .failure(let error):
                     self?.showAlert(title: "エラー", message: "レビューの投稿に失敗しました: \(error.localizedDescription)")
                 }
             }
         }
+    }
+    
+    private func clearAllFields() {
+        createReviewView.titleInputField.text = ""
+        createReviewView.urlInputField.text = ""
+        createReviewView.detailInputField.text = ""
+        createReviewView.reviewInputField.text = ""
     }
     
     private func showAlert(title: String, message: String) {
