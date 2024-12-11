@@ -8,7 +8,7 @@
 struct BookReview: Codable {
     let id: String
     let title: String
-    let url: String?
+    let url: String
     let detail: String
     let review: String
     let reviewer: String

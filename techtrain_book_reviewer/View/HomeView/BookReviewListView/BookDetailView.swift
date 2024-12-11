@@ -5,13 +5,6 @@
 //  Created by 林 明虎 on 2024/12/11.
 //
 
-//
-//  BookDetailView.swift
-//  techtrain_book_reviewer
-//
-//  Created by 林 明虎 on 2024/12/11.
-//
-
 import UIKit
 
 class BookDetailView: UIView {
@@ -20,19 +13,25 @@ class BookDetailView: UIView {
     private let reviewLabel = UILabel()
     let openUrlButton: TBRCardButton
     let backButton: TBRCardButton
+    let editButton: TBRCardButton
+    let deleteButton: TBRCardButton
     
     private var onBackAction: (() -> Void)?
-    private var bookUrl: String?
+    var bookUrl: String
+    private var isMine: Bool?
     
-    init(title: String, detail: String, review: String, url: String?, onBack: @escaping () -> Void) {
+    init(title: String, detail: String, review: String, url: String, isMine: Bool?, onBack: @escaping () -> Void) {
         self.openUrlButton = TBRCardButton(title: "Browser", action: {})
         self.backButton = TBRCardButton(title: "List", action: {})
+        self.editButton = TBRCardButton(title: "Edit", action: {})
+        self.deleteButton = TBRCardButton(title: "Delete", action: {})
         self.bookUrl = url
+        self.isMine = isMine
         self.onBackAction = onBack
         super.init(frame: .zero)
         setupUI()
         setupActions()
-        updateUI(title: title, detail: detail, review: review)
+        updateUI(title: title, detail: detail, review: review, url: bookUrl, isMine: isMine)
     }
     
     required init?(coder: NSCoder) {
@@ -72,13 +71,22 @@ class BookDetailView: UIView {
         contentView.addSubview(reviewLabel)
         
         // Button Stack
-        let buttonStack = UIStackView(arrangedSubviews: [backButton, openUrlButton])
+        let buttonStack = UIStackView(arrangedSubviews: [deleteButton, editButton])
         buttonStack.axis = .horizontal
         buttonStack.spacing = 16
         buttonStack.alignment = .center
         buttonStack.distribution = .fillEqually
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(buttonStack)
+        
+        // Navigation Buttons Stack
+        let navButtonStack = UIStackView(arrangedSubviews: [backButton, openUrlButton])
+        navButtonStack.axis = .horizontal
+        navButtonStack.spacing = 16
+        navButtonStack.alignment = .center
+        navButtonStack.distribution = .fillEqually
+        navButtonStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(navButtonStack)
         
         // Constraints
         NSLayoutConstraint.activate([
@@ -115,7 +123,13 @@ class BookDetailView: UIView {
             buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             buttonStack.heightAnchor.constraint(equalToConstant: 44),
-            buttonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            buttonStack.bottomAnchor.constraint(equalTo: navButtonStack.topAnchor, constant: -16),
+            
+            // Navigation Button Stack
+            navButtonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            navButtonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            navButtonStack.heightAnchor.constraint(equalToConstant: 44),
+            navButtonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
     }
     
@@ -129,7 +143,7 @@ class BookDetailView: UIView {
     }
     
     private func openUrl() {
-        guard let urlString = bookUrl, let url = URL(string: urlString) else {
+        guard let url = URL(string: bookUrl) else {
             showAlert(title: "Error", message: "Invalid or missing URL")
             return
         }
@@ -159,9 +173,14 @@ class BookDetailView: UIView {
         return nil
     }
     
-    func updateUI(title: String, detail: String, review: String) {
+    func updateUI(title: String, detail: String, review: String, url: String, isMine: Bool?) {
         titleLabel.text = title
         detailLabel.text = detail
         reviewLabel.text = review
+        self.isMine = isMine
+        
+        // Edit & Delete Buttons の表示/非表示
+        editButton.isHidden = !(isMine ?? false)
+        deleteButton.isHidden = !(isMine ?? false)
     }
 }

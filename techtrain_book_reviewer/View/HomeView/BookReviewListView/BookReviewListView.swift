@@ -7,13 +7,14 @@
 
 import UIKit
 
-class BookReviewListView: UITableView {
+class BookReviewListView: UIView {
+    let tableView = UITableView() // 外部からアクセス可能に
     private var bookReviews: [BookReview] = []
     private var isLoading = false
     private var currentOffset = 0
-    
+
     init() {
-        super.init(frame: .zero, style: .plain)
+        super.init(frame: .zero)
         setupUI()
     }
     
@@ -22,26 +23,37 @@ class BookReviewListView: UITableView {
     }
     
     private func setupUI() {
-        delegate = self
-        dataSource = self
-        register(BookReviewCell.self, forCellReuseIdentifier: "BookReviewCell")
-        translatesAutoresizingMaskIntoConstraints = false
+        addSubview(tableView)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.register(BookReviewCell.self, forCellReuseIdentifier: "BookReviewCell")
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            tableView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
     }
-    
+
     func resetReviews(_ reviews: [BookReview]) {
         bookReviews = reviews
-        reloadData()
+        tableView.reloadData()
     }
-    
+
     func appendReviews(_ reviews: [BookReview]) {
         bookReviews.append(contentsOf: reviews)
-        reloadData()
+        tableView.reloadData()
     }
-    
-    func loadBookReviews(offset: Int = 0) {
-        guard !isLoading, let token = UserProfileService.yourAccount?.token else { return }
+
+    func loadBookReviews(offset: Int = 0, completion: (() -> Void)? = nil) {
+        guard !isLoading, let token = UserProfileService.yourAccount?.token else {
+            completion?()
+            return
+        }
+
         isLoading = true
-        
         BookReviewService.shared.fetchBookReviews(offset: offset, token: token) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
@@ -49,15 +61,15 @@ class BookReviewListView: UITableView {
                 switch result {
                 case .success(let newReviews):
                     if offset == 0 {
-                        self.bookReviews = newReviews
+                        self.resetReviews(newReviews)
                     } else {
-                        self.bookReviews.append(contentsOf: newReviews)
+                        self.appendReviews(newReviews)
                     }
-                    self.currentOffset += newReviews.count
-                    self.reloadData()
+                    self.currentOffset = offset + newReviews.count
                 case .failure(let error):
                     print("書籍レビューの取得失敗: \(error.localizedDescription)")
                 }
+                completion?()
             }
         }
     }
@@ -68,23 +80,21 @@ extension BookReviewListView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return bookReviews.count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookReviewCell", for: indexPath) as? BookReviewCell else {
             return UITableViewCell()
         }
-        let review = bookReviews[indexPath.row]
-        cell.configure(with: review)
+        cell.configure(with: bookReviews[indexPath.row])
         return cell
     }
-    
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let review = bookReviews[indexPath.row]
-        let detailVC = BookDetailViewController(book: review)
-        parentViewController?.navigationController?.pushViewController(detailVC, animated: true)
+        parentViewController?.navigationController?.pushViewController(BookDetailViewController(book: review), animated: true)
     }
-    
+
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == bookReviews.count - 1 { // 最後のセルが表示されたら次をロード
             loadBookReviews(offset: currentOffset)
