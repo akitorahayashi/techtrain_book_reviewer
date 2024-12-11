@@ -104,7 +104,7 @@ class AuthInputVC: UIViewController {
     private func showSuccessAlert() {
         let alert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            self?.navigateToHomeVC()
+            self?.navigateToBookListVC()
         }))
         present(alert, animated: true, completion: nil)
     }
@@ -115,8 +115,10 @@ class AuthInputVC: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    private func navigateToHomeVC() {
-        let bookReviewListVC = BookReviewListViewController()
-        navigationController?.pushViewController(bookReviewListVC, animated: true)
+    private func navigateToBookListVC() {
+        let mainTabBarController = MainTabBarController()
+        let navigationController = UINavigationController(rootViewController: mainTabBarController)
+        navigationController.modalPresentationStyle = .fullScreen
+        present(navigationController, animated: true, completion: nil)
     }
 }

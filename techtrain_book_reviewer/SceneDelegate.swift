@@ -38,7 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     switch result {
                     case .success:
                         print("SceneDelegate: Profile取得成功")
-                        self?.showHomeScreen()
+                        self?.showBookListScreen()
                     case .failure:
                         print("SceneDelegate: Profile取得失敗")
                         let _ = SecureTokenService.shared.delete()
@@ -58,7 +58,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = navigationController
     }
     
-    private func showHomeScreen() {
+    private func showBookListScreen() {
         // SelectAuthVC をルートとして設定
         let selectAuthVC = SelectAuthVC()
         let navigationController = UINavigationController(rootViewController: selectAuthVC)
