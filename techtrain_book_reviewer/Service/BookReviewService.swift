@@ -13,32 +13,32 @@ class BookReviewService {
     private init() {}
     
     // Post a review
-        func postBookReview(
-            title: String,
-            url: String,
-            detail: String,
-            review: String,
-            token: String,
-            completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
-        ) {
-            let headers = ["Authorization": "Bearer \(token)"]
-            let endpoint = "/books"
-            let parameters: [String: Any] = [
-                "title": title,
-                "url": url,
-                "detail": detail,
-                "review": review
-            ]
-            
-            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "POST", parameters: parameters, headers: headers) { result in
-                switch result {
-                case .success:
-                    completion(.success(()))
-                case .failure(let error):
-                    completion(.failure(error))
-                }
+    func postBookReview(
+        title: String,
+        url: String,
+        detail: String,
+        review: String,
+        token: String,
+        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
+    ) {
+        let headers = ["Authorization": "Bearer \(token)"]
+        let endpoint = "/books"
+        let parameters: [String: Any] = [
+            "title": title,
+            "url": url,
+            "detail": detail,
+            "review": review
+        ]
+        
+        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "POST", parameters: parameters, headers: headers) { result in
+            switch result {
+            case .success:
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
+    }
     
     // fetch reviews
     func fetchBookReviews(
