@@ -89,43 +89,7 @@ class BookReviewCell: UITableViewCell {
         detailLabel.text = review.detail
         reviewerLabel.text = "Reviewer: \(review.reviewer)"
         reviewTextLabel.text = review.review
-        
-        // 画像の読み込み
-        if let url = URL(string: review.url) {
-            loadImage(from: url, for: review.title)
-        } else {
-            // URLがない場合
-            print("画像URLが存在しません: \(review.title)")
-            bookImageView.image = UIImage(named: "DefaultBookImage")
-        }
+        bookImageView.image = UIImage(named: "DefaultBookImage")
     }
-
-    private func loadImage(from url: URL, for title: String) {
-        let session = URLSession.shared
-        let task = session.dataTask(with: url) { [weak self] data, response, error in
-            guard let self = self else { return }
-            
-            if let error = error {
-                print("画像の読み込みエラー (\(title)): \(error.localizedDescription)")
-                DispatchQueue.main.async {
-                    self.bookImageView.image = UIImage(named: "DefaultBookImage")
-                }
-                return
-            }
-            
-            if let data = data, let image = UIImage(data: data) {
-                DispatchQueue.main.async {
-                    self.bookImageView.image = image
-                }
-            } else {
-                print("画像データが無効: \(title)")
-                DispatchQueue.main.async {
-                    self.bookImageView.image = UIImage(named: "DefaultBookImage")
-                }
-            }
-        }
-        task.resume()
-    }
-
 }
 
