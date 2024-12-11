@@ -116,7 +116,7 @@ class AuthInputVC: UIViewController {
     }
     
     private func navigateToHomeVC() {
-        let homeVC = HomeViewController()
-        navigationController?.pushViewController(homeVC, animated: true)
+        let bookReviewListVC = BookReviewListViewController()
+        navigationController?.pushViewController(bookReviewListVC, animated: true)
     }
 }
