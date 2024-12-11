@@ -10,7 +10,7 @@ import UIKit
 class BookReviewListViewController: UIViewController {
     private let bookReviewListView = BookReviewListView()
     private let refreshControl = UIRefreshControl()
-
+    
     override func loadView() {
         view = UIView()
         view.backgroundColor = .systemBackground
@@ -25,28 +25,33 @@ class BookReviewListViewController: UIViewController {
             bookReviewListView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupRefreshControl()
         loadInitialReviews()
     }
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        refreshReviews()
+    }
+    
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
         bookReviewListView.tableView.refreshControl = refreshControl
     }
-
+    
     private func loadInitialReviews() {
         loadReviews(offset: 0)
     }
-
+    
     @objc private func refreshReviews() {
         loadReviews(offset: 0) { [weak self] in
             self?.refreshControl.endRefreshing()
         }
     }
-
+    
     private func loadReviews(offset: Int, completion: (() -> Void)? = nil) {
         bookReviewListView.loadBookReviews(offset: offset, completion: completion)
     }
