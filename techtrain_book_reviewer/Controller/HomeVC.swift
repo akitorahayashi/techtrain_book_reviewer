@@ -11,15 +11,16 @@ import Combine
 class HomeViewController: UIViewController {
     private var homeView: HomeView?
     private var cancellables = Set<AnyCancellable>()
-
+    private var isLoggingOut = false
+    
     init() {
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
     override func loadView() {
         guard let user = UserProfileService.yourAccount else {
             showErrorAndExit()
@@ -41,13 +42,13 @@ class HomeViewController: UIViewController {
         }))
         present(alert, animated: true)
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
         bindUserProfileService()
     }
-
+    
     private func setupNavigationBar() {
         title = "Book Reviewer"
         navigationController?.navigationBar.titleTextAttributes = [
@@ -61,16 +62,20 @@ class HomeViewController: UIViewController {
         // 右側のアカウント管理のボタンを設定する
         let userIconButton = homeView?.createUserIconButton()
         userIconButton?.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
-
+        
         let userIconBarButtonItem = UIBarButtonItem(customView: userIconButton!)
         navigationItem.rightBarButtonItem = userIconBarButtonItem
     }
-
+    
     private func bindUserProfileService() {
         UserProfileService.yourAccountPublisher
             .receive(on: DispatchQueue.main)
             .sink { [weak self] user in
                 guard let self = self else { return }
+                if self.isLoggingOut {
+                    // ログアウト中の場合は処理をスキップ
+                    return
+                }
                 if let user = user {
                     // HomeViewのnameLabelを更新
                     self.homeView?.updateUserName(user.name)
@@ -80,24 +85,20 @@ class HomeViewController: UIViewController {
             }
             .store(in: &cancellables)
     }
-
+    
     @objc private func userIconTapped() {
         let alert = UIAlertController(title: "アカウント設定", message: nil, preferredStyle: .actionSheet)
-
+        
         alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
             self?.changeUserName()
         }))
-
+        
         alert.addAction(UIAlertAction(title: "ログアウト", style: .default, handler: { [weak self] _ in
             self?.logout()
         }))
-
-        alert.addAction(UIAlertAction(title: "アカウントを削除", style: .destructive, handler: { [weak self] _ in
-            self?.deleteAccount()
-        }))
-
+        
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-
+        
         present(alert, animated: true)
     }
     
@@ -148,32 +149,23 @@ class HomeViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
         present(alert, animated: true)
     }
-
+    
+    private func logout() {
+        isLoggingOut = true
+        UserProfileService.yourAccount = nil
+        UserProfileService.yourAccountPublisher.send(nil)
+        let _ = SecureTokenService.shared.delete()
+        navigationController?.popToRootViewController(animated: true)
+        print("ログアウトしました")
+        
+    }
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true)
     }
-
-    private func logout() {
-        print("ログアウトしました")
-        UserProfileService.yourAccount = nil
-        UserProfileService.yourAccountPublisher.send(nil)
-        navigationController?.popToRootViewController(animated: true)
-    }
-
-    private func deleteAccount() {
-        let alert = UIAlertController(title: "アカウント削除", message: "本当にアカウントを削除しますか？この操作は取り消せません。", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "削除", style: .destructive, handler: { [weak self] _ in
-            print("アカウントを削除しました")
-            UserProfileService.yourAccount = nil
-            UserProfileService.yourAccountPublisher.send(nil)
-            self?.navigationController?.popToRootViewController(animated: true)
-        }))
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-        present(alert, animated: true)
-    }
+    
 }
 
 
