@@ -19,7 +19,7 @@ class MainTabBarController: UITabBarController {
         createReviewVC.tabBarItem = UITabBarItem(title: "Create Review", image: UIImage(systemName: "square.and.pencil"), tag: 1)
         
         viewControllers = [homeVC, createReviewVC]
-        tabBar.tintColor = .systemPink
+        tabBar.tintColor = .accent
     }
     
     
@@ -57,13 +57,20 @@ class MainTabBarController: UITabBarController {
     
     // MARK: - Navigation Bar
     private func setupNavigationBar() {
-        title = "Book Reviewer"
+        // タイトル設定
+        let titleLabel = UILabel()
+        titleLabel.text = "Book Reviewer"
+        titleLabel.textColor = UIColor.accent
+        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        navigationItem.titleView = titleLabel
+
+        // ナビゲーションバーのスタイル設定
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.accent,
             .font: UIFont.systemFont(ofSize: 20, weight: .bold)
         ]
         navigationItem.hidesBackButton = true
-        
+
         // ユーザーアイコンボタン
         let userIconButton = createUserIconButton()
         userIconButton.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
