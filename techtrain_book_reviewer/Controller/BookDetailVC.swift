@@ -26,6 +26,7 @@ class BookDetailViewController: UIViewController {
             detail: book.detail,
             review: book.review,
             url: book.url,
+            isMine: book.isMine,
             onBack: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             }

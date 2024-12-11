@@ -40,6 +40,41 @@ class BookReviewService {
         }
     }
     
+    // updateBookReview
+    func updateBookReview(
+            id: String,
+            title: String,
+            url: String?,
+            detail: String,
+            review: String,
+            token: String,
+            completion: @escaping (Result<BookReview, TechTrainAPIClient.APIError>) -> Void
+        ) {
+            let headers = ["Authorization": "Bearer \(token)"]
+            let endpoint = "/books/\(id)"
+            let parameters: [String: Any] = [
+                "title": title,
+                "url": url ?? "",
+                "detail": detail,
+                "review": review
+            ]
+            
+            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "PUT", parameters: parameters, headers: headers) { result in
+                switch result {
+                case .success(let data):
+                    do {
+                        let decoder = JSONDecoder()
+                        let updatedBookReview = try decoder.decode(BookReview.self, from: data)
+                        completion(.success(updatedBookReview))
+                    } catch {
+                        completion(.failure(.decodingError))
+                    }
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            }
+        }
+    
     // fetch reviews
     func fetchBookReviews(
         offset: Int = 0,

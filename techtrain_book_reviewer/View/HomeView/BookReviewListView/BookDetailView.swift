@@ -5,13 +5,6 @@
 //  Created by 林 明虎 on 2024/12/11.
 //
 
-//
-//  BookDetailView.swift
-//  techtrain_book_reviewer
-//
-//  Created by 林 明虎 on 2024/12/11.
-//
-
 import UIKit
 
 class BookDetailView: UIView {
@@ -20,14 +13,18 @@ class BookDetailView: UIView {
     private let reviewLabel = UILabel()
     let openUrlButton: TBRCardButton
     let backButton: TBRCardButton
+    private let editButton: TBRCardButton
     
     private var onBackAction: (() -> Void)?
     private var bookUrl: String?
+    private var isMine: Bool?
     
-    init(title: String, detail: String, review: String, url: String?, onBack: @escaping () -> Void) {
+    init(title: String, detail: String, review: String, url: String?, isMine: Bool?, onBack: @escaping () -> Void) {
         self.openUrlButton = TBRCardButton(title: "Browser", action: {})
         self.backButton = TBRCardButton(title: "List", action: {})
+        self.editButton = TBRCardButton(title: "Edit", action: {}) // Editボタンを初期化
         self.bookUrl = url
+        self.isMine = isMine
         self.onBackAction = onBack
         super.init(frame: .zero)
         setupUI()
@@ -80,6 +77,11 @@ class BookDetailView: UIView {
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(buttonStack)
         
+        // Edit Button
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(editButton)
+        editButton.isHidden = !(isMine ?? false) // isMineがtrueでない場合は非表示
+        
         // Constraints
         NSLayoutConstraint.activate([
             // Scroll View
@@ -111,6 +113,12 @@ class BookDetailView: UIView {
             reviewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             reviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             
+            // Edit Button
+            editButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            editButton.heightAnchor.constraint(equalToConstant: 44),
+            editButton.bottomAnchor.constraint(equalTo: buttonStack.topAnchor, constant: -16),
+            
             // Button Stack
             buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
@@ -125,6 +133,10 @@ class BookDetailView: UIView {
         }
         backButton.addTapGesture { [weak self] in
             self?.onBackAction?()
+        }
+        editButton.addTapGesture { [weak self] in
+            // Edit ボタンのアクションをここに追加
+            print("Edit button tapped")
         }
     }
     
