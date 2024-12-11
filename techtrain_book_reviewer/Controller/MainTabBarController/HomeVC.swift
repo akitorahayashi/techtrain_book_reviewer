@@ -29,7 +29,6 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
         setupNavigationBar()
         setupRefreshControl()
-        setupFloatingActionButton()
 //        bindUserProfileService()
         loadInitialReviews()
     }
@@ -165,25 +164,6 @@ class HomeViewController: UIViewController {
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
         homeView?.bookReviewListView.refreshControl = refreshControl
-    }
-    
-    // MARK: - Floating Action Button
-    private func setupFloatingActionButton() {
-        fab.setImage(UIImage(systemName: "plus"), for: .normal)
-        fab.tintColor = .white
-        fab.backgroundColor = .systemPink
-        fab.layer.cornerRadius = 28
-        fab.translatesAutoresizingMaskIntoConstraints = false
-        fab.addTarget(self, action: #selector(loadMoreReviews), for: .touchUpInside)
-        
-        view.addSubview(fab)
-        
-        NSLayoutConstraint.activate([
-            fab.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            fab.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
-            fab.widthAnchor.constraint(equalToConstant: 56),
-            fab.heightAnchor.constraint(equalToConstant: 56)
-        ])
     }
     
     // MARK: - UserProfile Binding
