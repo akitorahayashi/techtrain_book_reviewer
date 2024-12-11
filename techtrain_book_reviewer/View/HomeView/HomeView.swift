@@ -9,7 +9,7 @@ import UIKit
 
 class HomeView: UIView {
     let yourAccount: TBRUser
-    private let nameLabel = UILabel()
+    let bookReviewListView = BookReviewListView()
     
     init(yourAccount: TBRUser) {
         self.yourAccount = yourAccount
@@ -25,21 +25,17 @@ class HomeView: UIView {
         backgroundColor = .systemBackground
         
         
-        // ユーザー名ラベルの設定
-        nameLabel.font = UIFont.systemFont(ofSize: 32, weight: .bold)
-        nameLabel.textColor = .accent
-        nameLabel.text = yourAccount.name
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(nameLabel)
+        // BookReviewListView を追加
+        addSubview(bookReviewListView)
         
+        // レイアウト設定
         NSLayoutConstraint.activate([
-            nameLabel.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            nameLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16)
+            
+            bookReviewListView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
+            bookReviewListView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            bookReviewListView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            bookReviewListView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
         ])
-    }
-    // 名前を更新をLabelに反映するメソッド
-    func updateUserName(_ name: String) {
-        nameLabel.text = name
     }
     
     // NavigationBarの右上のボタンを提供

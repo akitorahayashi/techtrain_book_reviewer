@@ -11,15 +11,10 @@ import Combine
 class HomeViewController: UIViewController {
     private var homeView: HomeView?
     private var cancellables = Set<AnyCancellable>()
+    private var currentOffset = 0
+    private let refreshControl = UIRefreshControl()
+    private let fab = UIButton(type: .custom)
     private var isLoggingOut = false
-    
-    init() {
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     override func loadView() {
         guard let user = UserProfileService.yourAccount else {
@@ -30,64 +25,71 @@ class HomeViewController: UIViewController {
         view = homeView
     }
     
-    
-    private func showErrorAndExit() {
-        let alert = UIAlertController(
-            title: "エラー",
-            message: "ユーザー情報を取得できませんでした。ログインし直してください。",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-            self?.navigationController?.popToRootViewController(animated: true)
-        }))
-        present(alert, animated: true)
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
-        bindUserProfileService()
+        setupRefreshControl()
+        setupFloatingActionButton()
+//        bindUserProfileService()
+        loadInitialReviews()
     }
     
+    // MARK: - Load Reviews
+    private func loadInitialReviews() {
+        loadReviews(offset: 0)
+    }
+    
+    @objc private func refreshReviews() {
+        loadReviews(offset: 0) {
+            self.refreshControl.endRefreshing()
+        }
+    }
+    
+    @objc private func loadMoreReviews() {
+        loadReviews(offset: currentOffset)
+    }
+    
+    private func loadReviews(offset: Int, completion: (() -> Void)? = nil) {
+        guard let token = UserProfileService.yourAccount?.token else { return }
+        
+        BookReviewService.shared.fetchBookReviews(offset: offset, token: token) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                switch result {
+                case .success(let newReviews):
+                    if offset == 0 {
+                        self.homeView?.bookReviewListView.resetReviews(newReviews)
+                    } else {
+                        self.homeView?.bookReviewListView.appendReviews(newReviews)
+                    }
+                    self.currentOffset += newReviews.count
+                case .failure(let error):
+                    self.showAlert(title: "エラー", message: "レビューの取得に失敗しました: \(error.localizedDescription)")
+                }
+                completion?()
+            }
+        }
+    }
+    
+    // MARK: - Navigation Bar
     private func setupNavigationBar() {
         title = "Book Reviewer"
         navigationController?.navigationBar.titleTextAttributes = [
             .foregroundColor: UIColor.accent,
             .font: UIFont.systemFont(ofSize: 20, weight: .bold)
         ]
-        
-        // 左側のBackするためのボタンを消す
         navigationItem.hidesBackButton = true
         
-        // 右側のアカウント管理のボタンを設定する
+        // ユーザーアイコンボタン
         let userIconButton = homeView?.createUserIconButton()
         userIconButton?.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
-        
         let userIconBarButtonItem = UIBarButtonItem(customView: userIconButton!)
         navigationItem.rightBarButtonItem = userIconBarButtonItem
     }
     
-    private func bindUserProfileService() {
-        UserProfileService.yourAccountPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] user in
-                guard let self = self else { return }
-                if self.isLoggingOut {
-                    // ログアウト中の場合は処理をスキップ
-                    return
-                }
-                if let user = user {
-                    // HomeViewのnameLabelを更新
-                    self.homeView?.updateUserName(user.name)
-                } else {
-                    self.showErrorAndExit()
-                }
-            }
-            .store(in: &cancellables)
-    }
-    
     @objc private func userIconTapped() {
-        let alert = UIAlertController(title: "アカウント設定", message: nil, preferredStyle: .actionSheet)
+        let userName: String = UserProfileService.yourAccount?.name ?? "Error"
+        let alert = UIAlertController(title: "アカウント設定: \(userName)", message: nil, preferredStyle: .actionSheet)
         
         alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
             self?.changeUserName()
@@ -130,7 +132,7 @@ class HomeViewController: UIViewController {
                 // サーバーに名前変更リクエストを送信
                 UserProfileService().updateUserName(withToken: token, newName: cleanedName) { result in
                     DispatchQueue.main.async {
-                        self.hideLoading() // ローディングを非表示
+                        self.hideLoading()
                         
                         switch result {
                         case .success:
@@ -157,8 +159,50 @@ class HomeViewController: UIViewController {
         let _ = SecureTokenService.shared.delete()
         navigationController?.popToRootViewController(animated: true)
         print("ログアウトしました")
-        
     }
+    
+    // MARK: - Refresh Control
+    private func setupRefreshControl() {
+        refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
+        homeView?.bookReviewListView.refreshControl = refreshControl
+    }
+    
+    // MARK: - Floating Action Button
+    private func setupFloatingActionButton() {
+        fab.setImage(UIImage(systemName: "plus"), for: .normal)
+        fab.tintColor = .white
+        fab.backgroundColor = .systemPink
+        fab.layer.cornerRadius = 28
+        fab.translatesAutoresizingMaskIntoConstraints = false
+        fab.addTarget(self, action: #selector(loadMoreReviews), for: .touchUpInside)
+        
+        view.addSubview(fab)
+        
+        NSLayoutConstraint.activate([
+            fab.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            fab.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -16),
+            fab.widthAnchor.constraint(equalToConstant: 56),
+            fab.heightAnchor.constraint(equalToConstant: 56)
+        ])
+    }
+    
+    // MARK: - UserProfile Binding
+//    private func bindUserProfileService() {
+//        UserProfileService.yourAccountPublisher
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] user in
+//                guard let self = self else { return }
+//                if self.isLoggingOut {
+//                    return
+//                }
+//                if let user = user {
+//                    self.homeView?.updateUserName(user.name)
+//                } else {
+//                    self.showErrorAndExit()
+//                }
+//            }
+//            .store(in: &cancellables)
+//    }
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -166,6 +210,15 @@ class HomeViewController: UIViewController {
         present(alert, animated: true)
     }
     
+    private func showErrorAndExit() {
+        let alert = UIAlertController(
+            title: "エラー",
+            message: "ユーザー情報を取得できませんでした。ログインし直してください。",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
+            self?.navigationController?.popToRootViewController(animated: true)
+        }))
+        present(alert, animated: true)
+    }
 }
-
-
