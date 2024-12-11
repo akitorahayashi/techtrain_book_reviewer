@@ -78,6 +78,13 @@ extension BookReviewListView: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let review = bookReviews[indexPath.row]
+        let detailVC = BookDetailViewController(book: review)
+        parentViewController?.navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         if indexPath.row == bookReviews.count - 1 { // 最後のセルが表示されたら次をロード
             loadBookReviews(offset: currentOffset)
