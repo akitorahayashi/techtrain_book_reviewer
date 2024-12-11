@@ -15,8 +15,8 @@ class EditBookReviewViewController: UIViewController {
     init(bookReviewId: String) {
         self.bookReviewId = bookReviewId
         self.editView = EditBookReviewView(
-            saveAction: { /* 保存アクション */ },
-            cancelAction: { /* キャンセルアクション */ }
+            saveAction: { /* 保存 */ },
+            cancelAction: { /* キャンセル */ }
         )
         super.init(nibName: nil, bundle: nil)
     }

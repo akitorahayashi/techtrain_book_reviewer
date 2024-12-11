@@ -54,6 +54,11 @@ class BookDetailViewController: UIViewController {
             guard let self = self else { return }
             self.navigateToEditView()
         }
+        
+        detailView?.deleteButton.addTapGesture { [weak self] in
+            guard let self = self else { return }
+            self.confirmAndDeleteBookReview()
+        }
     }
     
     private func fetchBookDetails() {
@@ -111,6 +116,39 @@ class BookDetailViewController: UIViewController {
             self?.fetchBookDetails() // 編集後にデータをリフレッシュ
         }
         navigationController?.pushViewController(editVC, animated: true)
+    }
+    
+    private func confirmAndDeleteBookReview() {
+        let alert = UIAlertController(
+            title: "削除確認",
+            message: "この書籍レビューを削除しますか？",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel))
+        alert.addAction(UIAlertAction(title: "削除", style: .destructive) { [weak self] _ in
+            self?.deleteBookReview()
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    private func deleteBookReview() {
+        guard let token = UserProfileService.yourAccount?.token else {
+            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            return
+        }
+        
+        BookReviewService.shared.deleteBookReview(id: bookId, token: token) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self?.navigationController?.popViewController(animated: true)
+                case .failure(let error):
+                    self?.showError(message: "削除に失敗しました: \(error.localizedDescription)")
+                }
+            }
+        }
     }
     
     private func showError(message: String) {

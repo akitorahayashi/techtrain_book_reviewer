@@ -14,6 +14,7 @@ class BookDetailView: UIView {
     let openUrlButton: TBRCardButton
     let backButton: TBRCardButton
     let editButton: TBRCardButton
+    let deleteButton: TBRCardButton
     
     private var onBackAction: (() -> Void)?
     var bookUrl: String
@@ -22,7 +23,8 @@ class BookDetailView: UIView {
     init(title: String, detail: String, review: String, url: String, isMine: Bool?, onBack: @escaping () -> Void) {
         self.openUrlButton = TBRCardButton(title: "Browser", action: {})
         self.backButton = TBRCardButton(title: "List", action: {})
-        self.editButton = TBRCardButton(title: "Edit", action: {}) // Editボタンを初期化
+        self.editButton = TBRCardButton(title: "Edit", action: {})
+        self.deleteButton = TBRCardButton(title: "Delete", action: {})
         self.bookUrl = url
         self.isMine = isMine
         self.onBackAction = onBack
@@ -69,7 +71,7 @@ class BookDetailView: UIView {
         contentView.addSubview(reviewLabel)
         
         // Button Stack
-        let buttonStack = UIStackView(arrangedSubviews: [backButton, openUrlButton])
+        let buttonStack = UIStackView(arrangedSubviews: [deleteButton, editButton])
         buttonStack.axis = .horizontal
         buttonStack.spacing = 16
         buttonStack.alignment = .center
@@ -77,10 +79,14 @@ class BookDetailView: UIView {
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(buttonStack)
         
-        // Edit Button
-        editButton.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(editButton)
-        editButton.isHidden = !(isMine ?? false) // isMineがtrueでない場合は非表示
+        // Navigation Buttons Stack
+        let navButtonStack = UIStackView(arrangedSubviews: [backButton, openUrlButton])
+        navButtonStack.axis = .horizontal
+        navButtonStack.spacing = 16
+        navButtonStack.alignment = .center
+        navButtonStack.distribution = .fillEqually
+        navButtonStack.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(navButtonStack)
         
         // Constraints
         NSLayoutConstraint.activate([
@@ -113,17 +119,17 @@ class BookDetailView: UIView {
             reviewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             reviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
             
-            // Edit Button
-            editButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            editButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            editButton.heightAnchor.constraint(equalToConstant: 44),
-            editButton.bottomAnchor.constraint(equalTo: buttonStack.topAnchor, constant: -16),
-            
             // Button Stack
             buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             buttonStack.heightAnchor.constraint(equalToConstant: 44),
-            buttonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            buttonStack.bottomAnchor.constraint(equalTo: navButtonStack.topAnchor, constant: -16),
+            
+            // Navigation Button Stack
+            navButtonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            navButtonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            navButtonStack.heightAnchor.constraint(equalToConstant: 44),
+            navButtonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
     }
     
@@ -133,10 +139,6 @@ class BookDetailView: UIView {
         }
         backButton.addTapGesture { [weak self] in
             self?.onBackAction?()
-        }
-        editButton.addTapGesture { [weak self] in
-            // Edit ボタンのアクションをここに追加
-            print("Edit button tapped")
         }
     }
     
@@ -177,7 +179,8 @@ class BookDetailView: UIView {
         reviewLabel.text = review
         self.isMine = isMine
         
-        // EditButton の表示/非表示
+        // Edit & Delete Buttons の表示/非表示
         editButton.isHidden = !(isMine ?? false)
+        deleteButton.isHidden = !(isMine ?? false)
     }
 }

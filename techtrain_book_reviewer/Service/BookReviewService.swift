@@ -125,4 +125,23 @@ class BookReviewService {
             }
         }
     }
+    
+    // Delete a review
+    func deleteBookReview(
+        id: String,
+        token: String,
+        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
+    ) {
+        let headers = ["Authorization": "Bearer \(token)"]
+        let endpoint = "/books/\(id)"
+        
+        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "DELETE", parameters: nil, headers: headers) { result in
+            switch result {
+            case .success:
+                completion(.success(()))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        }
+    }
 }
