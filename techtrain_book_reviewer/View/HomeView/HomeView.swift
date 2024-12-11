@@ -37,35 +37,4 @@ class HomeView: UIView {
             bookReviewListView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
-    // NavigationBarの右上のボタンを提供
-    func createUserIconButton() -> UIButton {
-        let userIconButton = UIButton(type: .custom)
-        
-        if let iconUrlString = yourAccount.iconUrl, let iconUrl = URL(string: iconUrlString) {
-            DispatchQueue.global().async {
-                if let data = try? Data(contentsOf: iconUrl), let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        userIconButton.setImage(image, for: .normal)
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
-                        userIconButton.tintColor = .accent
-                    }
-                }
-            }
-        } else {
-            userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
-            userIconButton.tintColor = .accent
-        }
-        
-        userIconButton.layer.cornerRadius = 18
-        userIconButton.clipsToBounds = true
-        userIconButton.translatesAutoresizingMaskIntoConstraints = false
-        userIconButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
-        userIconButton.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        
-        return userIconButton
-    }
 }

@@ -66,8 +66,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.makeKeyAndVisible()
         
         // SelectAuthVC から HomeViewController に遷移
-        let homeVC = HomeViewController()
-        navigationController.pushViewController(homeVC, animated: false)
+        let mainVC = MainTabBarController()
+        navigationController.pushViewController(mainVC, animated: false)
     }
     
     // シーンが切断されたときに呼び出される（リソース解放などに使用可能）
