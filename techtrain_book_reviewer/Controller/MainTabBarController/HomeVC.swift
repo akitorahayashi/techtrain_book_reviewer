@@ -30,7 +30,7 @@ class HomeViewController: UIViewController {
         setupNavigationBar()
         setupRefreshControl()
         setupFloatingActionButton()
-        bindUserProfileService()
+//        bindUserProfileService()
         loadInitialReviews()
     }
     
@@ -88,7 +88,8 @@ class HomeViewController: UIViewController {
     }
     
     @objc private func userIconTapped() {
-        let alert = UIAlertController(title: "アカウント設定", message: nil, preferredStyle: .actionSheet)
+        let userName: String = UserProfileService.yourAccount?.name ?? "Error"
+        let alert = UIAlertController(title: "アカウント設定: \(userName)", message: nil, preferredStyle: .actionSheet)
         
         alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
             self?.changeUserName()
@@ -186,22 +187,22 @@ class HomeViewController: UIViewController {
     }
     
     // MARK: - UserProfile Binding
-    private func bindUserProfileService() {
-        UserProfileService.yourAccountPublisher
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] user in
-                guard let self = self else { return }
-                if self.isLoggingOut {
-                    return
-                }
-                if let user = user {
-                    self.homeView?.updateUserName(user.name)
-                } else {
-                    self.showErrorAndExit()
-                }
-            }
-            .store(in: &cancellables)
-    }
+//    private func bindUserProfileService() {
+//        UserProfileService.yourAccountPublisher
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] user in
+//                guard let self = self else { return }
+//                if self.isLoggingOut {
+//                    return
+//                }
+//                if let user = user {
+//                    self.homeView?.updateUserName(user.name)
+//                } else {
+//                    self.showErrorAndExit()
+//                }
+//            }
+//            .store(in: &cancellables)
+//    }
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
