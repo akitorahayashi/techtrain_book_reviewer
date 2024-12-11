@@ -8,13 +8,16 @@
 import UIKit
 
 class EditBookReviewViewController: UIViewController {
-    private let editView = EditBookReviewView()
-    private var bookReview: BookReview
-    private let token: String
+    private let editView: EditBookReviewView
+    private let bookReviewId: String
+    var onSaveCompletion: (() -> Void)?
     
-    init(bookReview: BookReview, token: String) {
-        self.bookReview = bookReview
-        self.token = token
+    init(bookReviewId: String) {
+        self.bookReviewId = bookReviewId
+        self.editView = EditBookReviewView(
+            saveAction: { /* 保存アクション */ },
+            cancelAction: { /* キャンセルアクション */ }
+        )
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -29,28 +32,62 @@ class EditBookReviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        setupActions()
     }
     
     private func setupUI() {
+        fetchBookDetails()
+        
+        editView.saveButton.addTapGesture { [weak self] in
+            self?.saveReview()
+        }
+        editView.cancelButton.addTapGesture { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    private func fetchBookDetails() {
+        guard let token = UserProfileService.yourAccount?.token else {
+            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            return
+        }
+        
+        BookReviewService.shared.fetchBookReview(
+            id: bookReviewId,
+            token: token
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let bookReview):
+                    self?.populateFields(with: bookReview)
+                case .failure(let error):
+                    self?.showError(message: "データ取得に失敗しました。エラー: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    private func populateFields(with bookReview: BookReview) {
         editView.titleTextField.text = bookReview.title
         editView.urlTextField.text = bookReview.url
-        editView.detailTextView.text = bookReview.detail
-        editView.reviewTextView.text = bookReview.review
+        editView.detailTextField.text = bookReview.detail
+        editView.reviewTextField.text = bookReview.review
     }
     
-    private func setupActions() {
-        editView.saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc private func saveButtonTapped() {
+    private func saveReview() {
+        guard let token = UserProfileService.yourAccount?.token else {
+            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            return
+        }
+        
         guard let title = editView.titleTextField.text,
               let url = editView.urlTextField.text,
-              let detail = editView.detailTextView.text,
-              let review = editView.reviewTextView.text else { return }
+              let detail = editView.detailTextField.text,
+              let review = editView.reviewTextField.text else {
+            return
+        }
         
         BookReviewService.shared.updateBookReview(
-            id: bookReview.id,
+            id: bookReviewId,
             title: title,
             url: url.isEmpty ? nil : url,
             detail: detail,
@@ -59,23 +96,19 @@ class EditBookReviewViewController: UIViewController {
         ) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
-                case .success(let updatedReview):
-                    self?.bookReview = updatedReview
+                case .success:
+                    self?.onSaveCompletion?() // 完了クロージャを呼び出す
                     self?.navigationController?.popViewController(animated: true)
                 case .failure(let error):
-                    self?.showError(error: error)
+                    self?.showError(message: "保存に失敗しました。エラー: \(error.localizedDescription)")
                 }
             }
         }
     }
     
-    private func showError(error: TechTrainAPIClient.APIError) {
-        let alert = UIAlertController(
-            title: "Error",
-            message: "Failed to update the book review.",
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
 }

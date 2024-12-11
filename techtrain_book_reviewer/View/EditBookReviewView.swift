@@ -8,14 +8,18 @@
 import UIKit
 
 class EditBookReviewView: UIView {
-    let titleTextField = UITextField()
-    let urlTextField = UITextField()
-    let detailTextView = UITextView()
-    let reviewTextView = UITextView()
-    let saveButton = UIButton(type: .system)
+    let titleTextField = TBRInputField(placeholder: "タイトル")
+    let urlTextField = TBRInputField(placeholder: "URL")
+    let detailTextField = TBRInputField(placeholder: "詳細")
+    let reviewTextField = TBRInputField(placeholder: "レビュー")
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    let saveButton: TBRCardButton
+    let cancelButton: TBRCardButton
+    
+    init(saveAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
+        self.saveButton = TBRCardButton(title: "保存", action: saveAction)
+        self.cancelButton = TBRCardButton(title: "キャンセル", action: cancelAction)
+        super.init(frame: .zero)
         setupUI()
     }
     
@@ -24,63 +28,29 @@ class EditBookReviewView: UIView {
     }
     
     private func setupUI() {
-        backgroundColor = .systemBackground
+        backgroundColor = .white
         
-        // Title Text Field
-        titleTextField.placeholder = "Title"
-        titleTextField.borderStyle = .roundedRect
-        titleTextField.translatesAutoresizingMaskIntoConstraints = false
+        // ボタンスタックビュー
+        let buttonStackView = UIStackView(arrangedSubviews: [cancelButton, saveButton])
+        buttonStackView.axis = .horizontal
+        buttonStackView.spacing = 16
+        buttonStackView.distribution = .fillEqually
         
-        // URL Text Field
-        urlTextField.placeholder = "URL"
-        urlTextField.borderStyle = .roundedRect
-        urlTextField.translatesAutoresizingMaskIntoConstraints = false
+        // フィールドとボタンを含むスタックビュー
+        let inputFields: [UIView] = [titleTextField, urlTextField, detailTextField, reviewTextField]
         
-        // Detail Text View
-        detailTextView.layer.borderColor = UIColor.lightGray.cgColor
-        detailTextView.layer.borderWidth = 1
-        detailTextView.layer.cornerRadius = 8
-        detailTextView.translatesAutoresizingMaskIntoConstraints = false
+        let stackView = UIStackView(arrangedSubviews: inputFields + [buttonStackView])
+        stackView.axis = .vertical
+        stackView.spacing = 20
+        stackView.alignment = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(stackView)
         
-        // Review Text View
-        reviewTextView.layer.borderColor = UIColor.lightGray.cgColor
-        reviewTextView.layer.borderWidth = 1
-        reviewTextView.layer.cornerRadius = 8
-        reviewTextView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Save Button
-        saveButton.setTitle("Save", for: .normal)
-        saveButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Add subviews
-        addSubview(titleTextField)
-        addSubview(urlTextField)
-        addSubview(detailTextView)
-        addSubview(reviewTextView)
-        addSubview(saveButton)
-        
-        // Constraints
         NSLayoutConstraint.activate([
-            titleTextField.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 16),
-            titleTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            titleTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            
-            urlTextField.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 16),
-            urlTextField.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            urlTextField.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            
-            detailTextView.topAnchor.constraint(equalTo: urlTextField.bottomAnchor, constant: 16),
-            detailTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            detailTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            detailTextView.heightAnchor.constraint(equalToConstant: 100),
-            
-            reviewTextView.topAnchor.constraint(equalTo: detailTextView.bottomAnchor, constant: 16),
-            reviewTextView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            reviewTextView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            reviewTextView.heightAnchor.constraint(equalToConstant: 100),
-            
-            saveButton.topAnchor.constraint(equalTo: reviewTextView.bottomAnchor, constant: 16),
-            saveButton.centerXAnchor.constraint(equalTo: centerXAnchor)
+            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
         ])
     }
 }

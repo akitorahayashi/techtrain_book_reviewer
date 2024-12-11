@@ -8,11 +8,11 @@
 import UIKit
 
 class BookDetailViewController: UIViewController {
-    private let book: BookReview
+    private let bookId: String
     private var detailView: BookDetailView?
     
     init(book: BookReview) {
-        self.book = book
+        self.bookId = book.id
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -22,11 +22,11 @@ class BookDetailViewController: UIViewController {
     
     override func loadView() {
         detailView = BookDetailView(
-            title: book.title,
-            detail: book.detail,
-            review: book.review,
-            url: book.url,
-            isMine: book.isMine,
+            title: "",
+            detail: "",
+            review: "",
+            url: "",
+            isMine: nil,
             onBack: { [weak self] in
                 self?.navigationController?.popViewController(animated: true)
             }
@@ -37,8 +37,7 @@ class BookDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupActions()
-        
-        // Backボタンを非表示
+        fetchBookDetails()
         navigationItem.hidesBackButton = true
     }
     
@@ -46,25 +45,76 @@ class BookDetailViewController: UIViewController {
         detailView?.openUrlButton.addTapGesture { [weak self] in
             self?.openInBrowserTapped()
         }
+        
         detailView?.backButton.addTapGesture { [weak self] in
             self?.backToListTapped()
         }
+        
+        detailView?.editButton.addTapGesture { [weak self] in
+            guard let self = self else { return }
+            self.navigateToEditView()
+        }
     }
     
-    @objc private func openInBrowserTapped() {
-        guard let urlString = book.url, let url = URL(string: urlString) else {
-            showAlert(title: "エラー", message: "URLが無効です。")
+    private func fetchBookDetails() {
+        guard let token = UserProfileService.yourAccount?.token else {
+            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            return
+        }
+        
+        BookReviewService.shared.fetchBookReview(
+            id: bookId,
+            token: token
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let bookReview):
+                    self?.updateUI(with: bookReview)
+                case .failure(let error):
+                    self?.showError(message: "データ取得に失敗しました。エラー: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    private func updateUI(with bookReview: BookReview) {
+        detailView?.updateUI(
+            title: bookReview.title,
+            detail: bookReview.detail,
+            review: bookReview.review,
+            url: bookReview.url,
+            isMine: bookReview.isMine ?? false
+        )
+    }
+    
+    private func openInBrowserTapped() {
+        guard let urlString = detailView?.bookUrl, let url = URL(string: urlString) else {
+            showError(message: "URLが無効です。")
             return
         }
         UIApplication.shared.open(url)
     }
     
-    @objc private func backToListTapped() {
+    private func backToListTapped() {
         navigationController?.popViewController(animated: true)
     }
     
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+    private func navigateToEditView() {
+        guard let token = UserProfileService.yourAccount?.token else {
+            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            return
+        }
+        
+        // 編集画面へ遷移
+        let editVC = EditBookReviewViewController(bookReviewId: bookId)
+        editVC.onSaveCompletion = { [weak self] in
+            self?.fetchBookDetails() // 編集後にデータをリフレッシュ
+        }
+        navigationController?.pushViewController(editVC, animated: true)
+    }
+    
+    private func showError(message: String) {
+        let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }

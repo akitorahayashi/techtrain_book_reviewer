@@ -13,13 +13,13 @@ class BookDetailView: UIView {
     private let reviewLabel = UILabel()
     let openUrlButton: TBRCardButton
     let backButton: TBRCardButton
-    private let editButton: TBRCardButton
+    let editButton: TBRCardButton
     
     private var onBackAction: (() -> Void)?
-    private var bookUrl: String?
+    var bookUrl: String
     private var isMine: Bool?
     
-    init(title: String, detail: String, review: String, url: String?, isMine: Bool?, onBack: @escaping () -> Void) {
+    init(title: String, detail: String, review: String, url: String, isMine: Bool?, onBack: @escaping () -> Void) {
         self.openUrlButton = TBRCardButton(title: "Browser", action: {})
         self.backButton = TBRCardButton(title: "List", action: {})
         self.editButton = TBRCardButton(title: "Edit", action: {}) // Editボタンを初期化
@@ -29,7 +29,7 @@ class BookDetailView: UIView {
         super.init(frame: .zero)
         setupUI()
         setupActions()
-        updateUI(title: title, detail: detail, review: review)
+        updateUI(title: title, detail: detail, review: review, url: bookUrl, isMine: isMine)
     }
     
     required init?(coder: NSCoder) {
@@ -141,7 +141,7 @@ class BookDetailView: UIView {
     }
     
     private func openUrl() {
-        guard let urlString = bookUrl, let url = URL(string: urlString) else {
+        guard let url = URL(string: bookUrl) else {
             showAlert(title: "Error", message: "Invalid or missing URL")
             return
         }
@@ -171,9 +171,13 @@ class BookDetailView: UIView {
         return nil
     }
     
-    func updateUI(title: String, detail: String, review: String) {
+    func updateUI(title: String, detail: String, review: String, url: String, isMine: Bool?) {
         titleLabel.text = title
         detailLabel.text = detail
         reviewLabel.text = review
+        self.isMine = isMine
+        
+        // EditButton の表示/非表示
+        editButton.isHidden = !(isMine ?? false)
     }
 }

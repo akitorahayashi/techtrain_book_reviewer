@@ -91,7 +91,7 @@ class BookReviewCell: UITableViewCell {
         reviewTextLabel.text = review.review
         
         // 画像の読み込み
-        if let urlString = review.url, let url = URL(string: urlString) {
+        if let url = URL(string: review.url) {
             loadImage(from: url, for: review.title)
         } else {
             // URLがない場合
