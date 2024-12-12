@@ -104,8 +104,11 @@ class MainTabBarController: UITabBarController {
             guard let self = self else { return }
             if let newName = alert.textFields?.first?.text, !newName.isEmpty {
                 // 名前をバリデーション
-                guard let cleanedName = UserProfileService().validateAndCleanName(newName) else {
-                    self.showAlert(title: "エラー", message: "無効な名前です。再度入力してください。")
+                let cleanedName = newName.replacingOccurrences(of: " ", with: "") // 空白を削除
+                
+                guard !cleanedName.isEmpty, // 空白削除後に空でないことを確認
+                      cleanedName.count <= 10 else { // 名前の長さが10文字以下であることを確認
+                    self.showAlert(title: "エラー", message: "名前は10文字以下で空白以外の文字を含めてください。")
                     return
                 }
                 

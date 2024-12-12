@@ -40,24 +40,43 @@ class AuthInputVC: UIViewController {
         )
         view = authInputView
     }
-
+    
     // MARK: - authenticate
     private func authenticate() {
-        guard let email = authInputView.emailTextField.text, !email.isEmpty,
-              let password = authInputView.passwordTextField.text, !password.isEmpty else {
-            // 入力エラーアラートを表示する処理
+        guard let email = authInputView.emailTextField.text?.replacingOccurrences(of: " ", with: ""),
+              let password = authInputView.passwordTextField.text?.replacingOccurrences(of: " ", with: ""),
+              !email.isEmpty, !password.isEmpty else {
+            // メールアドレスまたはパスワードが未入力または空白のみの場合のアラートを表示
             let alert = UIAlertController(title: "入力エラー", message: "メールアドレスまたはパスワードを入力してください。", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             present(alert, animated: true, completion: nil)
             return
         }
 
+        
         if authMode == .signUp {
             // サインアップ時の処理
+            // メールアドレスの形式を確認
+            let emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$"
+            let emailPredicate = NSPredicate(format: "SELF MATCHES[c] %@", emailRegex)
+            if !emailPredicate.evaluate(with: email) {
+                let alert = UIAlertController(title: "入力エラー", message: "正しい形式のメールアドレスを入力してください。", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+            // パスワードが空白を抜いて6文字以上でないとエラー
+            if password.replacingOccurrences(of: " ", with: "").count < 6 {
+                let alert = UIAlertController(title: "入力エラー", message: "パスワードは6文字以上で設定してください。", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+                return
+            }
+            // 名前が10文字以下であることを確認
             let userProfileService = UserProfileService()
-            guard let cleanedName = userProfileService.validateAndCleanName(authInputView.nameTextField.text),
-                  !cleanedName.isEmpty else {
-                // 10文字以下の名前の入力エラーに関するアラートを表示する処理
+            guard let cleanedName = authInputView.nameTextField.text,
+                  !cleanedName.replacingOccurrences(of: " ", with: "").isEmpty,
+                  cleanedName.count <= 10 else {
                 let alert = UIAlertController(
                     title: "入力エラー",
                     message: "名前は10文字以下で空白以外の文字を含めてください。",
@@ -68,6 +87,7 @@ class AuthInputVC: UIViewController {
                 return
             }
 
+            
             // パスワード再確認アラートを表示する処理
             let confirmPasswordAlert = UIAlertController(title: "パスワード再確認", message: "もう一度パスワードを入力してください。", preferredStyle: .alert)
             confirmPasswordAlert.addTextField { textField in
@@ -83,16 +103,20 @@ class AuthInputVC: UIViewController {
                     self?.present(mismatchAlert, animated: true, completion: nil)
                     return
                 }
-
+                
                 // サインアップの処理を開始
+                self?.showLoading() // ローディング開始
                 self?.authService.authenticate(email: email, password: password, signUpName: cleanedName) { result in
                     DispatchQueue.main.async {
+                        self?.hideLoading() // ローディング終了
                         switch result {
                         case .success(let token):
+                            self?.showLoading() // ローディング再開（プロファイル取得）
                             // 認証成功時のユーザープロファイル取得処理と成功アラート表示
                             let userProfileService = UserProfileService()
                             userProfileService.fetchUserProfile(withToken: token) { result in
                                 DispatchQueue.main.async {
+                                    self?.hideLoading() // プロファイル取得終了
                                     switch result {
                                     case .success:
                                         let successAlert = UIAlertController(title: "成功", message: "登録が完了しました！", preferredStyle: .alert)
@@ -124,10 +148,12 @@ class AuthInputVC: UIViewController {
             present(confirmPasswordAlert, animated: true, completion: nil)
         } else {
             // ログインの処理を開始
+            showLoading() // ローディング開始
             authService.authenticate(email: email, password: password) { [weak self] result in
                 DispatchQueue.main.async {
+                    self?.hideLoading() // ローディング終了
                     switch result {
-                    case .success(let token):
+                    case .success(_):
                         let successAlert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
                         successAlert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
                             // メイン画面への遷移処理
