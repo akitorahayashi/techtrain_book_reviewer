@@ -1,8 +1,8 @@
 //
-//  CreateReviewViewController.swift
+//  CreateReviewVC.swift
 //  techtrain_book_reviewer
 //
-//  Created by 林 明虎 on 2024/12/11.
+//  Created by 林 明虎 on 2024/12/12.
 //
 
 import UIKit
