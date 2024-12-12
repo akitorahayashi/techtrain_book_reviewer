@@ -11,21 +11,12 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     private let scrollView = UIScrollView()
     private let contentView = UIView()
     
-    let titleTextField = TBRInputField(placeholder: "タイトル")
-    let urlTextField = TBRInputField(placeholder: "URL")
+    private let titleLabel = UILabel()
+    let titleTextField = TBRInputField(nil)
+    private let urlLabel = UILabel()
+    let urlTextField = TBRInputField(nil)
     
-    let reviewInputField: UITextView = {
-        let textView = UITextView()
-        textView.layer.borderWidth = 1.0
-        textView.layer.borderColor = UIColor.systemGray5.cgColor
-        textView.layer.cornerRadius = 5.0
-        textView.font = UIFont.systemFont(ofSize: 16)
-        textView.isScrollEnabled = false
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
-        return textView
-    }()
-    
+    private let detailLabel = UILabel()
     let detailInputField: UITextView = {
         let textView = UITextView()
         textView.layer.borderWidth = 1.0
@@ -38,15 +29,29 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         return textView
     }()
     
+    private let reviewLabel = UILabel()
+    let reviewInputField: UITextView = {
+        let textView = UITextView()
+        textView.layer.borderWidth = 1.0
+        textView.layer.borderColor = UIColor.systemGray5.cgColor
+        textView.layer.cornerRadius = 5.0
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.isScrollEnabled = false
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
+        return textView
+    }()
+    
+    
     private var reviewHeightConstraint: NSLayoutConstraint!
     private var detailHeightConstraint: NSLayoutConstraint!
     
-    let saveButton: TBRCardButton
-    let cancelButton: TBRCardButton
+    let compliteButton: TBRCardButton
+    let clearButton: TBRCardButton
     
-    init(saveAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
-        self.saveButton = TBRCardButton(title: "保存", action: saveAction)
-        self.cancelButton = TBRCardButton(title: "キャンセル", action: cancelAction)
+    init(compliteAction: @escaping () -> Void, clearAction: @escaping () -> Void) {
+        self.compliteButton = TBRCardButton(title: "", action: compliteAction)
+        self.clearButton = TBRCardButton(title: "", action: clearAction)
         super.init(frame: .zero)
         setupUI()
         setupDynamicHeight()
@@ -57,8 +62,8 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     }
     
     func configureButtons(saveButtonTitle: String, cancelButtonTitle: String) {
-        saveButton.setTitle(saveButtonTitle, for: .normal)
-        cancelButton.setTitle(cancelButtonTitle, for: .normal)
+        compliteButton.setTitle(saveButtonTitle, for: .normal)
+        clearButton.setTitle(cancelButtonTitle, for: .normal)
     }
     
     private func setupUI() {
@@ -83,8 +88,42 @@ class EditBookReviewView: UIView, UITextViewDelegate {
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
         
+        // 各ラベルの設定
+        titleLabel.text = "- Title -"
+        titleLabel.font = UIFont.boldSystemFont(ofSize: 14)
+        titleLabel.textColor = .gray
+        
+        urlLabel.text = "- URL -"
+        urlLabel.font = UIFont.boldSystemFont(ofSize: 14)
+        urlLabel.textColor = .gray
+        
+        detailLabel.text = "- Detail -"
+        detailLabel.font = UIFont.boldSystemFont(ofSize: 14)
+        detailLabel.textColor = .gray
+        
+        reviewLabel.text = "- Review -"
+        reviewLabel.font = UIFont.boldSystemFont(ofSize: 14)
+        reviewLabel.textColor = .gray
+        
+        // 各フィールドのラベルとTextFieldのペアを作成
+        let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleTextField])
+        titleStack.axis = .vertical
+        titleStack.spacing = 8
+        
+        let urlStack = UIStackView(arrangedSubviews: [urlLabel, urlTextField])
+        urlStack.axis = .vertical
+        urlStack.spacing = 8
+        
+        let detailStack = UIStackView(arrangedSubviews: [detailLabel, detailInputField])
+        detailStack.axis = .vertical
+        detailStack.spacing = 8
+        
+        let reviewStack = UIStackView(arrangedSubviews: [reviewLabel, reviewInputField])
+        reviewStack.axis = .vertical
+        reviewStack.spacing = 8
+        
         // フォームフィールドのスタックビュー
-        let inputFields: [UIView] = [titleTextField, urlTextField, reviewInputField, detailInputField]
+        let inputFields: [UIView] = [titleStack, urlStack, detailStack, reviewStack]
         let stackView = UIStackView(arrangedSubviews: inputFields)
         stackView.axis = .vertical
         stackView.spacing = 20
@@ -99,7 +138,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         ])
         
         // ボタンスタックビュー（画面下部に固定）
-        let buttonStackView = UIStackView(arrangedSubviews: [cancelButton, saveButton])
+        let buttonStackView = UIStackView(arrangedSubviews: [clearButton, compliteButton])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = 16
         buttonStackView.distribution = .fillEqually
@@ -125,6 +164,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         detailHeightConstraint = detailInputField.heightAnchor.constraint(equalToConstant: 90)
         detailHeightConstraint.isActive = true
     }
+
     
     private func setupDynamicHeight() {
         reviewInputField.delegate = self

@@ -15,8 +15,8 @@ class EditBookReviewViewController: UIViewController {
     init(bookReviewId: String? = nil) {
         self.bookReviewId = bookReviewId
         self.editView = EditBookReviewView(
-            saveAction: {},
-            cancelAction: {}
+            compliteAction: {},
+            clearAction: {}
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -45,14 +45,14 @@ class EditBookReviewViewController: UIViewController {
     
     // MARK: - アクションのセットアップ
     private func setupActions() {
-        editView.saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-        editView.cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        editView.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        editView.clearButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
     }
     
     private func configureForCreation() {
         // 新規作成用のボタンテキスト設定
-        editView.saveButton.setTitle(bookReviewId == nil ? "Post" : "Edit", for: .normal)
-        editView.cancelButton.setTitle(bookReviewId == nil ? "Back" : "Clear", for: .normal)
+        editView.compliteButton.setTitle(bookReviewId == nil ? "Post" : "Edit", for: .normal)
+        editView.clearButton.setTitle("Clear", for: .normal)
     }
     
     // MARK: - データ取得
@@ -135,16 +135,32 @@ class EditBookReviewViewController: UIViewController {
         }
     }
     
+    
+    // MARK: - clearボタンの処理
+    @objc private func cancelButtonTapped() {
+        let alert = UIAlertController(
+            title: "確認",
+            message: "すべての入力フィールドをクリアしますか？",
+            preferredStyle: .alert
+        )
+        
+        // 「クリア」ボタン
+        alert.addAction(UIAlertAction(title: "クリア", style: .destructive, handler: { [weak self] _ in
+            self?.clearFields()
+        }))
+        
+        // 「キャンセル」ボタン
+        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel))
+        
+        // ダイアログを表示
+        present(alert, animated: true)
+    }
+    
     private func clearFields() {
         editView.titleTextField.text = ""
         editView.urlTextField.text = ""
         editView.detailInputField.text = ""
         editView.reviewInputField.text = ""
-    }
-    
-    // MARK: - キャンセルボタンの処理
-    @objc private func cancelButtonTapped() {
-        navigationController?.popViewController(animated: true)
     }
     
     // MARK: - 入力バリデーション

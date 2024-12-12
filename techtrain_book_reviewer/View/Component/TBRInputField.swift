@@ -11,7 +11,7 @@ class TBRInputField: UITextField {
     let verticalPadding: CGFloat = 20 // 上下の余白
     let horizontalPadding: CGFloat = 10 // 左右の余白
 
-    init(placeholder: String, isSecure: Bool = false) {
+    init(_ placeholder: String?, isSecure: Bool = false) {
         super.init(frame: .zero)
         self.placeholder = placeholder
         self.isSecureTextEntry = isSecure
