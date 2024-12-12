@@ -8,6 +8,10 @@
 import UIKit
 
 class AuthInputView: UIView {
+    private let scrollView = UIScrollView()
+    private let contentView = UIView()
+    
+    
     let emailTextField = TBRInputField(placeholder: "メールアドレス")
     let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
     let nameTextField = TBRInputField(placeholder: "名前")
@@ -15,7 +19,7 @@ class AuthInputView: UIView {
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton
     
-    init(authMode: AuthInputVC.EmailAuthMode, actionButtonAction: @escaping () -> Void, clearButtonAction: @escaping () -> Void) {
+    init(authMode: AuthInputViewController.EmailAuthMode, actionButtonAction: @escaping () -> Void, clearButtonAction: @escaping () -> Void) {
         let actionTitle = (authMode == .login) ? "ログイン" : "登録"
         self.actionButton = TBRCardButton(title: actionTitle, action: actionButtonAction)
         self.clearButton = TBRCardButton(title: "クリア", action: clearButtonAction)
@@ -27,8 +31,26 @@ class AuthInputView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI(authMode: AuthInputVC.EmailAuthMode) {
+    private func setupUI(authMode: AuthInputViewController.EmailAuthMode) {
         backgroundColor = .systemBackground
+        
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
         
         // ボタンスタックビュー
         let buttonStackView = UIStackView(arrangedSubviews: [clearButton, actionButton])
@@ -38,8 +60,8 @@ class AuthInputView: UIView {
         
         // `signUp` の場合のみ名前フィールドを追加
         let inputFields: [UIView] = (authMode == .signUp)
-            ? [nameTextField, emailTextField, passwordTextField]
-            : [emailTextField, passwordTextField]
+        ? [nameTextField, emailTextField, passwordTextField]
+        : [emailTextField, passwordTextField]
         
         let stackView = UIStackView(arrangedSubviews: inputFields + [buttonStackView])
         stackView.axis = .vertical

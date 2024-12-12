@@ -41,42 +41,31 @@ class BookDetailViewController: UIViewController {
         navigationItem.hidesBackButton = true
     }
     
-    private func setupActions() {
-        detailView?.openUrlButton.addTapGesture { [weak self] in
-            self?.openInBrowserTapped()
-        }
-        
-        detailView?.backButton.addTapGesture { [weak self] in
-            self?.backToListTapped()
-        }
-        
-        detailView?.editButton.addTapGesture { [weak self] in
-            guard let self = self else { return }
-            self.navigateToEditView()
-        }
-        
-        detailView?.deleteButton.addTapGesture { [weak self] in
-            guard let self = self else { return }
-            self.confirmAndDeleteBookReview()
-        }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        fetchBookDetails() // 表示前にデータを再取得
     }
     
+    // MARK: - Actions Setup
+    private func setupActions() {
+        detailView?.openUrlButton.addTarget(self, action: #selector(openInBrowserTapped), for: .touchUpInside)
+        detailView?.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
+        detailView?.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)
+        detailView?.deleteButton.addTarget(self, action: #selector(confirmAndDeleteBookReview), for: .touchUpInside)
+    }
+    
+    // MARK: - Fetch Data
     private func fetchBookDetails() {
-        guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
-            return
-        }
+        guard let token = getToken() else { return }
         
-        BookReviewService.shared.fetchBookReview(
-            id: bookId,
-            token: token
-        ) { [weak self] result in
+        BookReviewService.shared.fetchBookReview(id: bookId, token: token) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let bookReview):
+                    print("Fetched BookReview: \(bookReview)") // ログで確認
                     self?.updateUI(with: bookReview)
                 case .failure(let error):
-                    self?.showError(message: "データ取得に失敗しました。エラー: \(error.localizedDescription)")
+                    self?.showError(title: "データ取得エラー", message: "データ取得に失敗しました。エラー: \(error.localizedDescription)")
                 }
             }
         }
@@ -90,42 +79,43 @@ class BookDetailViewController: UIViewController {
             url: bookReview.url,
             isMine: bookReview.isMine ?? false
         )
+        print("UI updated with: \(bookReview.title)") // UI更新のログを追加
     }
     
-    private func openInBrowserTapped() {
+    // MARK: - User Actions
+    @objc private func openInBrowserTapped() {
         guard let urlString = detailView?.bookUrl, let url = URL(string: urlString) else {
-            showError(message: "URLが無効です。")
+            showError(title: "無効なURL", message: "URLが無効です。")
             return
         }
         UIApplication.shared.open(url)
     }
     
-    private func backToListTapped() {
+    @objc private func backToListTapped() {
         navigationController?.popViewController(animated: true)
     }
     
-    private func navigateToEditView() {
-        guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
-            return
-        }
+    @objc private func navigateToEditView() {
+        guard getToken() != nil else { return }
         
-        // 編集画面へ遷移
         let editVC = EditBookReviewViewController(bookReviewId: bookId)
-        editVC.onSaveCompletion = { [weak self] in
+        editVC.onCompliteEditingCompletion = { [weak self] in
+            print("Editing completed, refreshing data...") // クロージャ実行ログ
             self?.fetchBookDetails() // 編集後にデータをリフレッシュ
         }
         navigationController?.pushViewController(editVC, animated: true)
     }
     
-    private func confirmAndDeleteBookReview() {
+    @objc private func confirmAndDeleteBookReview() {
         let alert = UIAlertController(
             title: "削除確認",
             message: "この書籍レビューを削除しますか？",
             preferredStyle: .alert
         )
         
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel))
+        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: { _ in
+            print("削除キャンセル") // ログで確認
+        }))
         alert.addAction(UIAlertAction(title: "削除", style: .destructive) { [weak self] _ in
             self?.deleteBookReview()
         })
@@ -134,10 +124,7 @@ class BookDetailViewController: UIViewController {
     }
     
     private func deleteBookReview() {
-        guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
-            return
-        }
+        guard let token = getToken() else { return }
         
         BookReviewService.shared.deleteBookReview(id: bookId, token: token) { [weak self] result in
             DispatchQueue.main.async {
@@ -145,15 +132,24 @@ class BookDetailViewController: UIViewController {
                 case .success:
                     self?.navigationController?.popViewController(animated: true)
                 case .failure(let error):
-                    self?.showError(message: "削除に失敗しました: \(error.localizedDescription)")
+                    self?.showError(title: "削除失敗", message: "削除に失敗しました: \(error.localizedDescription)")
                 }
             }
         }
     }
     
-    private func showError(message: String) {
-        let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
+    // MARK: - Helpers
+    private func showError(title: String = "エラー", message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+    
+    private func getToken() -> String? {
+        guard let token = UserProfileService.yourAccount?.token else {
+            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            return nil
+        }
+        return token
     }
 }
