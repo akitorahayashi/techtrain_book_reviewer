@@ -9,8 +9,11 @@ import UIKit
 
 class BookDetailView: UIView {
     private let titleLabel = UILabel()
+    private let titleDescriptionLabel = UILabel()
     private let detailLabel = UILabel()
+    private let detailDescriptionLabel = UILabel()
     private let reviewLabel = UILabel()
+    private let reviewDescriptionLabel = UILabel()
     let openUrlButton: TBRCardButton
     let backButton: TBRCardButton
     let editButton: TBRCardButton
@@ -45,31 +48,92 @@ class BookDetailView: UIView {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
+        ])
         
         // Content View
         let contentView = UIView()
         contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
+        NSLayoutConstraint.activate([
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
         
-        // Title Label
+        // Title Description and Label
+        titleDescriptionLabel.text = "- Title -"
+        titleDescriptionLabel.font = UIFont.boldSystemFont(ofSize: 14)
+        titleDescriptionLabel.textColor = UIColor.gray
+        titleDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(titleDescriptionLabel)
+
         titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
         titleLabel.numberOfLines = 0
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Detail Label
+        contentView.addSubview(titleLabel)
+
+        NSLayoutConstraint.activate([
+            titleDescriptionLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            titleDescriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+
+            titleLabel.topAnchor.constraint(equalTo: titleDescriptionLabel.bottomAnchor, constant: 8),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        ])
+
+        // Detail Description and Label
+        detailDescriptionLabel.text = "- Detail -"
+        detailDescriptionLabel.font = UIFont.boldSystemFont(ofSize: 14)
+        detailDescriptionLabel.textColor = UIColor.gray
+        detailDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(detailDescriptionLabel)
+
         detailLabel.font = UIFont.systemFont(ofSize: 16)
         detailLabel.numberOfLines = 0
         detailLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Review Label
+        contentView.addSubview(detailLabel)
+
+        NSLayoutConstraint.activate([
+            detailDescriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 32),
+            detailDescriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            detailDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+
+            detailLabel.topAnchor.constraint(equalTo: detailDescriptionLabel.bottomAnchor, constant: 8),
+            detailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            detailLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+        ])
+
+        // Review Description and Label
+        reviewDescriptionLabel.text = "- Review -"
+        reviewDescriptionLabel.font = UIFont.boldSystemFont(ofSize: 14)
+        reviewDescriptionLabel.textColor = UIColor.gray
+        reviewDescriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(reviewDescriptionLabel)
+
         reviewLabel.font = UIFont.systemFont(ofSize: 16)
         reviewLabel.numberOfLines = 0
         reviewLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(detailLabel)
         contentView.addSubview(reviewLabel)
-        
+
+        NSLayoutConstraint.activate([
+            reviewDescriptionLabel.topAnchor.constraint(equalTo: detailLabel.bottomAnchor, constant: 20),
+            reviewDescriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            reviewDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+
+            reviewLabel.topAnchor.constraint(equalTo: reviewDescriptionLabel.bottomAnchor, constant: 8),
+            reviewLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            reviewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            reviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+        ])
+
         // Button Stack
         let buttonStack = UIStackView(arrangedSubviews: [deleteButton, editButton])
         buttonStack.axis = .horizontal
@@ -78,8 +142,13 @@ class BookDetailView: UIView {
         buttonStack.distribution = .fillEqually
         buttonStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(buttonStack)
-        
-        // Navigation Buttons Stack
+        NSLayoutConstraint.activate([
+            buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            buttonStack.heightAnchor.constraint(equalToConstant: 44)
+        ])
+
+        // Navigation Button Stack
         let navButtonStack = UIStackView(arrangedSubviews: [backButton, openUrlButton])
         navButtonStack.axis = .horizontal
         navButtonStack.spacing = 16
@@ -87,49 +156,12 @@ class BookDetailView: UIView {
         navButtonStack.distribution = .fillEqually
         navButtonStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(navButtonStack)
-        
-        // Constraints
         NSLayoutConstraint.activate([
-            // Scroll View
-            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
-            
-            // Content View
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            
-            // Title Label
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            // Detail Label
-            detailLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
-            detailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            detailLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            // Review Label
-            reviewLabel.topAnchor.constraint(equalTo: detailLabel.bottomAnchor, constant: 16),
-            reviewLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            reviewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            reviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-            
-            // Button Stack
-            buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            buttonStack.heightAnchor.constraint(equalToConstant: 44),
-            buttonStack.bottomAnchor.constraint(equalTo: navButtonStack.topAnchor, constant: -16),
-            
-            // Navigation Button Stack
             navButtonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             navButtonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
             navButtonStack.heightAnchor.constraint(equalToConstant: 44),
-            navButtonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
+            navButtonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            buttonStack.bottomAnchor.constraint(equalTo: navButtonStack.topAnchor, constant: -16)
         ])
     }
     
