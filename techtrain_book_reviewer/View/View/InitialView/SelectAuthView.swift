@@ -2,7 +2,7 @@
 //  SelectAuthView.swift
 //  techtrain_book_reviewer
 //
-//  Created by 林 明虎 on 2024/12/10.
+//  Created by 林 明虎 on 2024/12/12.
 //
 
 import UIKit

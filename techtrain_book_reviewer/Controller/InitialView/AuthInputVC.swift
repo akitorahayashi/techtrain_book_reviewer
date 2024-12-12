@@ -8,15 +8,18 @@
 import UIKit
 
 class AuthInputVC: UIViewController {
+    // MARK: - Enums
     enum EmailAuthMode {
         case login
         case signUp
     }
     
+    // MARK: - Properties
     private let authMode: EmailAuthMode
     private let authService: TBREmailAuthService
-    private var authInputView: TBRAuthInputView!
+    private var authInputView: AuthInputView!
     
+    // MARK: - Initializers
     init(authMode: EmailAuthMode, authService: TBREmailAuthService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)) {
         self.authMode = authMode
         self.authService = authService
@@ -27,19 +30,18 @@ class AuthInputVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle Methods
     override func loadView() {
-        authInputView = TBRAuthInputView(
+        super.loadView()
+        authInputView = AuthInputView(
             authMode: authMode,
             actionButtonAction: { [weak self] in self?.authenticate() },
             clearButtonAction: { [weak self] in self?.authInputView.clearInputFields() }
         )
         view = authInputView
     }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
-    
+
+    // MARK: - Private Methods
     private func authenticate() {
         guard let email = authInputView.emailTextField.text, !email.isEmpty,
               let password = authInputView.passwordTextField.text, !password.isEmpty else {
@@ -61,30 +63,30 @@ class AuthInputVC: UIViewController {
             showLoading()
             authService.authenticate(email: email, password: password, signUpName: cleanedName) { [weak self] result in
                 DispatchQueue.main.async {
-                    self?.handleAuthResult(result.mapError { $0 as Error })
+                    self?.handleAuthResult(result.mapError { $0 as Error }, isLogin: false)
                 }
             }
         } else {
             showLoading()
             authService.authenticate(email: email, password: password) { [weak self] result in
                 DispatchQueue.main.async {
-                    self?.handleAuthResult(result.mapError { $0 as Error })
+                    self?.handleAuthResult(result.mapError { $0 as Error }, isLogin: true)
                 }
             }
         }
     }
-
-    private func handleAuthResult(_ result: Result<String, Error>) {
+    
+    private func handleAuthResult(_ result: Result<String, Error>, isLogin: Bool) {
         switch result {
         case .success(let token):
-            fetchUserProfileAndAlert(token: token)
+            fetchUserProfileAndAlert(token: token, isLogin: isLogin)
         case .failure(let error):
             hideLoading()
             showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
         }
     }
     
-    private func fetchUserProfileAndAlert(token: String) {
+    private func fetchUserProfileAndAlert(token: String, isLogin: Bool) {
         let userProfileService = UserProfileService()
 
         userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
@@ -93,7 +95,7 @@ class AuthInputVC: UIViewController {
 
                 switch result {
                 case .success:
-                    self?.showSuccessAlert()
+                    self?.showAuthSuccessAlert(isLogin: isLogin)
                 case .failure(let error):
                     self?.showSingleOptionAlert(title: "エラー", message: error.localizedDescription)
                 }
@@ -101,8 +103,9 @@ class AuthInputVC: UIViewController {
         }
     }
     
-    private func showSuccessAlert() {
-        let alert = UIAlertController(title: "成功", message: "ログインしました！", preferredStyle: .alert)
+    // MARK: - Alerts
+    private func showAuthSuccessAlert(isLogin: Bool) {
+        let alert = UIAlertController(title: "成功", message: isLogin ? "ログインしました！" : "登録が完了しました！", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
             self?.navigateToBookListVC()
         }))
@@ -115,6 +118,7 @@ class AuthInputVC: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
+    // MARK: - Navigate Methods
     private func navigateToBookListVC() {
         let mainTabBarController = MainTabBarController()
         let navigationController = UINavigationController(rootViewController: mainTabBarController)

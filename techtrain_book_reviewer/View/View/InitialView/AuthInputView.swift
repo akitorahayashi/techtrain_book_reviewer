@@ -2,12 +2,12 @@
 //  AuthInputView.swift
 //  techtrain_book_reviewer
 //
-//  Created by 林 明虎 on 2024/12/10.
+//  Created by 林 明虎 on 2024/12/12.
 //
 
 import UIKit
 
-class TBRAuthInputView: UIView {
+class AuthInputView: UIView {
     let emailTextField = TBRInputField(placeholder: "メールアドレス")
     let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
     let nameTextField = TBRInputField(placeholder: "名前")
@@ -28,7 +28,7 @@ class TBRAuthInputView: UIView {
     }
     
     private func setupUI(authMode: AuthInputVC.EmailAuthMode) {
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         
         // ボタンスタックビュー
         let buttonStackView = UIStackView(arrangedSubviews: [clearButton, actionButton])
