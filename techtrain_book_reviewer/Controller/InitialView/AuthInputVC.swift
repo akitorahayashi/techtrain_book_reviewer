@@ -76,7 +76,7 @@ class AuthInputVC: UIViewController {
             let userProfileService = UserProfileService()
             guard let cleanedName = authInputView.nameTextField.text,
                   !cleanedName.replacingOccurrences(of: " ", with: "").isEmpty,
-                  cleanedName.count <= 10 else {
+                  authInputView.nameTextField.text.count <= 10 else {
                 let alert = UIAlertController(
                     title: "入力エラー",
                     message: "名前は10文字以下で空白以外の文字を含めてください。",
@@ -106,7 +106,7 @@ class AuthInputVC: UIViewController {
                 
                 // サインアップの処理を開始
                 self?.showLoading() // ローディング開始
-                self?.authService.authenticate(email: email, password: password, signUpName: cleanedName) { result in
+                self?.authService.authenticate(email: email, password: password, signUpName: self?.authInputView.nameTextField.text) { result in
                     DispatchQueue.main.async {
                         self?.hideLoading() // ローディング終了
                         switch result {

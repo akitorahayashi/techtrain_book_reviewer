@@ -107,7 +107,7 @@ class MainTabBarController: UITabBarController {
                 let cleanedName = newName.replacingOccurrences(of: " ", with: "") // 空白を削除
                 
                 guard !cleanedName.isEmpty, // 空白削除後に空でないことを確認
-                      cleanedName.count <= 10 else { // 名前の長さが10文字以下であることを確認
+                      newName.count <= 10 else { // 名前の長さが10文字以下であることを確認
                     self.showAlert(title: "エラー", message: "名前は10文字以下で空白以外の文字を含めてください。")
                     return
                 }
@@ -124,14 +124,14 @@ class MainTabBarController: UITabBarController {
                 }
                 
                 // サーバーに名前変更リクエストを送信
-                UserProfileService().updateUserName(withToken: token, newName: cleanedName) { result in
+                UserProfileService().updateUserName(withToken: token, newName: newName) { result in
                     DispatchQueue.main.async {
                         self.hideLoading()
                         
                         switch result {
                         case .success:
                             print("名前の変更に成功しました")
-                            UserProfileService.yourAccount?.name = cleanedName
+                            UserProfileService.yourAccount?.name = newName
                             UserProfileService.yourAccountPublisher.send(UserProfileService.yourAccount)
                             self.showAlert(title: "成功", message: "名前が変更されました。")
                         case .failure(let error):
