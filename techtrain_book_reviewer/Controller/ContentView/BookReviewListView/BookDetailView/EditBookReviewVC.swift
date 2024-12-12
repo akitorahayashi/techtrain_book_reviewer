@@ -33,6 +33,7 @@ class EditBookReviewViewController: UIViewController {
         super.viewDidLoad()
         setupActions()
         fetchBookDetails()
+        setupKeyboardDismissTapGesture()
     }
     
     // MARK: - Setup Actions

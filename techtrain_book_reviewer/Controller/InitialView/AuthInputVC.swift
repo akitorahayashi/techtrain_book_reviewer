@@ -41,6 +41,12 @@ class AuthInputVC: UIViewController {
         view = authInputView
     }
     
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        setupKeyboardDismissTapGesture()
+    }
+    
+    // MARK: - Authenticate
     private func authenticate() {
         // MARK: - 入力データ取得
         guard let email = authInputView.emailTextField.text?.replacingOccurrences(of: " ", with: ""),
