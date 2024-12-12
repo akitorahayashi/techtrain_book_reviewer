@@ -7,7 +7,7 @@
 
 import UIKit
 
-class TBRAuthInputView: UIView {
+class AuthInputView: UIView {
     let emailTextField = TBRInputField(placeholder: "メールアドレス")
     let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
     let nameTextField = TBRInputField(placeholder: "名前")
@@ -28,7 +28,7 @@ class TBRAuthInputView: UIView {
     }
     
     private func setupUI(authMode: AuthInputVC.EmailAuthMode) {
-        backgroundColor = .white
+        backgroundColor = .systemBackground
         
         // ボタンスタックビュー
         let buttonStackView = UIStackView(arrangedSubviews: [clearButton, actionButton])
