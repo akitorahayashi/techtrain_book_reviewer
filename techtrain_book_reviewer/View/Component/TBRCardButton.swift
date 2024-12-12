@@ -32,6 +32,9 @@ class TBRCardButton: UIButton {
         setTitleColor(.accent, for: .normal)
         titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
         titleLabel?.textAlignment = .center
+        
+        // 高さ制約を固定
+        heightAnchor.constraint(equalToConstant: 44).isActive = true
     }
     
     private func addAction(_ action: @escaping () -> Void) {
