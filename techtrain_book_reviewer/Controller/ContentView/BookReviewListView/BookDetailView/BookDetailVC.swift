@@ -131,6 +131,9 @@ class BookDetailViewController: UIViewController {
                 switch result {
                 case .success:
                     self?.navigationController?.popViewController(animated: true)
+                    let alert = UIAlertController(title: "成功", message: "無事削除されました！", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default))
+                    self?.present(alert, animated: true)
                 case .failure(let error):
                     self?.showError(title: "削除失敗", message: "削除に失敗しました: \(error.localizedDescription)")
                 }
