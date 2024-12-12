@@ -12,9 +12,9 @@ class AuthInputView: UIView {
     private let contentView = UIView()
     
     
-    let emailTextField = TBRInputField(placeholder: "メールアドレス")
-    let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
-    let nameTextField = TBRInputField(placeholder: "名前")
+    let emailTextField = TBRInputField("メールアドレス")
+    let passwordTextField = TBRInputField("パスワード", isSecure: true)
+    let nameTextField = TBRInputField("名前")
     
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton
