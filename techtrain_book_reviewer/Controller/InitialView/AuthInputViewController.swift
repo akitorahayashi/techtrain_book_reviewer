@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AuthInputVC: UIViewController {
+class AuthInputViewController: UIViewController {
     // MARK: - Enums
     enum EmailAuthMode {
         case login
@@ -46,7 +46,6 @@ class AuthInputVC: UIViewController {
         setupKeyboardDismissTapGesture()
     }
     
-    // MARK: - Authenticate
     private func authenticate() {
         // MARK: - 入力データ取得
         guard let email = authInputView.emailTextField.text?.replacingOccurrences(of: " ", with: ""),

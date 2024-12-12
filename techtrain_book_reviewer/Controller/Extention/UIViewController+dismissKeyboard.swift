@@ -18,4 +18,3 @@ extension UIViewController {
         view.endEditing(true)
     }
 }
-git commit -m "UIViewControllerを拡張し、setupKeyboardDismissTapGestureを行えば、その画面をタップしたときにキーボードが消滅するようになった"
