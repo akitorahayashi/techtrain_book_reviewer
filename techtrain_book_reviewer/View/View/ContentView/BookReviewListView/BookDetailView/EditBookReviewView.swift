@@ -46,12 +46,12 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     private var reviewHeightConstraint: NSLayoutConstraint!
     private var detailHeightConstraint: NSLayoutConstraint!
     
-    let saveButton: TBRCardButton
-    let cancelButton: TBRCardButton
+    let compliteButton: TBRCardButton
+    let clearButton: TBRCardButton
     
-    init(saveAction: @escaping () -> Void, cancelAction: @escaping () -> Void) {
-        self.saveButton = TBRCardButton(title: "保存", action: saveAction)
-        self.cancelButton = TBRCardButton(title: "キャンセル", action: cancelAction)
+    init(compliteAction: @escaping () -> Void, clearAction: @escaping () -> Void) {
+        self.compliteButton = TBRCardButton(title: "", action: compliteAction)
+        self.clearButton = TBRCardButton(title: "", action: clearAction)
         super.init(frame: .zero)
         setupUI()
         setupDynamicHeight()
@@ -62,8 +62,8 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     }
     
     func configureButtons(saveButtonTitle: String, cancelButtonTitle: String) {
-        saveButton.setTitle(saveButtonTitle, for: .normal)
-        cancelButton.setTitle(cancelButtonTitle, for: .normal)
+        compliteButton.setTitle(saveButtonTitle, for: .normal)
+        clearButton.setTitle(cancelButtonTitle, for: .normal)
     }
     
     private func setupUI() {
@@ -138,7 +138,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         ])
         
         // ボタンスタックビュー（画面下部に固定）
-        let buttonStackView = UIStackView(arrangedSubviews: [cancelButton, saveButton])
+        let buttonStackView = UIStackView(arrangedSubviews: [clearButton, compliteButton])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = 16
         buttonStackView.distribution = .fillEqually
