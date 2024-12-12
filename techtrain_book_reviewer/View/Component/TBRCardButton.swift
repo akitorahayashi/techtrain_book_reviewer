@@ -7,14 +7,11 @@
 
 import UIKit
 
-class TBRCardButton: UIView {
-    let titleLabel = UILabel()
-    
-    
+class TBRCardButton: UIButton {
     init(title: String, action: @escaping () -> Void) {
         super.init(frame: .zero)
         setupUI(title: title)
-        addTapGesture(action: action)
+        addAction(action)
     }
     
     required init?(coder: NSCoder) {
@@ -22,6 +19,7 @@ class TBRCardButton: UIView {
     }
     
     private func setupUI(title: String) {
+        // ボタンの背景デザイン
         backgroundColor = .systemGray6
         layer.cornerRadius = 12
         layer.shadowColor = UIColor.black.cgColor
@@ -29,61 +27,36 @@ class TBRCardButton: UIView {
         layer.shadowOffset = CGSize(width: 0, height: 2)
         layer.shadowRadius = 4
         
-        titleLabel.text = title
-        titleLabel.textColor = .accent
-        titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        
-        addSubview(titleLabel)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            titleLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            titleLabel.topAnchor.constraint(equalTo: topAnchor, constant: 12),
-            titleLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12)
-        ])
+        // ボタンタイトルの設定
+        setTitle(title, for: .normal)
+        setTitleColor(.accent, for: .normal)
+        titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+        titleLabel?.textAlignment = .center
     }
     
-    // メモリのアドレスをactionKeyとして使用
-    static private var actionKey: Void? = nil
-    
-    func addTapGesture(action: @escaping () -> Void) {
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        self.addGestureRecognizer(tapGesture)
-        self.isUserInteractionEnabled = true
-        // メモリアドレスをキーとして保存
+    private func addAction(_ action: @escaping () -> Void) {
+        // タップアクションを追加
+        addTarget(self, action: #selector(handleTap), for: .touchUpInside)
+        // アクションを関連付け
         objc_setAssociatedObject(self, &TBRCardButton.actionKey, action, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
     }
     
     @objc private func handleTap() {
-        // メモリアドレスをキーとして動作を取得
+        // 保存されたアクションを実行
         if let action = objc_getAssociatedObject(self, &TBRCardButton.actionKey) as? () -> Void {
             action()
         }
     }
     
-    // タップに対して文字を薄くする処理
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesBegan(touches, with: event)
-        // タップ時に透明度をアニメーションで変更
-        UIView.animate(withDuration: 0.2) {
-            self.titleLabel.alpha = 0.5
+    // タップ時の視覚効果
+    override var isHighlighted: Bool {
+        didSet {
+            UIView.animate(withDuration: 0.2) {
+                self.alpha = self.isHighlighted ? 0.5 : 1.0
+            }
         }
     }
     
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesEnded(touches, with: event)
-        // 元に戻すアニメーション
-        UIView.animate(withDuration: 0.2) {
-            self.titleLabel.alpha = 1.0
-        }
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        super.touchesCancelled(touches, with: event)
-        // キャンセル時も透明度を元に戻す
-        UIView.animate(withDuration: 0.2) {
-            self.titleLabel.alpha = 1.0
-        }
-    }
+    // メモリアドレスをキーとして保存
+    static private var actionKey: Void? = nil
 }

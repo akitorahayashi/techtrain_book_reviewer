@@ -22,7 +22,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         textView.font = UIFont.systemFont(ofSize: 16)
         textView.isScrollEnabled = false
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
         return textView
     }()
     
@@ -34,7 +34,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         textView.font = UIFont.systemFont(ofSize: 16)
         textView.isScrollEnabled = false
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
         return textView
     }()
     
@@ -54,6 +54,11 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func configureButtons(saveButtonTitle: String, cancelButtonTitle: String) {
+        saveButton.setTitle(saveButtonTitle, for: .normal)
+        cancelButton.setTitle(cancelButtonTitle, for: .normal)
     }
     
     private func setupUI() {
@@ -108,9 +113,9 @@ class EditBookReviewView: UIView, UITextViewDelegate {
             buttonStackView.heightAnchor.constraint(equalToConstant: 44)
         ])
         
-        // コンテンツの高さ制約
+        // contentViewの高さ制約
         NSLayoutConstraint.activate([
-            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 20)
+            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 300)
         ])
         
         // 動的な高さ制約の設定
@@ -126,7 +131,6 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         detailInputField.delegate = self
     }
     
-    // UITextViewのサイズを動的に変更
     func textViewDidChange(_ textView: UITextView) {
         if textView == reviewInputField {
             adjustHeight(for: textView, constraint: reviewHeightConstraint)

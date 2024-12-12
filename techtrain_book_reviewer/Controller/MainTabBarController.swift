@@ -15,7 +15,7 @@ class MainTabBarController: UITabBarController {
         let homeVC = UINavigationController(rootViewController: BookReviewListViewController())
         homeVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
         
-        let createReviewVC = UINavigationController(rootViewController: CreateReviewViewController())
+        let createReviewVC = UINavigationController(rootViewController: EditBookReviewViewController())
         createReviewVC.tabBarItem = UITabBarItem(title: "Create Review", image: UIImage(systemName: "square.and.pencil"), tag: 1)
         
         viewControllers = [homeVC, createReviewVC]
@@ -86,7 +86,7 @@ class MainTabBarController: UITabBarController {
             self?.changeUserName()
         }))
         
-        alert.addAction(UIAlertAction(title: "ログアウト", style: .default, handler: { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "ログアウト", style: .destructive, handler: { [weak self] _ in
             self?.logout()
         }))
         

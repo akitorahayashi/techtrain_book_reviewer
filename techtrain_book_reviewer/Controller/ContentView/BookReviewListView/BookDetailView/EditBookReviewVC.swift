@@ -9,14 +9,14 @@ import UIKit
 
 class EditBookReviewViewController: UIViewController {
     private let editView: EditBookReviewView
-    private let bookReviewId: String
-    var onSaveCompletion: (() -> Void)?
+    private let bookReviewId: String? // nilの場合は新規作成
+    var onCompliteEditingCompletion: (() -> Void)?
     
-    init(bookReviewId: String) {
+    init(bookReviewId: String? = nil) {
         self.bookReviewId = bookReviewId
         self.editView = EditBookReviewView(
-            saveAction: { /* 保存 */ },
-            cancelAction: { /* キャンセル */ }
+            saveAction: {},
+            cancelAction: {}
         )
         super.init(nibName: nil, bundle: nil)
     }
@@ -31,29 +31,35 @@ class EditBookReviewViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.hidesBackButton = true
         setupActions()
-        fetchBookDetails()
         setupKeyboardDismissTapGesture()
-    }
-    
-    // MARK: - Setup Actions
-    private func setupActions() {
-        editView.saveButton.addTapGesture { [weak self] in
-            self?.saveReview()
-        }
-        editView.cancelButton.addTapGesture { [weak self] in
-            self?.navigationController?.popViewController(animated: true)
-        }
-    }
-    
-    // MARK: - Fetch Book Details
-    private func fetchBookDetails() {
-        guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
-            return
-        }
         
-        BookReviewService.shared.fetchBookReview(id: bookReviewId, token: token) { [weak self] result in
+        // 編集の場合はデータ取得、新規作成の場合はUI設定
+        if let id = bookReviewId {
+            fetchBookDetails(reviewId: id)
+        } else {
+            configureForCreation()
+        }
+    }
+    
+    // MARK: - アクションのセットアップ
+    private func setupActions() {
+        editView.saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        editView.cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+    }
+    
+    private func configureForCreation() {
+        // 新規作成用のボタンテキスト設定
+        editView.saveButton.setTitle(bookReviewId == nil ? "Post" : "Edit", for: .normal)
+        editView.cancelButton.setTitle(bookReviewId == nil ? "Back" : "Clear", for: .normal)
+    }
+    
+    // MARK: - データ取得
+    private func fetchBookDetails(reviewId: String) {
+        guard let token = getToken() else { return }
+        
+        BookReviewService.shared.fetchBookReview(id: reviewId, token: token) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let bookReview):
@@ -72,71 +78,122 @@ class EditBookReviewViewController: UIViewController {
         editView.reviewInputField.text = bookReview.review
     }
     
-    // MARK: - Save Review
-    private func saveReview() {
-        guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
-            return
+    // MARK: - 保存/投稿処理
+    @objc private func saveButtonTapped() {
+        if bookReviewId == nil {
+            createReview() // 新規作成
+        } else {
+            updateReview() // 編集
         }
+    }
+    
+    private func createReview() {
+        guard validateInputs(), let token = getToken() else { return }
         
-        guard let title = editView.titleTextField.text,
-              let url = editView.urlTextField.text,
-              let detail = editView.detailInputField.text,
-              let review = editView.reviewInputField.text else {
-            showError(message: "全てのフィールドを正しく入力してください。")
-            return
-        }
-        
-        // 入力値のバリデーション
-        if isBlank(text: title) {
-            showError(message: "タイトルを入力してください。")
-            return
-        }
-        if isBlank(text: url) {
-            showError(message: "URLを入力してください。")
-            return
-        }
-        if isBlank(text: detail) {
-            showError(message: "詳細を入力してください。")
-            return
-        }
-        if isBlank(text: review) {
-            showError(message: "レビューを入力してください。")
-            return
-        }
-        
-        BookReviewService.shared.updateBookReview(
-            id: bookReviewId,
-            title: title,
-            url: url.isEmpty ? nil : url,
-            detail: detail,
-            review: review,
+        BookReviewService.shared.postBookReview(
+            title: editView.titleTextField.text!,
+            url: editView.urlTextField.text!,
+            detail: editView.detailInputField.text!,
+            review: editView.reviewInputField.text!,
             token: token
         ) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
                 case .success:
-                    self?.onSaveCompletion?() // 保存成功後のコールバック
-                    self?.navigationController?.popViewController(animated: true)
+                    self?.showAlert(title: "成功", message: "レビューが投稿されました", completion: {
+                        self?.clearFields()
+                    })
                 case .failure(let error):
-                    self?.showError(message: "保存に失敗しました。エラー: \(error.localizedDescription)")
+                    self?.showError(message: "投稿に失敗しました: \(error.localizedDescription)")
                 }
             }
         }
     }
-
-    // MARK: - バリデーション用ヘルパー
+    
+    private func updateReview() {
+        guard validateInputs(), let token = getToken(), let id = bookReviewId else { return }
+        
+        BookReviewService.shared.updateBookReview(
+            id: id,
+            title: editView.titleTextField.text!,
+            url: editView.urlTextField.text!,
+            detail: editView.detailInputField.text!,
+            review: editView.reviewInputField.text!,
+            token: token
+        ) { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success:
+                    self?.showAlert(title: "成功", message: "レビューが更新されました", completion: {
+                        self?.onCompliteEditingCompletion?()
+                        self?.navigationController?.popViewController(animated: true)
+                    })
+                case .failure(let error):
+                    self?.showError(message: "更新に失敗しました: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
+    private func clearFields() {
+        editView.titleTextField.text = ""
+        editView.urlTextField.text = ""
+        editView.detailInputField.text = ""
+        editView.reviewInputField.text = ""
+    }
+    
+    // MARK: - キャンセルボタンの処理
+    @objc private func cancelButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    
+    // MARK: - 入力バリデーション
+    private func validateInputs() -> Bool {
+        if isBlank(text: editView.titleTextField.text) {
+            showError(message: "タイトルを入力してください。")
+            return false
+        }
+        if isBlank(text: editView.urlTextField.text) {
+            showError(message: "URLを入力してください。")
+            return false
+        }
+        if isBlank(text: editView.detailInputField.text) {
+            showError(message: "詳細を入力してください。")
+            return false
+        }
+        if isBlank(text: editView.reviewInputField.text) {
+            showError(message: "レビューを入力してください。")
+            return false
+        }
+        return true
+    }
+    
     private func isBlank(text: String?) -> Bool {
         guard let text = text else { return true }
         return text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-
     
-    // MARK: - Show Error
+    // MARK: - ユーティリティ
     private func showError(message: String) {
         let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
-}
+    
+    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+            // 呼び出し元で指定された処理を実行
+            completion?()
+        }))
+        present(alert, animated: true)
+    }
 
+    private func getToken() -> String? {
+        guard let token = UserProfileService.yourAccount?.token else {
+            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            return nil
+        }
+        return token
+    }
+}
