@@ -23,6 +23,14 @@ class UserProfileService {
         self.apiClient = apiClient
     }
     
+    enum UserProfileError: Error {
+        case unauthorized       // 認証エラー
+        case invalidRequest     // リクエストが不正
+        case serverIssue        // サーバー側の問題
+        case unknown            // その他不明なエラー
+        case underlyingError(TechTrainAPIClient.APIError) // APIエラーをラップ
+    }
+    
     func updateUserName(
         withToken token: String,
         newName: String,

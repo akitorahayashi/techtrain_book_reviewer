@@ -53,7 +53,7 @@ class TechTrainAPIClient {
         
         print("リクエスト送信: \(url)")
         
-        session.dataTask(with: request) { data, response, error in
+        let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("リクエストエラー: \(error)")
                 completion(.failure(.networkError(error)))
@@ -80,23 +80,39 @@ class TechTrainAPIClient {
             case 200...299:
                 completion(.success(data))
             default:
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                        print("エラーJSONレスポンス: \(json)")
-                    }
-                } catch {
-                    print("エラーJSONレスポンスの解析失敗")
-                }
-                completion(.failure(.serverError(
-                    statusCode: httpResponse.statusCode,
-                    messageJP: "エラーが発生しました",
-                    messageEN: "An error occurred"
-                )))
+                // エラーの内容を解析してローカライズ
+                let localizedError = self.parseServerError(from: data, statusCode: httpResponse.statusCode)
+                completion(.failure(localizedError))
             }
-        }.resume()
+        }
+        
+        task.resume()
     }
-
-
+    
+    private func parseServerError(from data: Data, statusCode: Int) -> APIError {
+        do {
+            // サーバーエラーのJSONレスポンスを解析
+            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let messageJP = json["ErrorMessageJP"] as? String,
+               let messageEN = json["ErrorMessageEN"] as? String {
+                return .serverError(
+                    statusCode: statusCode,
+                    messageJP: messageJP,
+                    messageEN: messageEN
+                )
+            }
+        } catch {
+            print("エラーJSONレスポンスの解析失敗: \(error)")
+        }
+        
+        // JSONが解析できない場合のエラー
+        return .serverError(
+            statusCode: statusCode,
+            messageJP: "エラー内容の解析に失敗しました。JSON形式が無効です。",
+            messageEN: "Failed to parse error details. The JSON format is invalid."
+        )
+    }
+    
     
     enum APIError: Error {
         case invalidURL
@@ -123,5 +139,5 @@ class TechTrainAPIClient {
             }
         }
     }
-
+    
 }
