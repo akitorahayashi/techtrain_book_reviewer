@@ -7,24 +7,24 @@
 
 enum TechTrainAPIError: Error {
     case invalidURL
-    case networkError(Error)
+    case networkError
     case serverError(statusCode: Int, messageJP: String, messageEN: String)
     case decodingError
-    case keychainSaveError(String)
+    case keychainSaveError
     case unknown
     
-    var debugDescription: String {
+    var localizedDescription: String {
         switch self {
         case .invalidURL:
             return "無効なURLです。"
-        case .networkError(let error):
-            return "ネットワークエラーが発生しました: \(error.localizedDescription)"
+        case .networkError:
+            return "ネットワークエラーが発生しました"
         case .serverError(let statusCode, let messageJP, let messageEN):
             return "サーバーエラーが発生しました (\(statusCode)):\nJP: \(messageJP)\nEN: \(messageEN)"
         case .decodingError:
             return "データの解読に失敗しました。"
-        case .keychainSaveError(let description):
-            return "Keychain 保存エラーが発生しました: \(description)"
+        case .keychainSaveError:
+            return "端末内への保存中にエラーが発生しました"
         case .unknown:
             return "不明なエラーが発生しました。"
         }
@@ -70,7 +70,7 @@ enum TechTrainAPIError: Error {
         case underlyingError(TechTrainAPIError)
         case unknown
         
-        var debugDescription: String {
+        var localizedDescription: String {
             switch self {
             case .invalidRequest(let messageJP, _):
                 return messageJP

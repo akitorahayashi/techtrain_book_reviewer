@@ -103,7 +103,7 @@ class EditBookReviewViewController: UIViewController {
                         self?.clearFields()
                     })
                 case .failure(let error):
-                    self?.showError(message: "投稿に失敗しました: \(error.localizedDescription)")
+                    self?.showError(message: error.localizedDescription)
                 }
             }
         }

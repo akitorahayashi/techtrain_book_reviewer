@@ -18,7 +18,7 @@ class TBREmailAuthService {
         email: String,
         password: String,
         signUpName: String? = nil, // `signUp` の場合は名前がある
-        completion: @escaping (Result<String, TechTrainAPIClient.APIError>) -> Void
+        completion: @escaping (Result<String, TechTrainAPIError.ServiceError>) -> Void
     ) {
         let endpoint = signUpName == nil ? "/signin" : "/users" // `users` はサインアップ用エンドポイント
         var parameters: [String: Any] = [
@@ -43,17 +43,18 @@ class TBREmailAuthService {
                         if SecureTokenService.shared.save(data: tokenData) {
                             completion(.success(token))
                         } else {
-                            completion(.failure(.keychainSaveError("Keychainへのトークン保存に失敗しました。")))
+                            completion(.failure(.underlyingError(.keychainSaveError))
+                            )
                         }
                     } else {
-                        completion(.failure(.decodingError))
+                        completion(.failure(.underlyingError(.decodingError)))
                     }
                 } catch {
-                    completion(.failure(.decodingError))
+                    completion(.failure(.underlyingError(.decodingError)))
                 }
                 
             case .failure(let error):
-                completion(.failure(error))
+                completion(.failure(error.toServiceError()))
             }
         }
     }

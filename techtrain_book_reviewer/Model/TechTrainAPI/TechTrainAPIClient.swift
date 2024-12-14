@@ -23,7 +23,7 @@ class TechTrainAPIClient {
         method: String,
         parameters: [String: Any]?,
         headers: [String: String]? = nil,
-        completion: @escaping (Result<Data, APIError>) -> Void
+        completion: @escaping (Result<Data, TechTrainAPIError>) -> Void
     ) {
         guard let url = URL(string: baseURL + endpoint) else {
             print("URLが無効: \(baseURL + endpoint)")
@@ -46,7 +46,7 @@ class TechTrainAPIClient {
                 request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
             } catch {
                 print("パラメータのエンコードエラー: \(error)")
-                completion(.failure(.networkError(error)))
+                completion(.failure(.networkError))
                 return
             }
         }
@@ -56,7 +56,7 @@ class TechTrainAPIClient {
         let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("リクエストエラー: \(error)")
-                completion(.failure(.networkError(error)))
+                completion(.failure(.networkError))
                 return
             }
             
@@ -89,7 +89,7 @@ class TechTrainAPIClient {
         task.resume()
     }
     
-    private func parseServerError(from data: Data, statusCode: Int) -> APIError {
+    private func parseServerError(from data: Data, statusCode: Int) -> TechTrainAPIError {
         do {
             // サーバーエラーのJSONレスポンスを解析
             if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
@@ -112,8 +112,4 @@ class TechTrainAPIClient {
             messageEN: "Failed to parse error details. The JSON format is invalid."
         )
     }
-    
-    
-    
-    
 }
