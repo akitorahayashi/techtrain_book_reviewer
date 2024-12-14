@@ -33,13 +33,12 @@ class EditBookReviewViewController: UIViewController {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
         setupActions()
+        configureForCreation()
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
         if let id = bookReviewId {
             fetchBookDetails(reviewId: id)
-        } else {
-            configureForCreation()
         }
     }
     
