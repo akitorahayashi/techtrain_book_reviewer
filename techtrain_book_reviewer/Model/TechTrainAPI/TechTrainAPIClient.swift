@@ -23,7 +23,7 @@ class TechTrainAPIClient {
         method: String,
         parameters: [String: Any]?,
         headers: [String: String]? = nil,
-        completion: @escaping (Result<Data, APIError>) -> Void
+        completion: @escaping (Result<Data, TechTrainAPIError>) -> Void
     ) {
         guard let url = URL(string: baseURL + endpoint) else {
             print("URLが無効: \(baseURL + endpoint)")
@@ -46,17 +46,17 @@ class TechTrainAPIClient {
                 request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
             } catch {
                 print("パラメータのエンコードエラー: \(error)")
-                completion(.failure(.networkError(error)))
+                completion(.failure(.networkError))
                 return
             }
         }
         
         print("リクエスト送信: \(url)")
         
-        session.dataTask(with: request) { data, response, error in
+        let task = session.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("リクエストエラー: \(error)")
-                completion(.failure(.networkError(error)))
+                completion(.failure(.networkError))
                 return
             }
             
@@ -80,48 +80,36 @@ class TechTrainAPIClient {
             case 200...299:
                 completion(.success(data))
             default:
-                do {
-                    if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                        print("エラーJSONレスポンス: \(json)")
-                    }
-                } catch {
-                    print("エラーJSONレスポンスの解析失敗")
-                }
-                completion(.failure(.serverError(
-                    statusCode: httpResponse.statusCode,
-                    messageJP: "エラーが発生しました",
-                    messageEN: "An error occurred"
-                )))
-            }
-        }.resume()
-    }
-
-
-    
-    enum APIError: Error {
-        case invalidURL
-        case networkError(Error)
-        case serverError(statusCode: Int, messageJP: String, messageEN: String)
-        case decodingError
-        case keychainSaveError(String)
-        case unknown
-        
-        var localizedDescription: String {
-            switch self {
-            case .invalidURL:
-                return "無効なURLです。"
-            case .networkError(let error):
-                return "ネットワークエラーが発生しました: \(error.localizedDescription)"
-            case .serverError(let statusCode, let messageJP, let messageEN):
-                return "サーバーエラーが発生しました (\(statusCode)):\nJP: \(messageJP)\nEN: \(messageEN)"
-            case .decodingError:
-                return "データの解読に失敗しました。"
-            case .keychainSaveError(let description):
-                return "Keychain 保存エラーが発生しました: \(description)"
-            case .unknown:
-                return "不明なエラーが発生しました。"
+                // エラーの内容を解析してローカライズ
+                let localizedError = self.parseServerError(from: data, statusCode: httpResponse.statusCode)
+                completion(.failure(localizedError))
             }
         }
+        
+        task.resume()
     }
-
+    
+    private func parseServerError(from data: Data, statusCode: Int) -> TechTrainAPIError {
+        do {
+            // サーバーエラーのJSONレスポンスを解析
+            if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+               let messageJP = json["ErrorMessageJP"] as? String,
+               let messageEN = json["ErrorMessageEN"] as? String {
+                return .serverError(
+                    statusCode: statusCode,
+                    messageJP: messageJP,
+                    messageEN: messageEN
+                )
+            }
+        } catch {
+            print("エラーJSONレスポンスの解析失敗: \(error)")
+        }
+        
+        // JSONが解析できない場合のエラー
+        return .serverError(
+            statusCode: statusCode,
+            messageJP: "エラー内容の解析に失敗しました。JSON形式が無効です。",
+            messageEN: "Failed to parse error details. The JSON format is invalid."
+        )
+    }
 }

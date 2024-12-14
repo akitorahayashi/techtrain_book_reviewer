@@ -19,7 +19,7 @@ class BookReviewService {
         detail: String,
         review: String,
         token: String,
-        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
+        completion: @escaping (Result<Void, TechTrainAPIError.ServiceError>) -> Void
     ) {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books"
@@ -35,7 +35,7 @@ class BookReviewService {
             case .success:
                 completion(.success(()))
             case .failure(let error):
-                completion(.failure(error))
+                completion(.failure(error.toServiceError()))
             }
         }
     }
@@ -48,7 +48,7 @@ class BookReviewService {
             detail: String,
             review: String,
             token: String,
-            completion: @escaping (Result<BookReview, TechTrainAPIClient.APIError>) -> Void
+            completion: @escaping (Result<BookReview, TechTrainAPIError.ServiceError>) -> Void
         ) {
             let headers = ["Authorization": "Bearer \(token)"]
             let endpoint = "/books/\(id)"
@@ -67,10 +67,10 @@ class BookReviewService {
                         let updatedBookReview = try decoder.decode(BookReview.self, from: data)
                         completion(.success(updatedBookReview))
                     } catch {
-                        completion(.failure(.decodingError))
+                        completion(.failure(.underlyingError(.decodingError)))
                     }
                 case .failure(let error):
-                    completion(.failure(error))
+                    completion(.failure(error.toServiceError()))
                 }
             }
         }
@@ -79,7 +79,7 @@ class BookReviewService {
     func fetchBookReview(
             id: String,
             token: String,
-            completion: @escaping (Result<BookReview, TechTrainAPIClient.APIError>) -> Void
+            completion: @escaping (Result<BookReview, TechTrainAPIError.ServiceError>) -> Void
         ) {
             let headers = ["Authorization": "Bearer \(token)"]
             let endpoint = "/books/\(id)"
@@ -92,10 +92,10 @@ class BookReviewService {
                         let bookReview = try decoder.decode(BookReview.self, from: data)
                         completion(.success(bookReview))
                     } catch {
-                        completion(.failure(.decodingError))
+                        completion(.failure(.underlyingError(.decodingError)))
                     }
                 case .failure(let error):
-                    completion(.failure(error))
+                    completion(.failure(error.toServiceError()))
                 }
             }
         }
@@ -104,7 +104,7 @@ class BookReviewService {
     func fetchBookReviews(
         offset: Int = 0,
         token: String,
-        completion: @escaping (Result<[BookReview], TechTrainAPIClient.APIError>) -> Void
+        completion: @escaping (Result<[BookReview], TechTrainAPIError.ServiceError>) -> Void
     ) {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books?offset=\(offset)"
@@ -118,10 +118,10 @@ class BookReviewService {
                     completion(.success(bookReviews))
                 } catch {
                     print("fetchBookReviews デコードエラー: \(error)")
-                    completion(.failure(.decodingError))
+                    completion(.failure(.underlyingError(.decodingError)))
                 }
             case .failure(let error):
-                completion(.failure(error))
+                completion(.failure(error.toServiceError()))
             }
         }
     }
@@ -130,7 +130,7 @@ class BookReviewService {
     func deleteBookReview(
         id: String,
         token: String,
-        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
+        completion: @escaping (Result<Void, TechTrainAPIError.ServiceError>) -> Void
     ) {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books/\(id)"
@@ -140,7 +140,7 @@ class BookReviewService {
             case .success:
                 completion(.success(()))
             case .failure(let error):
-                completion(.failure(error))
+                completion(.failure(error.toServiceError()))
             }
         }
     }
