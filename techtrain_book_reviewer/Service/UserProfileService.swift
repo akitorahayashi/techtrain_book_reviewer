@@ -1,11 +1,3 @@
-//
-//  TBRUserProfileService.swift
-//  techtrain_book_reviewer
-//
-//  Created by 林 明虎 on 2024/12/10.
-//
-
-
 import Foundation
 import Combine
 
@@ -23,18 +15,12 @@ class UserProfileService {
         self.apiClient = apiClient
     }
     
-    enum UserProfileError: Error {
-        case unauthorized       // 認証エラー
-        case invalidRequest     // リクエストが不正
-        case serverIssue        // サーバー側の問題
-        case unknown            // その他不明なエラー
-        case underlyingError(TechTrainAPIClient.APIError) // APIエラーをラップ
-    }
     
+    /// ユーザー名を更新する
     func updateUserName(
         withToken token: String,
         newName: String,
-        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
+        completion: @escaping (Result<Void, UserProfileError>) -> Void
     ) {
         let endpoint = "/users"
         
@@ -51,59 +37,88 @@ class UserProfileService {
             case .success:
                 print("UserProfileService: ユーザー名の更新に成功しました")
                 completion(.success(()))
-            case .failure(let error):
-                print("UserProfileService: ユーザー名の更新に失敗しました - \(error.localizedDescription)")
-                completion(.failure(error))
+            case .failure(let apiError):
+                let userProfileError = self.mapToUserProfileError(from: apiError)
+                print("UserProfileService: ユーザー名の更新に失敗しました - \(userProfileError)")
+                completion(.failure(userProfileError))
             }
         }
     }
     
+    /// ユーザープロファイルを取得する
     func fetchUserProfile(
         withToken token: String,
-        completion: @escaping (Result<Void, TechTrainAPIClient.APIError>) -> Void
+        completion: @escaping (Result<Void, UserProfileError>) -> Void
     ) {
         let endpoint = "/users"
         
-        // ヘッダーの設定
         let headers = [
             "Authorization": "Bearer \(token)"
         ]
         
-        // リクエストを送信
         apiClient.makeRequest(to: endpoint, method: "GET", parameters: nil, headers: headers) { result in
             switch result {
             case .success(let data):
                 do {
-                    // レスポンスをログ
                     print("レスポンスデータ: \(String(data: data, encoding: .utf8) ?? "データなし")")
-                    
-                    // JSONを解析してTBRUserを生成
                     if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                        let name = json["name"] as? String,
                        let iconUrl = json["iconUrl"] as? String? {
                         let user = TBRUser(token: token, name: name, iconUrl: iconUrl)
-                        
-                        // 静的プロパティに格納
                         UserProfileService.yourAccount = user
-                        
-                        // 成功として通知
                         completion(.success(()))
                     } else {
-                        print("JSON解析失敗: \(String(data: data, encoding: .utf8) ?? "データなし")")
-                        completion(.failure(.decodingError))
+                        print("JSON解析失敗")
+                        completion(.failure(.unknown))
                     }
-                } catch let error as DecodingError {
-                    print("デコードエラー: \(error)")
-                    completion(.failure(.decodingError))
                 } catch {
-                    print("不明なエラー: \(error)")
+                    print("JSONデコードエラー: \(error)")
                     completion(.failure(.unknown))
                 }
-                
-            case .failure(let error):
-                print("リクエスト失敗: \(error.localizedDescription)")
-                completion(.failure(error))
+            case .failure(let apiError):
+                let userProfileError = self.mapToUserProfileError(from: apiError)
+                print("UserProfileService: ユーザープロファイルの取得に失敗しました - \(userProfileError)")
+                completion(.failure(userProfileError))
             }
+        }
+    }
+    
+    enum UserProfileError: Error {
+        case unauthorized       // 認証エラー
+        case invalidRequest     // リクエストが不正
+        case serverIssue        // サーバー側の問題
+        case conflict           // 競合エラー（例: 重複データ）
+        case serviceUnavailable // サービスが利用不可
+        case notFound           // リソースが見つからない
+        case unknown            // その他不明なエラー
+        case underlyingError(TechTrainAPIClient.APIError) // APIエラーをラップ
+    }
+    
+    private func mapToUserProfileError(from apiError: TechTrainAPIClient.APIError) -> UserProfileError {
+        switch apiError {
+        case .serverError(let statusCode, let messageJP, _):
+            switch statusCode {
+            case 400:
+                print("UserProfileService: バリデーションエラー - \(messageJP)")
+                return .invalidRequest
+            case 401:
+                print("UserProfileService: 認証エラー - \(messageJP)")
+                return .unauthorized
+            case 404:
+                print("UserProfileService: リソースが見つかりません - \(messageJP)")
+                return .notFound
+            case 409:
+                print("UserProfileService: 競合エラー - \(messageJP)")
+                return .conflict
+            case 503:
+                print("UserProfileService: サービス利用不可 - \(messageJP)")
+                return .serviceUnavailable
+            default:
+                print("UserProfileService: サーバー側の問題 - \(messageJP)")
+                return .serverIssue
+            }
+        default:
+            return .underlyingError(apiError)
         }
     }
 }

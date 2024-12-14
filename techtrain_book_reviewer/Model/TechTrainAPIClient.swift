@@ -114,30 +114,6 @@ class TechTrainAPIClient {
     }
     
     
-    enum APIError: Error {
-        case invalidURL
-        case networkError(Error)
-        case serverError(statusCode: Int, messageJP: String, messageEN: String)
-        case decodingError
-        case keychainSaveError(String)
-        case unknown
-        
-        var localizedDescription: String {
-            switch self {
-            case .invalidURL:
-                return "無効なURLです。"
-            case .networkError(let error):
-                return "ネットワークエラーが発生しました: \(error.localizedDescription)"
-            case .serverError(let statusCode, let messageJP, let messageEN):
-                return "サーバーエラーが発生しました (\(statusCode)):\nJP: \(messageJP)\nEN: \(messageEN)"
-            case .decodingError:
-                return "データの解読に失敗しました。"
-            case .keychainSaveError(let description):
-                return "Keychain 保存エラーが発生しました: \(description)"
-            case .unknown:
-                return "不明なエラーが発生しました。"
-            }
-        }
-    }
+    
     
 }
