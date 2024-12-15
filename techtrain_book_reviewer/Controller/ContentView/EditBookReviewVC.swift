@@ -25,10 +25,7 @@ class EditBookReviewViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func loadView() {
-        view = editView
-    }
-    
+    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
@@ -43,6 +40,10 @@ class EditBookReviewViewController: UIViewController {
     }
     
     // MARK: - アクションのセットアップ
+    override func loadView() {
+        view = editView
+    }
+    
     private func setupActions() {
         editView.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         editView.clearButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
