@@ -10,6 +10,7 @@ import UIKit
 class BookReviewListViewController: UIViewController {
     private let bookReviewListView = BookReviewListView()
     private let refreshControl = UIRefreshControl()
+    var shouldRefreshOnReturn: Bool = false
     
     override func loadView() {
         view = UIView()
@@ -25,18 +26,23 @@ class BookReviewListViewController: UIViewController {
             bookReviewListView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
+    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupRefreshControl()
         loadInitialReviews()
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        refreshReviews()
+        if shouldRefreshOnReturn {
+            refreshReviews()
+            shouldRefreshOnReturn = false // フラグをリセット
+        }
     }
     
+    // MARK: - Local Methods
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
         bookReviewListView.tableView.refreshControl = refreshControl

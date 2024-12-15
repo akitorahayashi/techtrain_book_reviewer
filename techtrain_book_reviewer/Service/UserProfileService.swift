@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 class UserProfileService {
-    static var yourAccountPublisher = CurrentValueSubject<TBRUser?, Never>(nil)
+    private static var yourAccountPublisher = CurrentValueSubject<TBRUser?, Never>(nil)
     
     static var yourAccount: TBRUser? {
         get { yourAccountPublisher.value }

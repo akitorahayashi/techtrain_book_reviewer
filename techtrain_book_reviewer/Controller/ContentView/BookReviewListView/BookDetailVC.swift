@@ -10,6 +10,7 @@ import UIKit
 class BookDetailViewController: UIViewController {
     private let bookId: String
     private var detailView: BookDetailView?
+    var isUpdated: Bool = false
     
     init(book: BookReview) {
         self.bookId = book.id
@@ -20,6 +21,7 @@ class BookDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle Methods
     override func loadView() {
         detailView = BookDetailView(
             title: "",
@@ -41,9 +43,11 @@ class BookDetailViewController: UIViewController {
         navigationItem.hidesBackButton = true
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        fetchBookDetails() // 表示前にデータを再取得
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let parent = navigationController?.viewControllers.last as? BookReviewListViewController {
+            parent.shouldRefreshOnReturn = isUpdated // 親にフラグを渡す
+        }
     }
     
     // MARK: - Actions Setup
@@ -57,7 +61,6 @@ class BookDetailViewController: UIViewController {
     // MARK: - Fetch Data
     private func fetchBookDetails() {
         guard let token = getToken() else { return }
-        
         BookReviewService.shared.fetchBookReview(id: bookId, token: token) { [weak self] result in
             DispatchQueue.main.async {
                 switch result {
@@ -100,8 +103,9 @@ class BookDetailViewController: UIViewController {
         
         let editVC = EditBookReviewViewController(bookReviewId: bookId)
         editVC.onCompliteEditingCompletion = { [weak self] in
-            print("Editing completed, refreshing data...") // クロージャ実行ログ
-            self?.fetchBookDetails() // 編集後にデータをリフレッシュ
+            print("Editing completed, refreshing data...")
+            self?.isUpdated = true
+            self?.fetchBookDetails()
         }
         navigationController?.pushViewController(editVC, animated: true)
     }
@@ -130,6 +134,7 @@ class BookDetailViewController: UIViewController {
             DispatchQueue.main.async {
                 switch result {
                 case .success:
+                    self?.isUpdated = true
                     self?.navigationController?.popViewController(animated: true)
                     let alert = UIAlertController(title: "成功", message: "無事削除されました！", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default))

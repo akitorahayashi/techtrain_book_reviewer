@@ -132,7 +132,7 @@ class MainTabBarController: UITabBarController {
                         case .success:
                             print("名前の変更に成功しました")
                             UserProfileService.yourAccount?.name = newName
-                            UserProfileService.yourAccountPublisher.send(UserProfileService.yourAccount)
+                            
                             self.showAlert(title: "成功", message: "名前が変更されました。")
                         case .failure(let error):
                             print("名前の変更に失敗しました: \(error.localizedDescription)")
@@ -148,7 +148,6 @@ class MainTabBarController: UITabBarController {
     
     private func logout() {
         UserProfileService.yourAccount = nil
-        UserProfileService.yourAccountPublisher.send(nil)
         let _ = SecureTokenService.shared.delete()
         
         if let navigationController = navigationController {
