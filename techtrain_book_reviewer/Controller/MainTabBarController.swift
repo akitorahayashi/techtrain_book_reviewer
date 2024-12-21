@@ -7,7 +7,11 @@
 
 import UIKit
 
-class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
+protocol UserNameChangeDelegate: AnyObject {
+    func didChangeUserName()
+}
+
+class MainTabBarController: UITabBarController, UITabBarControllerDelegate, UserNameChangeDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
@@ -15,7 +19,11 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         // Delegate を設定
         self.delegate = self
         
-        let homeVC = UINavigationController(rootViewController: BookReviewListViewController())
+        // BookReviewListViewControllerにデリゲートを設定
+        let bookListVC = BookReviewListViewController()
+        bookListVC.delegate = self
+        
+        let homeVC = UINavigationController(rootViewController: bookListVC)
         homeVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
         
         let createReviewVC = UINavigationController(rootViewController: EditBookReviewViewController())
@@ -32,6 +40,14 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
            let bookListVC = navController.viewControllers.first as? BookReviewListViewController {
             // フラグを設定し、次回表示時にリフレッシュ
             bookListVC.shouldRefreshOnReturn = true
+        }
+    }
+    
+    // MARK: - UserNameChangeDelegate
+    func didChangeUserName() {
+        if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
+           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListViewController {
+            bookListVC.didChangeUserName()
         }
     }
     
@@ -147,6 +163,9 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                             UserProfileService.yourAccount?.name = newName
                             
                             self.showAlert(title: "成功", message: "名前が変更されました。")
+                            
+                            // デリゲートを利用してリフレッシュ通知を送る
+                            self.didChangeUserName()
                         case .failure(let error):
                             print("名前の変更に失敗しました: \(error.localizedDescription)")
                             self.showAlert(title: "エラー", message: "名前の変更に失敗しました。再度お試しください。")
@@ -177,10 +196,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                 )
             }
         }
-        
         print("ログアウトしました")
     }
-    
     
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
