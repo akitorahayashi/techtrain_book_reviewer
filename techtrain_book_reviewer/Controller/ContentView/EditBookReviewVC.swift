@@ -59,11 +59,11 @@ class EditBookReviewViewController: UIViewController {
     private func fetchBookDetails(reviewId: String) {
         guard let token = getToken() else { return }
         // ローディング開始
-            LoadingOverlayService.shared.show()
+        LoadingOverlayService.shared.show()
         BookReviewService.shared.fetchBookReview(id: reviewId, token: token) { [weak self] result in
             DispatchQueue.main.async {
                 // ローディング終了
-                            LoadingOverlayService.shared.hide()
+                LoadingOverlayService.shared.hide()
                 switch result {
                 case .success(let bookReview):
                     self?.populateFields(with: bookReview)
@@ -93,7 +93,7 @@ class EditBookReviewViewController: UIViewController {
     private func createReview() {
         guard validateInputs(), let token = getToken() else { return }
         // ローディング開始
-            LoadingOverlayService.shared.show()
+        LoadingOverlayService.shared.show()
         BookReviewService.shared.postBookReview(
             title: editView.titleTextField.text!,
             url: editView.urlTextField.text!,
@@ -103,7 +103,7 @@ class EditBookReviewViewController: UIViewController {
         ) { [weak self] result in
             DispatchQueue.main.async {
                 // ローディング終了
-                            LoadingOverlayService.shared.hide()
+                LoadingOverlayService.shared.hide()
                 switch result {
                 case .success:
                     self?.showAlert(title: "成功", message: "レビューが投稿されました", completion: {
@@ -119,7 +119,7 @@ class EditBookReviewViewController: UIViewController {
     private func updateReview() {
         guard validateInputs(), let token = getToken(), let id = bookReviewId else { return }
         // ローディング開始
-            LoadingOverlayService.shared.show()
+        LoadingOverlayService.shared.show()
         BookReviewService.shared.updateBookReview(
             id: id,
             title: editView.titleTextField.text!,
@@ -212,7 +212,7 @@ class EditBookReviewViewController: UIViewController {
         }))
         present(alert, animated: true)
     }
-
+    
     private func getToken() -> String? {
         guard let token = UserProfileService.yourAccount?.token else {
             showError(message: "認証情報が見つかりません。再度ログインしてください。")

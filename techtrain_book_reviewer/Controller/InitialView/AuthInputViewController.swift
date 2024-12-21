@@ -46,57 +46,56 @@ class AuthInputViewController: UIViewController {
         setupKeyboardDismissTapGesture()
     }
     
-    private func authenticate() {
-        // MARK: - 入力データ取得
-        guard let email = authInputView.emailTextField.text?.replacingOccurrences(of: " ", with: ""),
-              let password = authInputView.passwordTextField.text?.replacingOccurrences(of: " ", with: ""),
-              !email.isEmpty, !password.isEmpty else {
+    // MARK: - 入力検証と認証処理
+    private func validateInputs() -> (email: String, password: String, name: String?)? {
+        guard let email = authInputView.emailTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+              let password = authInputView.passwordTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+              !AuthInputValidationUtils.isBlank(email), !AuthInputValidationUtils.isBlank(password) else {
             showAlert(title: "入力エラー", message: "メールアドレスまたはパスワードを入力してください。")
-            return
+            return nil
         }
         
-        // MARK: - バリデーション
+        if !AuthInputValidationUtils.isValidEmail(email) {
+            showAlert(title: "入力エラー", message: "正しい形式のメールアドレスを入力してください。")
+            return nil
+        }
+        
+        if !AuthInputValidationUtils.isValidPassword(password) {
+            showAlert(title: "入力エラー", message: "パスワードは6文字以上20文字以下で設定してください。")
+            return nil
+        }
+        
         if authMode == .signUp {
-            // メールアドレスの形式チェック
-            if !isValidEmail(email) {
-                showAlert(title: "入力エラー", message: "正しい形式のメールアドレスを入力してください。")
-                return
-            }
-            
-            // パスワードの長さチェック
-            if password.count < 6 {
-                showAlert(title: "入力エラー", message: "パスワードは6文字以上で設定してください。")
-                return
-            }
-            
-            // 名前のバリデーション
-            guard let name = authInputView.nameTextField.text?.replacingOccurrences(of: " ", with: ""),
-                  !name.isEmpty, name.count <= 10 else {
+            guard let name = authInputView.nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                  AuthInputValidationUtils.isValidName(name) else {
                 showAlert(title: "入力エラー", message: "名前は10文字以下で空白以外の文字を含めてください。")
-                return
+                return nil
             }
+            return (email, password, name)
+        }
+        
+        return (email, password, nil)
+    }
+    
+    private func authenticate() {
+        guard let validatedInputs = validateInputs() else { return }
+        let email = validatedInputs.email
+        let password = validatedInputs.password
+        
+        if authMode == .signUp {
+            guard let name = validatedInputs.name else { return }
             
-            // パスワード再確認アラート
             confirmPassword(password: password) { [weak self] confirmed in
                 guard let self = self, confirmed else {
                     self?.showAlert(title: "エラー", message: "再入力されたパスワードが一致しません。")
                     return
                 }
                 
-                // サインアップ処理
                 self.performSignUp(email: email, password: password, name: name)
             }
         } else {
-            // ログイン処理
             performLogin(email: email, password: password)
         }
-    }
-    
-    // MARK: - バリデーション用関数
-    private func isValidEmail(_ email: String) -> Bool {
-        let emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES[c] %@", emailRegex)
-        return emailPredicate.evaluate(with: email)
     }
     
     // MARK: - パスワード再確認アラート
@@ -115,20 +114,14 @@ class AuthInputViewController: UIViewController {
     
     // MARK: - ログイン処理
     private func performLogin(email: String, password: String) {
-        // ローディング開始
         LoadingOverlayService.shared.show()
-        
         authService.authenticate(email: email, password: password) { [weak self] result in
             DispatchQueue.main.async {
-                // ローディング終了
                 LoadingOverlayService.shared.hide()
-                
                 switch result {
                 case .success(let token):
-                    // ログイン成功時にプロファイル取得を開始
                     self?.fetchUserProfile(token: token, isSignUp: false)
                 case .failure(let error):
-                    // 認証失敗時のエラーアラートを表示
                     self?.showAlert(title: "エラー", message: error.localizedDescription)
                 }
             }
@@ -137,17 +130,12 @@ class AuthInputViewController: UIViewController {
     
     // MARK: - サインアップ処理
     private func performSignUp(email: String, password: String, name: String) {
-        // ローディング開始
         LoadingOverlayService.shared.show()
-        
         authService.authenticate(email: email, password: password, signUpName: name) { [weak self] result in
             DispatchQueue.main.async {
-                // ローディング終了
                 LoadingOverlayService.shared.hide()
-                
                 switch result {
                 case .success(let token):
-                    // サインアップ成功時にプロファイル取得を開始
                     self?.fetchUserProfile(token: token, isSignUp: true)
                 case .failure(let error):
                     self?.showAlert(title: "エラー", message: error.localizedDescription)
@@ -158,25 +146,20 @@ class AuthInputViewController: UIViewController {
     
     // MARK: - プロファイル取得
     private func fetchUserProfile(token: String, isSignUp: Bool) {
-        // ローディング開始
         LoadingOverlayService.shared.show()
         let userProfileService = UserProfileService()
         userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
             DispatchQueue.main.async {
-                // ローディング終了
                 LoadingOverlayService.shared.hide()
                 switch result {
                 case .success:
-                    // プロファイル取得成功時に文言を動的に変更
                     let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
                     let alert = UIAlertController(title: "成功", message: message, preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                        // OKを押したらメイン画面に遷移
                         self?.navigateToMain()
                     }))
                     self?.present(alert, animated: true, completion: nil)
                 case .failure(let error):
-                    // プロファイル取得失敗時のエラーアラートを表示
                     self?.showAlert(title: "エラー", message: error.localizedDescription)
                 }
             }
@@ -186,9 +169,7 @@ class AuthInputViewController: UIViewController {
     // MARK: - ナビゲーション
     private func navigateToMain() {
         let mainTabBarController = MainTabBarController()
-        // Backボタンを削除する設定
         mainTabBarController.navigationItem.hidesBackButton = true
-        // 次の画面をPush
         navigationController?.pushViewController(mainTabBarController, animated: true)
     }
     
@@ -198,5 +179,4 @@ class AuthInputViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-    
 }
