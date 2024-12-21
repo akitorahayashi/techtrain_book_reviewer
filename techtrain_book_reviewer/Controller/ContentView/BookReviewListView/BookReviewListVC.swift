@@ -7,7 +7,9 @@
 
 import UIKit
 
-class BookReviewListViewController: UIViewController {
+class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
+    weak var delegate: UserNameChangeDelegate?
+    
     private let bookReviewListView = BookReviewListView()
     private let refreshControl = UIRefreshControl()
     var shouldRefreshOnReturn: Bool = false
@@ -26,6 +28,7 @@ class BookReviewListViewController: UIViewController {
             bookReviewListView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
+    
     // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,13 +36,17 @@ class BookReviewListViewController: UIViewController {
         loadInitialReviews()
     }
     
-    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if shouldRefreshOnReturn {
             refreshReviews()
             shouldRefreshOnReturn = false // フラグをリセット
         }
+    }
+    
+    // MARK: - UserNameChangeDelegate
+    func didChangeUserName() {
+        refreshReviews()
     }
     
     // MARK: - Local Methods
