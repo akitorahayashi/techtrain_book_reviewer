@@ -54,7 +54,7 @@ class AuthInputViewController: UIViewController {
             showAlert(title: "入力エラー", message: "メールアドレスまたはパスワードを入力してください。")
             return
         }
-
+        
         // MARK: - バリデーション
         if authMode == .signUp {
             // メールアドレスの形式チェック
@@ -68,14 +68,14 @@ class AuthInputViewController: UIViewController {
                 showAlert(title: "入力エラー", message: "パスワードは6文字以上で設定してください。")
                 return
             }
-
+            
             // 名前のバリデーション
             guard let name = authInputView.nameTextField.text?.replacingOccurrences(of: " ", with: ""),
                   !name.isEmpty, name.count <= 10 else {
                 showAlert(title: "入力エラー", message: "名前は10文字以下で空白以外の文字を含めてください。")
                 return
             }
-
+            
             // パスワード再確認アラート
             confirmPassword(password: password) { [weak self] confirmed in
                 guard let self = self, confirmed else {
@@ -91,14 +91,14 @@ class AuthInputViewController: UIViewController {
             performLogin(email: email, password: password)
         }
     }
-
+    
     // MARK: - バリデーション用関数
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$"
         let emailPredicate = NSPredicate(format: "SELF MATCHES[c] %@", emailRegex)
         return emailPredicate.evaluate(with: email)
     }
-
+    
     // MARK: - パスワード再確認アラート
     private func confirmPassword(password: String, completion: @escaping (Bool) -> Void) {
         let alert = UIAlertController(title: "パスワード再確認", message: "もう一度パスワードを入力してください。", preferredStyle: .alert)
@@ -112,13 +112,17 @@ class AuthInputViewController: UIViewController {
         }))
         present(alert, animated: true, completion: nil)
     }
-
+    
     // MARK: - ログイン処理
     private func performLogin(email: String, password: String) {
-        showLoading() // ローディング開始
+        // ローディング開始
+        LoadingOverlayService.shared.show()
+        
         authService.authenticate(email: email, password: password) { [weak self] result in
             DispatchQueue.main.async {
-                self?.hideLoading() // ローディング終了
+                // ローディング終了
+                LoadingOverlayService.shared.hide()
+                
                 switch result {
                 case .success(let token):
                     // ログイン成功時にプロファイル取得を開始
@@ -130,13 +134,17 @@ class AuthInputViewController: UIViewController {
             }
         }
     }
-
+    
     // MARK: - サインアップ処理
     private func performSignUp(email: String, password: String, name: String) {
-        showLoading()
+        // ローディング開始
+        LoadingOverlayService.shared.show()
+        
         authService.authenticate(email: email, password: password, signUpName: name) { [weak self] result in
             DispatchQueue.main.async {
-                self?.hideLoading()
+                // ローディング終了
+                LoadingOverlayService.shared.hide()
+                
                 switch result {
                 case .success(let token):
                     // サインアップ成功時にプロファイル取得を開始
@@ -147,14 +155,16 @@ class AuthInputViewController: UIViewController {
             }
         }
     }
-
+    
     // MARK: - プロファイル取得
     private func fetchUserProfile(token: String, isSignUp: Bool) {
-        showLoading() // ローディング再開（プロファイル取得開始）
+        // ローディング開始
+        LoadingOverlayService.shared.show()
         let userProfileService = UserProfileService()
         userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
             DispatchQueue.main.async {
-                self?.hideLoading() // ローディング終了
+                // ローディング終了
+                LoadingOverlayService.shared.hide()
                 switch result {
                 case .success:
                     // プロファイル取得成功時に文言を動的に変更
@@ -172,7 +182,7 @@ class AuthInputViewController: UIViewController {
             }
         }
     }
-
+    
     // MARK: - ナビゲーション
     private func navigateToMain() {
         let mainTabBarController = MainTabBarController()
@@ -181,12 +191,12 @@ class AuthInputViewController: UIViewController {
         // 次の画面をPush
         navigationController?.pushViewController(mainTabBarController, animated: true)
     }
-
+    
     // MARK: - アラート表示
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true, completion: nil)
     }
-
+    
 }
