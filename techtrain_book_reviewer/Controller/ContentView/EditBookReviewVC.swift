@@ -58,9 +58,12 @@ class EditBookReviewViewController: UIViewController {
     // MARK: - データ取得
     private func fetchBookDetails(reviewId: String) {
         guard let token = getToken() else { return }
-        
+        // ローディング開始
+            LoadingOverlayService.shared.show()
         BookReviewService.shared.fetchBookReview(id: reviewId, token: token) { [weak self] result in
             DispatchQueue.main.async {
+                // ローディング終了
+                            LoadingOverlayService.shared.hide()
                 switch result {
                 case .success(let bookReview):
                     self?.populateFields(with: bookReview)
@@ -89,7 +92,8 @@ class EditBookReviewViewController: UIViewController {
     
     private func createReview() {
         guard validateInputs(), let token = getToken() else { return }
-        
+        // ローディング開始
+            LoadingOverlayService.shared.show()
         BookReviewService.shared.postBookReview(
             title: editView.titleTextField.text!,
             url: editView.urlTextField.text!,
@@ -98,6 +102,8 @@ class EditBookReviewViewController: UIViewController {
             token: token
         ) { [weak self] result in
             DispatchQueue.main.async {
+                // ローディング終了
+                            LoadingOverlayService.shared.hide()
                 switch result {
                 case .success:
                     self?.showAlert(title: "成功", message: "レビューが投稿されました", completion: {
@@ -112,7 +118,8 @@ class EditBookReviewViewController: UIViewController {
     
     private func updateReview() {
         guard validateInputs(), let token = getToken(), let id = bookReviewId else { return }
-        
+        // ローディング開始
+            LoadingOverlayService.shared.show()
         BookReviewService.shared.updateBookReview(
             id: id,
             title: editView.titleTextField.text!,
@@ -121,7 +128,8 @@ class EditBookReviewViewController: UIViewController {
             review: editView.reviewInputField.text!,
             token: token
         ) { [weak self] result in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async {// ローディング終了
+                LoadingOverlayService.shared.hide()
                 switch result {
                 case .success:
                     self?.showAlert(title: "成功", message: "レビューが更新されました", completion: {

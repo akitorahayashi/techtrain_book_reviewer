@@ -112,12 +112,13 @@ class MainTabBarController: UITabBarController {
                     return
                 }
                 
-                // ローディング表示
-                self.showLoading()
+                // ローディング開始
+                LoadingOverlayService.shared.show()
                 
                 // トークン取得
                 guard let token = UserProfileService.yourAccount?.token else {
-                    self.hideLoading()
+                    // ローディング終了
+                    LoadingOverlayService.shared.hide()
                     self.showAlert(title: "エラー", message: "認証情報が無効です。ログインし直してください。")
                     self.logout()
                     return
@@ -126,7 +127,8 @@ class MainTabBarController: UITabBarController {
                 // サーバーに名前変更リクエストを送信
                 UserProfileService().updateUserName(withToken: token, newName: newName) { result in
                     DispatchQueue.main.async {
-                        self.hideLoading()
+                        // ローディング終了
+                        LoadingOverlayService.shared.hide()
                         
                         switch result {
                         case .success:

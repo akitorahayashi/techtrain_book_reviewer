@@ -61,8 +61,12 @@ class BookDetailViewController: UIViewController {
     // MARK: - Fetch Data
     private func fetchBookDetails() {
         guard let token = getToken() else { return }
+        // ローディング開始
+        LoadingOverlayService.shared.show()
         BookReviewService.shared.fetchBookReview(id: bookId, token: token) { [weak self] result in
             DispatchQueue.main.async {
+                // ローディング終了
+                LoadingOverlayService.shared.hide()
                 switch result {
                 case .success(let bookReview):
                     print("Fetched BookReview: \(bookReview)") // ログで確認
@@ -129,9 +133,12 @@ class BookDetailViewController: UIViewController {
     
     private func deleteBookReview() {
         guard let token = getToken() else { return }
-        
+        // ローディング開始
+        LoadingOverlayService.shared.show()
         BookReviewService.shared.deleteBookReview(id: bookId, token: token) { [weak self] result in
             DispatchQueue.main.async {
+                // ローディング終了
+                LoadingOverlayService.shared.hide()
                 switch result {
                 case .success:
                     self?.isUpdated = true
