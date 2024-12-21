@@ -7,10 +7,13 @@
 
 import UIKit
 
-class MainTabBarController: UITabBarController {
+class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupNavigationBar()
+        
+        // Delegate を設定
+        self.delegate = self
         
         let homeVC = UINavigationController(rootViewController: BookReviewListViewController())
         homeVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
@@ -22,6 +25,15 @@ class MainTabBarController: UITabBarController {
         tabBar.tintColor = .accent
     }
     
+    // MARK: - Tab Selection Handling
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        // "Book List" タブを選択したときにリフレッシュ
+        if let navController = viewController as? UINavigationController,
+           let bookListVC = navController.viewControllers.first as? BookReviewListViewController {
+            // フラグを設定し、次回表示時にリフレッシュ
+            bookListVC.shouldRefreshOnReturn = true
+        }
+    }
     
     // MARK: - Right Bar Button Item
     func createUserIconButton() -> UIButton {
@@ -53,7 +65,6 @@ class MainTabBarController: UITabBarController {
         
         return userIconButton
     }
-    
     
     // MARK: - Navigation Bar
     private func setupNavigationBar() {
@@ -176,6 +187,4 @@ class MainTabBarController: UITabBarController {
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true)
     }
-    
-    
 }
