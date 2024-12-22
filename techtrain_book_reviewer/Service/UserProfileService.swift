@@ -1,13 +1,8 @@
 import Foundation
-import Combine
 
 class UserProfileService {
-    private static var yourAccountPublisher = CurrentValueSubject<TBRUser?, Never>(nil)
     
-    static var yourAccount: TBRUser? {
-        get { yourAccountPublisher.value }
-        set { yourAccountPublisher.send(newValue) }
-    }
+    static var yourAccount: TBRUser? = nil
     
     private let apiClient: TechTrainAPIClient
     
