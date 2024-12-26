@@ -8,7 +8,7 @@
 import UIKit
 
 class SelectAuthView: UIView {
-    private let titleLabel: UILabel = {
+    private let appNameLabel: UILabel = {
         let label = UILabel()
         label.text = "Book Reviewer"
         label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
@@ -36,10 +36,10 @@ class SelectAuthView: UIView {
         backgroundColor = .systemBackground
         
         // タイトルラベルを追加
-        addSubview(titleLabel)
+        addSubview(appNameLabel)
         NSLayoutConstraint.activate([
-            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
-            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -50)
+            appNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
+            appNameLabel.centerYAnchor.constraint(equalTo: centerYAnchor, constant: -50)
         ])
         
         // ボタンのスタックビューを作成

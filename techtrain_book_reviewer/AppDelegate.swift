@@ -17,8 +17,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     // シーンセッションの作成時
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        let configration = UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
         print("AppDelegate: 新しいシーンセッションが作成されました")
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+        configration.delegateClass = SceneDelegate.self
+        return configration
     }
 
     // シーンセッションの破棄時

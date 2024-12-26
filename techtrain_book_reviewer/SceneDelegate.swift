@@ -20,7 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = window
         
         // Launch Screen と同じ背景色を設定
-        window.backgroundColor = UIColor.systemBackground // 適宜変更
+        window.backgroundColor = UIColor.systemBackground
         window.makeKeyAndVisible()
         
         // トークン読み取りと画面遷移処理
