@@ -180,7 +180,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     
     private func logout() {
         UserProfileService.yourAccount = nil
-        let _ = SecureTokenService.shared.delete()
+        let _ = SecureTokenService.shared.deleteAPIToken()
         
         if let navigationController = navigationController {
             // 既存のスタックに SelectAuthVC があるか確認

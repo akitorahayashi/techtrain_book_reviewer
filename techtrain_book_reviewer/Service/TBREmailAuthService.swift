@@ -40,7 +40,7 @@ class TBREmailAuthService {
                        let token = json["token"] as? String {
                         // トークンを Keychain に保存
                         let tokenData = Data(token.utf8)
-                        if SecureTokenService.shared.save(data: tokenData) {
+                        if SecureTokenService.shared.saveAPIToken(data: tokenData) {
                             completion(.success(token))
                         } else {
                             completion(.failure(.underlyingError(.keychainSaveError))

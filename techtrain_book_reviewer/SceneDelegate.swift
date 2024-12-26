@@ -28,7 +28,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     private func handleTokenAndProceed() {
-        if let tokenData = SecureTokenService.shared.load(),
+        if let tokenData = SecureTokenService.shared.loadAPIToken(),
            let token = String(data: tokenData, encoding: .utf8) {
             print("SceneDelegate: トークンを読み取りました: \(token)")
             
@@ -41,7 +41,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         self?.showBookListScreen()
                     case .failure:
                         print("SceneDelegate: Profile取得失敗")
-                        let _ = SecureTokenService.shared.delete()
+                        let _ = SecureTokenService.shared.deleteAPIToken()
                         self?.showAuthScreen()
                     }
                 }

@@ -10,13 +10,13 @@ import Security
 
 class SecureTokenService {
     static let shared = SecureTokenService()
-    let tokenKey = "\(String(describing: Bundle.main.bundleIdentifier)).authToken"
+    let tokenKey = "techtrain_book_reviewer_authToken"
     private init() {}
     
     private let service = Bundle.main.bundleIdentifier ?? "com.akitorahayashi.techtrain-book-reviewer"
     
-    func save(data: Data) -> Bool {
-        let _ = delete() // 既存データの削除
+    func saveAPIToken(data: Data) -> Bool {
+        let _ = deleteAPIToken() // 既存データの削除
         
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -35,7 +35,7 @@ class SecureTokenService {
         }
     }
     
-    func load() -> Data? {
+    func loadAPIToken() -> Data? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -56,7 +56,7 @@ class SecureTokenService {
         }
     }
     
-    func delete() -> Bool {
+    func deleteAPIToken() -> Bool {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
