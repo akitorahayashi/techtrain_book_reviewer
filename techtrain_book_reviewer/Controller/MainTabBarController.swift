@@ -16,12 +16,11 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         super.viewDidLoad()
         setupNavigationBar()
         
-        // Delegate を設定
         self.delegate = self
         
         // BookReviewListViewControllerにデリゲートを設定
         let bookListVC = BookReviewListViewController()
-        bookListVC.delegate = self
+        bookListVC.userNameChangeDelegate = self
         
         let homeVC = UINavigationController(rootViewController: bookListVC)
         homeVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
@@ -33,9 +32,10 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         tabBar.tintColor = .accent
     }
     
-    // MARK: - Tab Selection Handling
+    // MARK: - UITabBarControllerDelegate
+    /// タブが選択された際に呼び出されるメソッド
+    /// "Book List" タブを選択したときにリフレッシュ
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        // "Book List" タブを選択したときにリフレッシュ
         if let navController = viewController as? UINavigationController,
            let bookListVC = navController.viewControllers.first as? BookReviewListViewController {
             // フラグを設定し、次回表示時にリフレッシュ
@@ -44,6 +44,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     }
     
     // MARK: - UserNameChangeDelegate
+    /// UserNameChangeDelegateプロトコルのメソッド
+    /// ユーザー名が変更された際に呼び出される
     func didChangeUserName() {
         if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
            let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListViewController {
@@ -51,7 +53,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         }
     }
     
-    // MARK: - Right Bar Button Item
+    // MARK: - Custom Methods
+    /// ユーザーアイコンボタンを作成するメソッド
     func createUserIconButton() -> UIButton {
         let userIconButton = UIButton(type: .custom)
         
@@ -82,7 +85,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         return userIconButton
     }
     
-    // MARK: - Navigation Bar
+    /// ナビゲーションバーを設定するメソッド
     private func setupNavigationBar() {
         // タイトル設定
         let titleLabel = UILabel()
@@ -91,11 +94,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         navigationItem.titleView = titleLabel
         
-        // ナビゲーションバーのスタイル設定
-        navigationController?.navigationBar.titleTextAttributes = [
-            .foregroundColor: UIColor.accent,
-            .font: UIFont.systemFont(ofSize: 20, weight: .bold)
-        ]
+        // ナビゲーションバーのbackボタンを消す
         navigationItem.hidesBackButton = true
         
         // ユーザーアイコンボタン
@@ -105,6 +104,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         navigationItem.rightBarButtonItem = userIconBarButtonItem
     }
     
+    // MARK: - Button Actions
+    /// ユーザーアイコンがタップされた際に呼び出されるメソッド
     @objc private func userIconTapped() {
         let userName: String = UserProfileService.yourAccount?.name ?? "Error"
         let alert = UIAlertController(title: "アカウント設定: \(userName)", message: nil, preferredStyle: .actionSheet)
@@ -122,6 +123,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         present(alert, animated: true)
     }
     
+    /// ユーザー名を変更するアクション
     private func changeUserName() {
         let alert = UIAlertController(title: "名前を変更", message: "新しい名前を入力してください", preferredStyle: .alert)
         alert.addTextField { textField in
@@ -178,6 +180,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         present(alert, animated: true)
     }
     
+    /// ログアウトを実行するアクション
     private func logout() {
         UserProfileService.yourAccount = nil
         let _ = SecureTokenService.shared.deleteAPIToken()
@@ -199,6 +202,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         print("ログアウトしました")
     }
     
+    /// アラートを表示する汎用メソッド
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

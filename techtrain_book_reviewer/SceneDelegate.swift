@@ -48,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         } else {
             print("SceneDelegate: トークンが見つかりません")
-            showAuthScreen()
+            self.showAuthScreen()
         }
     }
     

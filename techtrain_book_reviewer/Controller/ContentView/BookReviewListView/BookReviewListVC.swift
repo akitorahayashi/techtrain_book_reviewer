@@ -8,7 +8,7 @@
 import UIKit
 
 class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
-    weak var delegate: UserNameChangeDelegate?
+    weak var userNameChangeDelegate: UserNameChangeDelegate?
     
     private let bookReviewListView = BookReviewListView()
     private let refreshControl = UIRefreshControl()
