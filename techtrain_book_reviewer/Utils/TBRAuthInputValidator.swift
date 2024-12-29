@@ -30,7 +30,7 @@ class TBRAuthInputValidator {
     static func isValidEmail(_ email: String?) -> Bool {
         guard let email = email, !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
         let emailRegex = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$"
-        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        let emailPredicate = NSPredicate(format: "SELF MATCHES[c] %@", emailRegex)
         return emailPredicate.evaluate(with: email)
     }
 
