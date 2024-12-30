@@ -25,7 +25,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         let homeVC = UINavigationController(rootViewController: bookListVC)
         homeVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
         
-        let createReviewVC = UINavigationController(rootViewController: EditBookReviewViewController())
+        let createReviewVC = UINavigationController(rootViewController: EditBookReviewVC())
         createReviewVC.tabBarItem = UITabBarItem(title: "Create Review", image: UIImage(systemName: "square.and.pencil"), tag: 1)
         
         viewControllers = [homeVC, createReviewVC]

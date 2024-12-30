@@ -105,7 +105,7 @@ class BookDetailViewController: UIViewController {
     @objc private func navigateToEditView() {
         guard getToken() != nil else { return }
         
-        let editVC = EditBookReviewViewController(bookReviewId: bookId)
+        let editVC = EditBookReviewVC(bookReviewId: bookId)
         editVC.onCompliteEditingCompletion = { [weak self] in
             print("Editing completed, refreshing data...")
             self?.isUpdated = true

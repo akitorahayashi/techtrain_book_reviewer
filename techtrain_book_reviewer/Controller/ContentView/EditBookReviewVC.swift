@@ -7,7 +7,7 @@
 
 import UIKit
 
-class EditBookReviewViewController: UIViewController {
+class EditBookReviewVC: UIViewController {
     private let editView: EditBookReviewView
     private let bookReviewId: String? // nilの場合は新規作成
     var onCompliteEditingCompletion: (() -> Void)?
@@ -32,30 +32,27 @@ class EditBookReviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
-        setupActions()
-        configureForCreation()
+        setupEditBookReviewViewButton()
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
         if let id = bookReviewId {
-            fetchBookDetails(reviewId: id)
+            fetchBookDetailsForEdit(reviewId: id)
         }
     }
     
-    // MARK: - 具体的なアクションのセットアップ
-    private func setupActions() {
-        editView.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-        editView.clearButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
-    }
-    
-    private func configureForCreation() {
+    // MARK: - EditBookReviewViewのボタンのセットアップ
+    private func setupEditBookReviewViewButton() {
         // 新規作成用のボタンテキスト設定
         editView.compliteButton.setTitle(bookReviewId == nil ? "Post" : "Edit", for: .normal)
         editView.clearButton.setTitle("Clear", for: .normal)
+        
+        editView.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        editView.clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
     }
     
     // MARK: - データ取得
-    private func fetchBookDetails(reviewId: String) {
+    private func fetchBookDetailsForEdit(reviewId: String) {
         guard let token = getToken() else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
@@ -144,7 +141,7 @@ class EditBookReviewViewController: UIViewController {
     
     
     // MARK: - clearボタンの処理
-    @objc private func cancelButtonTapped() {
+    @objc private func clearButtonTapped() {
         let alert = UIAlertController(
             title: "確認",
             message: "すべての入力フィールドをクリアしますか？",
