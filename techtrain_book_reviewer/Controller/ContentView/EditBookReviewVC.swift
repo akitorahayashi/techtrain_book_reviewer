@@ -86,30 +86,30 @@ class EditBookReviewVC: UIViewController {
         }
     }
     
-    private func createReview() {
+    private func createReview() async {
         guard validateInputs(), let token = getToken() else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
-        BookReviewService.shared.postBookReview(
-            title: editView.titleTextField.text!,
-            url: editView.urlTextField.text!,
-            detail: editView.detailInputField.text!,
-            review: editView.reviewInputField.text!,
-            token: token
-        ) { [weak self] result in
-            DispatchQueue.main.async {
-                // ローディング終了
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success:
-                    self?.showAlert(title: "成功", message: "レビューが投稿されました", completion: {
-                        self?.clearFields()
-                    })
-                case .failure(let error):
-                    self?.showError(message: error.localizedDescription)
-                }
+        do {
+            // A successful response. が返ってきただけなので使わない
+            let _  = try await BookReviewService.shared.postBookReview(
+                title: editView.titleTextField.text!,
+                url: editView.urlTextField.text!,
+                detail: editView.detailInputField.text!,
+                review: editView.reviewInputField.text!,
+                token: token
+            )
+            await MainActor.run { [weak self] in
+                self?.showAlert(title: "成功", message: "レビューが投稿されました", completion: {
+                    self?.clearFields()
+                })
+            }
+        } catch {
+            await MainActor.run { [weak self] in
+                self?.showError(message: error.localizedDescription)
             }
         }
+        LoadingOverlayService.shared.hide()
     }
     
     private func updateReview() {

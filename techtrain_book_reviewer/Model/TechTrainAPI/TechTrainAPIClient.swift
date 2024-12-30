@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TechTrainAPIClient {
+actor TechTrainAPIClient {
     // インスタンス
     static let shared = TechTrainAPIClient()
     // その他のメンバー
@@ -18,12 +18,12 @@ class TechTrainAPIClient {
         self.session = session
     }
     
-    func makeRequest(
+    func makeRequestAsync(
         to endpoint: String,
         method: String,
         headers: [String: String]? = nil,
         body: [String: Any]?
-    ) async throws(TechTrainAPIError) -> Data? {
+    ) async throws(TechTrainAPIError) -> Data {
         guard let url = URL(string: baseURL + endpoint) else {
             print("URLが無効: \(baseURL + endpoint)")
             throw TechTrainAPIError.invalidURL

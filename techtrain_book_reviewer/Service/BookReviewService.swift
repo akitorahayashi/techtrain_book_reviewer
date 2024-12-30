@@ -18,9 +18,8 @@ class BookReviewService {
         url: String,
         detail: String,
         review: String,
-        token: String,
-        completion: @escaping (Result<Void, TechTrainAPIError.ServiceError>) -> Void
-    ) {
+        token: String
+    ) async throws(TechTrainAPIError.ServiceError) -> Data {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books"
         let parameters: [String: Any] = [
@@ -29,14 +28,11 @@ class BookReviewService {
             "detail": detail,
             "review": review
         ]
-        
-        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "POST", body: parameters, headers: headers) { result in
-            switch result {
-            case .success:
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error.toServiceError()))
-            }
+        do {
+            let data = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "POST", headers: headers, body: parameters)
+            return data
+        } catch {
+            throw error.toServiceError()
         }
     }
     
@@ -80,11 +76,24 @@ class BookReviewService {
             id: String,
             token: String,
             completion: @escaping (Result<BookReview, TechTrainAPIError.ServiceError>) -> Void
-        ) {
+    ) async throws(TechTrainAPIError.ServiceError) -> BookReview {
             let headers = ["Authorization": "Bearer \(token)"]
             let endpoint = "/books/\(id)"
             
-            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "GET", body: nil, headers: headers) { result in
+            do {
+                let bookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+                do {
+                    let decoder = JSONDecoder()
+                    let bookReview = try decoder.decode(BookReview.self, from: bookReviewData)
+                    return bookReview
+                } catch {
+                    throw TechTrainAPIError.ServiceError.underlyingError(TechTrainAPIError.decodingError)
+                }
+            } catch {
+                throw error.toServiceError()
+            }
+            
+            { result in
                 switch result {
                 case .success(let data):
                     do {
@@ -92,7 +101,7 @@ class BookReviewService {
                         let bookReview = try decoder.decode(BookReview.self, from: data)
                         completion(.success(bookReview))
                     } catch {
-                        completion(.failure(.underlyingError(.decodingError)))
+                        completion(.failure())
                     }
                 case .failure(let error):
                     completion(.failure(error.toServiceError()))
