@@ -34,7 +34,7 @@ class UserProfileService {
             "name": newName
         ]
         
-        apiClient.makeRequest(to: endpoint, method: "PUT", parameters: parameters, headers: headers) { result in
+        apiClient.makeRequest(to: endpoint, method: "PUT", body: parameters, headers: headers) { result in
             switch result {
             case .success:
                 print("UserProfileService: ユーザー名の更新に成功しました")
@@ -56,7 +56,7 @@ class UserProfileService {
             "Authorization": "Bearer \(token)"
         ]
         
-        apiClient.makeRequest(to: endpoint, method: "GET", parameters: nil, headers: headers) { result in
+        apiClient.makeRequest(to: endpoint, method: "GET", body: nil, headers: headers) { result in
             switch result {
             case .success(let data):
                 do {

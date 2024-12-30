@@ -31,7 +31,7 @@ class TBREmailAuthService {
             parameters["name"] = name
         }
         
-        apiClient.makeRequest(to: endpoint, method: "POST", parameters: parameters) { result in
+        apiClient.makeRequest(to: endpoint, method: "POST", body: parameters) { result in
             switch result {
             case .success(let data):
                 do {

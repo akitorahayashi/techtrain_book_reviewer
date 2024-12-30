@@ -9,8 +9,17 @@ enum TechTrainAPIError: Error {
     case invalidURL
     case networkError
     case serverError(statusCode: Int, messageJP: String, messageEN: String)
+    // Jsonシリアライズ
+    case encodingError
     case decodingError
+    // レスポンスの解析
+    case invalidResponse
+    case responseIsEmpty
+    // keychain
     case keychainSaveError
+    // エラー解析
+    case failedToAnalyzeError
+    // 不明
     case unknown
     
     var localizedDescription: String {
@@ -21,10 +30,23 @@ enum TechTrainAPIError: Error {
             return "ネットワークエラーが発生しました"
         case .serverError(let statusCode, let messageJP, let messageEN):
             return "サーバーエラーが発生しました (\(statusCode)):\nJP: \(messageJP)\nEN: \(messageEN)"
+        // Jsonシリアライズ
+        case .encodingError:
+            return "データの変換に失敗しました。"
         case .decodingError:
             return "データの解読に失敗しました。"
+        // レスポンスの解析
+        case .invalidResponse:
+            return "HTTPレスポンスが無効です。"
+        case .responseIsEmpty:
+            return "レスポンスデータが空です。"
+        // keychain
         case .keychainSaveError:
-            return "端末内への保存中にエラーが発生しました"
+            return "端末内への保存中にエラーが発生しました。"
+        // エラー解析
+        case .failedToAnalyzeError:
+            return "Network層のエラー解析に失敗しました。"
+        // 不明
         case .unknown:
             return "不明なエラーが発生しました。"
         }

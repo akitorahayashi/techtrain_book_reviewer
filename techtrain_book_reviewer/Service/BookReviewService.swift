@@ -30,7 +30,7 @@ class BookReviewService {
             "review": review
         ]
         
-        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "POST", parameters: parameters, headers: headers) { result in
+        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "POST", body: parameters, headers: headers) { result in
             switch result {
             case .success:
                 completion(.success(()))
@@ -59,7 +59,7 @@ class BookReviewService {
                 "review": review
             ]
             
-            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "PUT", parameters: parameters, headers: headers) { result in
+            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "PUT", body: parameters, headers: headers) { result in
                 switch result {
                 case .success(let data):
                     do {
@@ -84,7 +84,7 @@ class BookReviewService {
             let headers = ["Authorization": "Bearer \(token)"]
             let endpoint = "/books/\(id)"
             
-            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "GET", parameters: nil, headers: headers) { result in
+            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "GET", body: nil, headers: headers) { result in
                 switch result {
                 case .success(let data):
                     do {
@@ -109,7 +109,7 @@ class BookReviewService {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books?offset=\(offset)"
         
-        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "GET", parameters: nil, headers: headers) { result in
+        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "GET", body: nil, headers: headers) { result in
             switch result {
             case .success(let data):
                 do {
@@ -135,7 +135,7 @@ class BookReviewService {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books/\(id)"
         
-        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "DELETE", parameters: nil, headers: headers) { result in
+        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "DELETE", body: nil, headers: headers) { result in
             switch result {
             case .success:
                 completion(.success(()))

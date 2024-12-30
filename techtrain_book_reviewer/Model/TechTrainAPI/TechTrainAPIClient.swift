@@ -21,14 +21,12 @@ class TechTrainAPIClient {
     func makeRequest(
         to endpoint: String,
         method: String,
-        parameters: [String: Any]?,
         headers: [String: String]? = nil,
-        completion: @escaping (Result<Data, TechTrainAPIError>) -> Void
-    ) {
+        body: [String: Any]?
+    ) async throws(TechTrainAPIError) -> Data? {
         guard let url = URL(string: baseURL + endpoint) else {
             print("URLが無効: \(baseURL + endpoint)")
-            completion(.failure(.invalidURL))
-            return
+            throw TechTrainAPIError.invalidURL
         }
         
         var request = URLRequest(url: url)
@@ -41,52 +39,36 @@ class TechTrainAPIClient {
             }
         }
         
-        if let parameters = parameters {
+        if let parameters = body {
             do {
                 request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
             } catch {
                 print("パラメータのエンコードエラー: \(error)")
-                completion(.failure(.networkError))
-                return
+                throw TechTrainAPIError.encodingError
             }
         }
         
-        print("リクエスト送信: \(url)")
-        
-        let task = session.dataTask(with: request) { data, response, error in
-            if let error = error {
-                print("リクエストエラー: \(error)")
-                completion(.failure(.networkError))
-                return
-            }
+        do {
+            let (data, response) = try await session.data(for: request)
             
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("HTTPレスポンスが無効")
-                completion(.failure(.unknown))
-                return
+                throw TechTrainAPIError.invalidResponse
             }
             
-            print("HTTPステータスコード: \(httpResponse.statusCode)")
+            print("レスポンスデータ解析成功")
             
-            guard let data = data else {
-                print("レスポンスデータが空")
-                completion(.failure(.unknown))
-                return
-            }
-            
-            print("レスポンスデータ取得成功")
             
             switch httpResponse.statusCode {
             case 200...299:
-                completion(.success(data))
+                return data
             default:
                 // エラーの内容を解析してローカライズ
                 let localizedError = self.parseServerError(from: data, statusCode: httpResponse.statusCode)
-                completion(.failure(localizedError))
+                throw localizedError
             }
+        } catch {
+            throw TechTrainAPIError.networkError
         }
-        
-        task.resume()
     }
     
     private func parseServerError(from data: Data, statusCode: Int) -> TechTrainAPIError {
@@ -103,6 +85,8 @@ class TechTrainAPIClient {
             }
         } catch {
             print("エラーJSONレスポンスの解析失敗: \(error)")
+            // JSON解析中のエラー発生時に `.unknown` を返す
+            return .unknown
         }
         
         // JSONが解析できない場合のエラー
@@ -112,4 +96,5 @@ class TechTrainAPIClient {
             messageEN: "Failed to parse error details. The JSON format is invalid."
         )
     }
+
 }
