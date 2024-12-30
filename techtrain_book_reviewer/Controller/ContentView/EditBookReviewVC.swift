@@ -26,6 +26,9 @@ class EditBookReviewViewController: UIViewController {
     }
     
     // MARK: - Lifecycle Methods
+    override func loadView() {
+        view = editView
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
@@ -39,11 +42,7 @@ class EditBookReviewViewController: UIViewController {
         }
     }
     
-    // MARK: - アクションのセットアップ
-    override func loadView() {
-        view = editView
-    }
-    
+    // MARK: - 具体的なアクションのセットアップ
     private func setupActions() {
         editView.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         editView.clearButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)

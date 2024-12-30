@@ -32,7 +32,6 @@ class AuthInputViewController: UIViewController {
     
     // MARK: - Lifecycle Methods
     override func loadView() {
-        super.loadView()
         authInputView = AuthInputView(
             authMode: authMode,
             actionButtonAction: { [weak self] in self?.authenticate() },
