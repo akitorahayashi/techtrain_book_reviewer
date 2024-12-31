@@ -15,7 +15,7 @@ actor SecureTokenService {
     
     private let service = Bundle.main.bundleIdentifier ?? "com.akitorahayashi.techtrain-book-reviewer"
     
-    func saveAPIToken(data: Data) -> Void {
+    func saveAPIToken(data: Data) throws(TechTrainAPIError) -> Void {
         let _ = deleteAPIToken() // 既存データの削除
         
         let query: [String: Any] = [
@@ -30,6 +30,7 @@ actor SecureTokenService {
             print("SecureTokenService: データを保存しました")
         } else {
             print("SecureTokenService: データ保存に失敗しました（ステータスコード: \(status)）")
+            throw TechTrainAPIError.keychainSaveError
         }
     }
     

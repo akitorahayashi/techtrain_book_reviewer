@@ -1,66 +1,58 @@
-//
-//  LoadingOverlayService.swift
-//  techtrain_book_reviewer
-//
-//  Created by 林 明虎 on 2024/12/21.
-//
-
 import UIKit
 
-class LoadingOverlayService {
+actor LoadingOverlayService {
     static let shared = LoadingOverlayService()
     
     private var overlayView: UIView?
     
-    private init() {}
-    
-    func show() {
+    /// オーバーレイの表示
+    @MainActor
+    func show() async {
         guard overlayView == nil else { return } // 複数のオーバーレイ表示を防ぐ
         
-        // アクティブなウィンドウシーンを取得
+        // ウィンドウの取得
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else {
             return
         }
         
         // オーバーレイビューを作成
-        let overlayView = UIView(frame: window.bounds)
-        overlayView.backgroundColor = UIColor(white: 0, alpha: 0.3)
+        let overlay = UIView(frame: window.bounds)
+        overlay.backgroundColor = UIColor(white: 0, alpha: 0.3)
+        overlay.isUserInteractionEnabled = true
         
-        // ローディングインジケーターを作成
         let activityIndicator = UIActivityIndicatorView(style: .large)
-        activityIndicator.center = overlayView.center
+        activityIndicator.center = overlay.center
         activityIndicator.startAnimating()
         
-        // ローディングインジケーターをオーバーレイに追加
-        overlayView.addSubview(activityIndicator)
-        
-        // オーバーレイをウィンドウに追加
-        window.addSubview(overlayView)
+        overlay.addSubview(activityIndicator)
+        window.addSubview(overlay)
         
         // フェードインで表示
-        overlayView.alpha = 0
+        overlay.alpha = 0
         UIView.animate(withDuration: 0.3) {
-            overlayView.alpha = 1
+            overlay.alpha = 1
         }
         
-        // オーバーレイを保持して管理
-        self.overlayView = overlayView
+        // overlayViewを保持
+        overlayView = overlay
         
         // ユーザー操作を無効化
         window.isUserInteractionEnabled = false
+        
     }
     
-    func hide() {
-        guard let overlayView = overlayView else { return }
+    /// オーバーレイの非表示
+    @MainActor
+    func hide() async {
+        guard let overlay = await overlayView else { return }
         
         // フェードアウトアニメーション
         UIView.animate(withDuration: 0.3, animations: {
-            overlayView.alpha = 0
+            overlay.alpha = 0
         }) { _ in
-            // アニメーション完了後にオーバーレイを削除
-            overlayView.removeFromSuperview()
-            self.overlayView = nil
+            overlay.removeFromSuperview()
+            await overlayView = nil
         }
         
         // ユーザー操作を有効化
