@@ -58,8 +58,7 @@ actor UserProfileService {
     
     /// ユーザープロファイルを取得する
     func fetchUserProfile(
-        withToken token: String,
-        completion: @escaping (Result<Void, TechTrainAPIError.ServiceError>) -> Void
+        withToken token: String
     ) async throws(TechTrainAPIError.ServiceError) -> Void {
         let endpoint = "/users"
         

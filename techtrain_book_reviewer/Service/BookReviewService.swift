@@ -65,8 +65,7 @@ actor BookReviewService {
     // fetchBookReview・
     func fetchBookReview(
         id: String,
-        token: String,
-        completion: @escaping (Result<BookReview, TechTrainAPIError.ServiceError>) -> Void
+        token: String
     ) async throws(TechTrainAPIError.ServiceError) -> BookReview {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books/\(id)"
@@ -74,6 +73,7 @@ actor BookReviewService {
         do {
             let bookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedBookReview = try BookReview.decodeBookReview(bookReviewData)
+            return decodedBookReview
         } catch {
             throw error.toServiceError()
         }
@@ -90,6 +90,7 @@ actor BookReviewService {
         do {
             let data = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedBookReviews = try BookReview.decodeBookReviews(data)
+            return decodedBookReviews
         } catch {
             throw error.toServiceError()
         }
