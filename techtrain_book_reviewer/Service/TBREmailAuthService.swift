@@ -18,8 +18,7 @@ class TBREmailAuthService {
         email: String,
         password: String,
         signUpName: String? = nil, // `signUp` の場合は名前がある
-        completion: @escaping (Result<String, TechTrainAPIError.ServiceError>) -> Void
-    ) {
+    ) async throws(TechTrainAPIError.ServiceError) {
         let endpoint = signUpName == nil ? "/signin" : "/users" // `users` はサインアップ用エンドポイント
         var parameters: [String: Any] = [
             "email": email,
@@ -31,7 +30,21 @@ class TBREmailAuthService {
             parameters["name"] = name
         }
         
-        apiClient.makeRequest(to: endpoint, method: "POST", body: parameters) { result in
+        do {
+            let data = try await apiClient.makeRequestAsync(to: endpoint, method: "POST", body: parameters)
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let token = json["token"] as? String {
+                    let tokenData = Data(token.utf8)
+                    SecureTokenService.shared.saveAPIToken(data: tokenData)
+                }
+            } catch {
+                throw TechTrainAPIError.decodingError
+            }
+        } catch {
+            throw error.toServiceError()
+        }
+            { result in
             switch result {
             case .success(let data):
                 do {

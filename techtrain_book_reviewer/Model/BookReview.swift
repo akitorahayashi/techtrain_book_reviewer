@@ -4,6 +4,7 @@
 //
 //  Created by 林 明虎 on 2024/12/11.
 //
+import Foundation
 
 struct BookReview: Codable {
     let id: String
@@ -13,4 +14,24 @@ struct BookReview: Codable {
     let review: String
     let reviewer: String
     let isMine: Bool?
+    
+    /// 単一形式に対する`BookReview`のデコード
+    static func decodeBookReview(_ data: Data) throws(TechTrainAPIError) -> BookReview {
+        do {
+            let decoder = JSONDecoder()
+            return try decoder.decode(BookReview.self, from: data)
+        } catch {
+            throw TechTrainAPIError.decodingError
+        }
+    }
+    
+    /// 配列形式に対する`BookReview`のデコード
+    static func decodeBookReviews(_ data: Data) throws(TechTrainAPIError) -> [BookReview] {
+        do {
+            let decoder = JSONDecoder()
+            return try decoder.decode([BookReview].self, from: data)
+        } catch {
+            throw TechTrainAPIError.decodingError
+        }
+    }
 }

@@ -77,6 +77,7 @@ enum TechTrainAPIError: Error {
                 return .serverIssue(messageJP: messageJP, messageEN: messageEN)
             }
         default:
+            print("TechTrainAPIError - toServiceError: serverErrorではないようです")
             return .underlyingError(self)
         }
     }

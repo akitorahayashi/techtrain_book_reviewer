@@ -8,14 +8,14 @@
 import Foundation
 import Security
 
-class SecureTokenService {
+actor SecureTokenService {
     static let shared = SecureTokenService()
     let tokenKey = "techtrain_book_reviewer_authToken"
     private init() {}
     
     private let service = Bundle.main.bundleIdentifier ?? "com.akitorahayashi.techtrain-book-reviewer"
     
-    func saveAPIToken(data: Data) -> Bool {
+    func saveAPIToken(data: Data) -> Void {
         let _ = deleteAPIToken() // 既存データの削除
         
         let query: [String: Any] = [
@@ -28,10 +28,8 @@ class SecureTokenService {
         let status = SecItemAdd(query as CFDictionary, nil)
         if status == errSecSuccess {
             print("SecureTokenService: データを保存しました")
-            return true
         } else {
             print("SecureTokenService: データ保存に失敗しました（ステータスコード: \(status)）")
-            return false
         }
     }
     
