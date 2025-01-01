@@ -88,8 +88,8 @@ class BookDetailVC: UIViewController {
     
     // MARK: - User Actions
     @objc private func openInBrowserTapped() {
-        guard let urlString = detailView?.bookUrl, let url = URL(string: urlString) else {
-            showError(title: "無効なURL", message: "URLが無効です。")
+        guard let urlString = detailView?.bookUrl, let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "URLが無効です")
             return
         }
         UIApplication.shared.open(url)
@@ -147,15 +147,10 @@ class BookDetailVC: UIViewController {
     }
     
     // MARK: - Helpers
-    private func showError(title: String = "エラー", message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
     
     private func getToken() -> String? {
         guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が見つかりません。再度ログインしてください")
             return nil
         }
         return token

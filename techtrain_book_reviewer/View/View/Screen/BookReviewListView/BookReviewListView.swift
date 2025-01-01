@@ -56,14 +56,18 @@ class BookReviewListView: UIView {
         isLoading = true
         
         do {
-            let bookReviewList = try await BookReviewService.shared.fetchAndReturnBookReviews(offset: currentOffset, token: token)
             self.isLoading = false
             if offset == 0 {
+                // リセットする
+                self.currentOffset = 0
+                let bookReviewList = try await BookReviewService.shared.fetchAndReturnBookReviews(offset: currentOffset, token: token)
                 self.resetReviews(bookReviewList)
             } else {
+                // 追加で過去のものを表示する
+                let bookReviewList = try await BookReviewService.shared.fetchAndReturnBookReviews(offset: currentOffset, token: token)
                 self.appendReviews(bookReviewList)
             }
-            self.currentOffset = offset + bookReviewList.count
+            self.currentOffset = offset + currentOffset
         } catch let serviceError {
             print("書籍レビューの取得失敗: \(serviceError.localizedDescription)")
         }
@@ -94,7 +98,7 @@ extension BookReviewListView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         Task {
             if indexPath.row == bookReviews.count - 1 { // 最後のセルが表示されたら次をロード
-                await loadBookReviews(offset: currentOffset)
+                await loadBookReviews(offset: 10)
             }
         }
     }
