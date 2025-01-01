@@ -14,7 +14,7 @@ class TBREmailAuthService {
         self.apiClient = apiClient
     }
     
-    func authenticate(
+    func authenticateAndReturnToken(
         email: String,
         password: String,
         signUpName: String? = nil // `signUp` の場合は名前がある
@@ -35,6 +35,7 @@ class TBREmailAuthService {
             let data = try await apiClient.makeRequestAsync(to: endpoint, method: "POST", body: parameters)
             let token = try extractToken(from: data)
             try await SecureTokenService.shared.saveAPIToken(data: Data(token.utf8))
+            return token
         } catch {
             throw (error as? TechTrainAPIError)?.toServiceError() ?? TechTrainAPIError.ServiceError.underlyingError(.unknown)
         }

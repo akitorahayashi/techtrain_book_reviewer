@@ -63,7 +63,7 @@ actor BookReviewService {
     }
     
     // fetchBookReview・
-    func fetchBookReviewDetail(
+    func fetchAndReturnBookReviewDetail(
         id: String,
         token: String
     ) async throws(TechTrainAPIError.ServiceError) -> BookReview {

@@ -92,7 +92,7 @@ extension BookReviewListView: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let review = bookReviews[indexPath.row]
-        parentViewController?.navigationController?.pushViewController(BookDetailViewController(book: review), animated: true)
+        parentViewController?.navigationController?.pushViewController(BookDetailVC(book: review), animated: true)
     }
 
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

@@ -59,7 +59,7 @@ class EditBookReviewVC: UIViewController {
         // ローディング開始
         LoadingOverlayService.shared.show()
         do {
-            let fetchedBookReviewDetail = try await BookReviewService.shared.fetchBookReviewDetail(id: reviewId, token: token)
+            let fetchedBookReviewDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: reviewId, token: token)
             await MainActor.run { [weak self] in
                 self?.populateFields(with: fetchedBookReviewDetail)
             }
