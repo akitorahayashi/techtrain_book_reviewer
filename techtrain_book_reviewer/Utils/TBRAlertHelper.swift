@@ -7,9 +7,10 @@
 
 import UIKit
 
+@MainActor
 class TBRAlertHelper {
     /// アラートを表示する汎用グローバルメソッド
-    static func showSingleOptionAlert(on viewController: UIViewController?, title: String, message: String, handler: ((UIAlertAction) -> Void)? = nil) {
+    static func showSingleOKOptionAlert(on viewController: UIViewController?, title: String, message: String, handler: ((UIAlertAction) -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         
         // カスタムアクションがない場合、デフォルトでOKボタンを追加

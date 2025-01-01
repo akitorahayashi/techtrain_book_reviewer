@@ -7,7 +7,7 @@
 
 import UIKit
 
-class BookDetailViewController: UIViewController {
+class BookDetailVC: UIViewController {
     private let bookId: String
     private var detailView: BookDetailView?
     var isUpdated: Bool = false
@@ -39,7 +39,7 @@ class BookDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupActions()
-        fetchBookDetails()
+        loadBookDetail()
         navigationItem.hidesBackButton = true
     }
     
@@ -50,32 +50,21 @@ class BookDetailViewController: UIViewController {
         }
     }
     
-    // MARK: - Actions Setup
-    private func setupActions() {
-        detailView?.openUrlButton.addTarget(self, action: #selector(openInBrowserTapped), for: .touchUpInside)
-        detailView?.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
-        detailView?.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)
-        detailView?.deleteButton.addTarget(self, action: #selector(confirmAndDeleteBookReview), for: .touchUpInside)
-    }
-    
-    // MARK: - Fetch Data
-    private func fetchBookDetails() {
+    // MARK: - Setup View
+    private func loadBookDetail() {
         guard let token = getToken() else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
-        BookReviewService.shared.fetchBookReview(id: bookId, token: token) { [weak self] result in
-            DispatchQueue.main.async {
-                // ローディング終了
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success(let bookReview):
-                    print("Fetched BookReview: \(bookReview)") // ログで確認
-                    self?.updateUI(with: bookReview)
-                case .failure(let error):
-                    self?.showError(title: "データ取得エラー", message: "データ取得に失敗しました。エラー: \(error.localizedDescription)")
-                }
+        Task {
+            do {
+                let bookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: bookId, token: token)
+                self.updateUI(with: bookDetail)
+            } catch let serviceError {
+                TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
             }
         }
+        // ローディング終了
+        LoadingOverlayService.shared.hide()
     }
     
     private func updateUI(with bookReview: BookReview) {
@@ -86,13 +75,21 @@ class BookDetailViewController: UIViewController {
             url: bookReview.url,
             isMine: bookReview.isMine ?? false
         )
-        print("UI updated with: \(bookReview.title)") // UI更新のログを追加
     }
+    
+    // MARK: - Setup Actions
+    private func setupActions() {
+        detailView?.openUrlButton.addTarget(self, action: #selector(openInBrowserTapped), for: .touchUpInside)
+        detailView?.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
+        detailView?.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)
+        detailView?.deleteButton.addTarget(self, action: #selector(confirmAndDeleteBookReview), for: .touchUpInside)
+    }
+    
     
     // MARK: - User Actions
     @objc private func openInBrowserTapped() {
-        guard let urlString = detailView?.bookUrl, let url = URL(string: urlString) else {
-            showError(title: "無効なURL", message: "URLが無効です。")
+        guard let urlString = detailView?.bookUrl, let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "URLが無効です")
             return
         }
         UIApplication.shared.open(url)
@@ -109,7 +106,7 @@ class BookDetailViewController: UIViewController {
         editVC.onCompliteEditingCompletion = { [weak self] in
             print("Editing completed, refreshing data...")
             self?.isUpdated = true
-            self?.fetchBookDetails()
+            self?.loadBookDetail()
         }
         navigationController?.pushViewController(editVC, animated: true)
     }
@@ -135,34 +132,25 @@ class BookDetailViewController: UIViewController {
         guard let token = getToken() else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
-        BookReviewService.shared.deleteBookReview(id: bookId, token: token) { [weak self] result in
-            DispatchQueue.main.async {
-                // ローディング終了
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success:
-                    self?.isUpdated = true
-                    self?.navigationController?.popViewController(animated: true)
-                    let alert = UIAlertController(title: "成功", message: "無事削除されました！", preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default))
-                    self?.present(alert, animated: true)
-                case .failure(let error):
-                    self?.showError(title: "削除失敗", message: "削除に失敗しました: \(error.localizedDescription)")
-                }
+        Task {
+            do {
+                try await BookReviewService.shared.deleteBookReview(id: bookId, token: token)
+                self.isUpdated = true
+                self.navigationController?.popViewController(animated: true)
+                TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "削除されました！")
+            } catch let serviceError {
+                TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "削除失敗", message: serviceError.localizedDescription)
             }
         }
+        // ローディング終了
+        LoadingOverlayService.shared.hide()
     }
     
     // MARK: - Helpers
-    private func showError(title: String = "エラー", message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
     
     private func getToken() -> String? {
         guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が見つかりません。再度ログインしてください")
             return nil
         }
         return token

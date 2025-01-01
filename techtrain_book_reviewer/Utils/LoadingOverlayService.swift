@@ -7,6 +7,7 @@
 
 import UIKit
 
+@MainActor
 class LoadingOverlayService {
     static let shared = LoadingOverlayService()
     
@@ -31,7 +32,6 @@ class LoadingOverlayService {
         let activityIndicator = UIActivityIndicatorView(style: .large)
         activityIndicator.center = overlayView.center
         activityIndicator.startAnimating()
-        
         // ローディングインジケーターをオーバーレイに追加
         overlayView.addSubview(activityIndicator)
         
@@ -62,7 +62,6 @@ class LoadingOverlayService {
             overlayView.removeFromSuperview()
             self.overlayView = nil
         }
-        
         // ユーザー操作を有効化
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {

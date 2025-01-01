@@ -36,8 +36,10 @@ class EditBookReviewVC: UIViewController {
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
-        if let id = bookReviewId {
-            fetchBookDetailsForEdit(reviewId: id)
+        Task {
+            if let id = bookReviewId {
+                await fetchBookDetailsForEdit(reviewId: id)
+            }
         }
     }
     
@@ -52,22 +54,22 @@ class EditBookReviewVC: UIViewController {
     }
     
     // MARK: - データ取得
-    private func fetchBookDetailsForEdit(reviewId: String) {
+    private func fetchBookDetailsForEdit(reviewId: String) async {
         guard let token = getToken() else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
-        BookReviewService.shared.fetchBookReview(id: reviewId, token: token) { [weak self] result in
-            DispatchQueue.main.async {
-                // ローディング終了
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success(let bookReview):
-                    self?.populateFields(with: bookReview)
-                case .failure(let error):
-                    self?.showError(message: "データ取得に失敗しました。エラー: \(error.localizedDescription)")
-                }
+        do {
+            let fetchedBookReviewDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: reviewId, token: token)
+            await MainActor.run { [weak self] in
+                self?.populateFields(with: fetchedBookReviewDetail)
+            }
+        } catch let serviceError {
+            await MainActor.run { [weak self] in
+                self?.showError(message: serviceError.localizedDescription)
             }
         }
+        // ローディング終了
+        LoadingOverlayService.shared.hide()
     }
     
     private func populateFields(with bookReview: BookReview) {
@@ -79,14 +81,16 @@ class EditBookReviewVC: UIViewController {
     
     // MARK: - 保存/投稿処理
     @objc private func saveButtonTapped() {
-        if bookReviewId == nil {
-            createReview() // 新規作成
-        } else {
-            updateReview() // 編集
+        Task {
+            if bookReviewId == nil {
+                await createReviewAsync() // 新規作成
+            } else {
+                await updateReviewAsync() // 編集
+            }
         }
     }
     
-    private func createReview() async {
+    private func createReviewAsync() async {
         guard validateInputs(), let token = getToken() else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
@@ -112,30 +116,25 @@ class EditBookReviewVC: UIViewController {
         LoadingOverlayService.shared.hide()
     }
     
-    private func updateReview() {
+    private func updateReviewAsync() async {
         guard validateInputs(), let token = getToken(), let id = bookReviewId else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
-        BookReviewService.shared.updateBookReview(
-            id: id,
-            title: editView.titleTextField.text!,
-            url: editView.urlTextField.text!,
-            detail: editView.detailInputField.text!,
-            review: editView.reviewInputField.text!,
-            token: token
-        ) { [weak self] result in
-            DispatchQueue.main.async {// ローディング終了
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success:
-                    self?.showAlert(title: "成功", message: "レビューが更新されました", completion: {
-                        self?.onCompliteEditingCompletion?()
-                        self?.navigationController?.popViewController(animated: true)
-                    })
-                case .failure(let error):
-                    self?.showError(message: "更新に失敗しました: \(error.localizedDescription)")
-                }
-            }
+        do {
+            let postedBookReview = try await BookReviewService.shared.updateBookReview(
+                id: id,
+                title: editView.titleTextField.text!,
+                url: editView.urlTextField.text!,
+                detail: editView.detailInputField.text!,
+                review: editView.reviewInputField.text!,
+                token: token
+            )
+            self.showAlert(title: "成功", message: "レビューが更新されました", completion: { [weak self] in
+                self?.onCompliteEditingCompletion?()
+                self?.navigationController?.popViewController(animated: true)
+            })
+        } catch let serviceError {
+            self.showError(message: serviceError.localizedDescription)
         }
     }
     

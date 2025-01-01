@@ -34,7 +34,7 @@ class AuthInputViewController: UIViewController {
     override func loadView() {
         authInputView = AuthInputView(
             authMode: authMode,
-            actionButtonAction: { [weak self] in self?.authenticate() },
+            authButtonAction: { [weak self] in self?.authButtonAction() },
             clearButtonAction: { [weak self] in self?.authInputView.clearInputFields() }
         )
         view = authInputView
@@ -57,7 +57,7 @@ class AuthInputViewController: UIViewController {
         
         // エラーがある場合、最初のエラーをアラートで表示
         if let firstErrorMessage = validationErrorMessages.first {
-            TBRAlertHelper.showSingleOptionAlert(on: self, title: "入力エラー", message: firstErrorMessage)
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "入力エラー", message: firstErrorMessage)
             return nil
         }
         
@@ -65,92 +65,81 @@ class AuthInputViewController: UIViewController {
         return (email, password, name)
     }
     // MARK: - 認証処理
-    private func authenticate() {
+    private func authButtonAction() {
         guard let validatedInputs = validateAndShowErrors() else { return }
         let email = validatedInputs.email
         let password = validatedInputs.password
         
-        if authMode == .signUp {
-            guard let name = validatedInputs.name else { return }
-            
-            confirmPassword(password: password) { [weak self] confirmed in
-                guard let self = self, confirmed else {
-                    TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: "再入力されたパスワードが一致しません")
-                    return
+        Task {
+            if authMode == .signUp {
+                guard let name = validatedInputs.name else { return }
+                await confirmPasswordAsync(password: password) { [weak self] confirmed in
+                    guard let self = self, confirmed else {
+                        TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "再入力されたパスワードが一致しません")
+                        return
+                    }
+                    Task {
+                        await self.performSignUp(email: email, password: password, name: name)
+                    }
                 }
-                
-                self.performSignUp(email: email, password: password, name: name)
+            } else {
+                await performLoginAsync(email: email, password: password)
             }
-        } else {
-            performLogin(email: email, password: password)
         }
     }
     // MARK: - パスワードを2回目に入力させるためのアラート
-    private func confirmPassword(password: String, completion: @escaping (Bool) -> Void) {
+    private func confirmPasswordAsync(password: String, completion: @escaping (Bool) -> Void) async {
         let alert = UIAlertController(title: "パスワード再確認", message: "もう一度パスワードを入力してください。", preferredStyle: .alert)
         alert.addTextField { $0.isSecureTextEntry = true }
-        alert.addAction(UIAlertAction(title: "確認", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "確認", style: .default) { _ in
             let confirmedPassword = alert.textFields?.first?.text
             completion(confirmedPassword == password)
-        }))
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: { _ in
+        })
+        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel) { _ in
             completion(false)
-        }))
-        present(alert, animated: true, completion: nil)
-    }
-    
-    // MARK: - ログイン処理
-    private func performLogin(email: String, password: String) {
-        LoadingOverlayService.shared.show()
-        authService.authenticate(email: email, password: password) { [weak self] result in
-            DispatchQueue.main.async {
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success(let token):
-                    self?.fetchUserProfile(token: token, isSignUp: false)
-                case .failure(let error):
-                    TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: error.localizedDescription)
-                }
-            }
+        })
+        await MainActor.run {
+            present(alert, animated: true, completion: nil)
         }
     }
     
     // MARK: - サインアップ処理
-    private func performSignUp(email: String, password: String, name: String) {
+    private func performSignUp(email: String, password: String, name: String) async {
         LoadingOverlayService.shared.show()
-        authService.authenticate(email: email, password: password, signUpName: name) { [weak self] result in
-            DispatchQueue.main.async {
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success(let token):
-                    self?.fetchUserProfile(token: token, isSignUp: true)
-                case .failure(let error):
-                    TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: error.localizedDescription)
-                }
-            }
+        do {
+            let token = try await authService.authenticateAndReturnToken(email: email, password: password, signUpName: name)
+            await self.fetchAndSetupUserProfile(token: token, isSignUp: true)
+        } catch let serviceError {
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
         }
     }
     
+    // MARK: - ログイン処理
+    private func performLoginAsync(email: String, password: String) async {
+        LoadingOverlayService.shared.show()
+        do {
+            let token = try await authService.authenticateAndReturnToken(email: email, password: password)
+            await self.fetchAndSetupUserProfile(token: token, isSignUp: false)
+        } catch let serviceError {
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
+        }
+        LoadingOverlayService.shared.hide()
+    }
+    
     // MARK: - プロファイル取得
-    private func fetchUserProfile(token: String, isSignUp: Bool) {
+    private func fetchAndSetupUserProfile(token: String, isSignUp: Bool) async {
         LoadingOverlayService.shared.show()
         let userProfileService = UserProfileService()
-        userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
-            DispatchQueue.main.async {
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success:
-                    let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
-                    let alert = UIAlertController(title: "成功", message: message, preferredStyle: .alert)
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { [weak self] _ in
-                        self?.navigateToMain()
-                    }))
-                    self?.present(alert, animated: true, completion: nil)
-                case .failure(let error):
-                    TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: error.localizedDescription)
-                }
+        do {
+            try await userProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
+            let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: message) { [weak self] _ in
+                self?.navigateToMain()
             }
+        } catch let serviceError {
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
         }
+        LoadingOverlayService.shared.hide()
     }
     
     // MARK: - ナビゲーション

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol UserNameChangeDelegate: AnyObject {
-    func didChangeUserName()
+    func didChangeUserName() async
 }
 
 class MainTabBarController: UITabBarController, UITabBarControllerDelegate, UserNameChangeDelegate {
@@ -46,10 +46,10 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     // MARK: - UserNameChangeDelegate
     /// UserNameChangeDelegateプロトコルのメソッド
     /// ユーザー名が変更された際に呼び出される
-    func didChangeUserName() {
+    func didChangeUserName() async {
         if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
            let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListViewController {
-            bookListVC.didChangeUserName()
+            await bookListVC.didChangeUserName()
         }
     }
     
@@ -115,7 +115,9 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         }))
         
         alert.addAction(UIAlertAction(title: "ログアウト", style: .destructive, handler: { [weak self] _ in
-            self?.logout()
+            Task {
+                await self?.logout()
+            }
         }))
         
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
@@ -129,61 +131,52 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         alert.addTextField { textField in
             textField.placeholder = "新しい名前"
         }
-        alert.addAction(UIAlertAction(title: "変更", style: .default, handler: { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "変更", style: .default) { [weak self] _ in
             guard let self = self else { return }
-            if let newName = alert.textFields?.first?.text, !newName.isEmpty {
+            if let newName = alert.textFields?.first?.text {
                 // 名前をバリデーション
-                let cleanedName = newName.replacingOccurrences(of: " ", with: "") // 空白を削除
-                
-                guard !cleanedName.isEmpty, // 空白削除後に空でないことを確認
-                      newName.count <= 10 else { // 名前の長さが10文字以下であることを確認
-                    self.showAlert(title: "エラー", message: "名前は10文字以下で空白以外の文字を含めてください。")
+                guard !TBRAuthInputValidator.isValidName(newName) else { // 名前の長さが10文字以下であることを確認
+                    TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "名前は10文字以下で空白以外の文字を含めてください。")
                     return
                 }
                 
                 // ローディング開始
                 LoadingOverlayService.shared.show()
                 
-                // トークン取得
-                guard let token = UserProfileService.yourAccount?.token else {
-                    // ローディング終了
-                    LoadingOverlayService.shared.hide()
-                    self.showAlert(title: "エラー", message: "認証情報が無効です。ログインし直してください。")
-                    self.logout()
-                    return
-                }
-                
-                // サーバーに名前変更リクエストを送信
-                UserProfileService().updateUserName(withToken: token, newName: newName) { result in
-                    DispatchQueue.main.async {
+                Task {
+                    // トークン取得
+                    guard let token = UserProfileService.yourAccount?.token else {
                         // ローディング終了
                         LoadingOverlayService.shared.hide()
-                        
-                        switch result {
-                        case .success:
-                            print("名前の変更に成功しました")
-                            UserProfileService.yourAccount?.name = newName
-                            
-                            self.showAlert(title: "成功", message: "名前が変更されました。")
-                            
-                            // デリゲートを利用してリフレッシュ通知を送る
-                            self.didChangeUserName()
-                        case .failure(let error):
-                            print("名前の変更に失敗しました: \(error.localizedDescription)")
-                            self.showAlert(title: "エラー", message: "名前の変更に失敗しました。再度お試しください。")
-                        }
+                        TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が無効です。ログインし直してください")
+                        await self.logout()
+                        return
+                    }
+                    
+                    // サーバーに名前変更リクエストを送信
+                    do {
+                        try await UserProfileService().updateUserName(withToken: token, newName: newName)
+                        // デリゲートを利用してリフレッシュするように通知を送る
+                        await self.didChangeUserName()
+                        TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")
+                    } catch let serviceError {
+                        self.showAlert(title: "エラー", message: serviceError.localizedDescription)
                     }
                 }
+                // ローディング終了
+                LoadingOverlayService.shared.hide()
+                
             }
-        }))
+        })
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
         present(alert, animated: true)
     }
     
     /// ログアウトを実行するアクション
-    private func logout() {
+    private func logout() async {
         UserProfileService.yourAccount = nil
-        let _ = SecureTokenService.shared.deleteAPIToken()
+        
+        await SecureTokenService.shared.deleteAPIToken()
         
         if let navigationController = navigationController {
             // 既存のスタックに SelectAuthVC があるか確認

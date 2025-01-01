@@ -7,7 +7,7 @@
 
 import Foundation
 
-class BookReviewService {
+actor BookReviewService {
     static let shared = BookReviewService()
     
     private init() {}
@@ -38,119 +38,75 @@ class BookReviewService {
     
     // updateBookReview
     func updateBookReview(
-            id: String,
-            title: String,
-            url: String?,
-            detail: String,
-            review: String,
-            token: String,
-            completion: @escaping (Result<BookReview, TechTrainAPIError.ServiceError>) -> Void
-        ) {
-            let headers = ["Authorization": "Bearer \(token)"]
-            let endpoint = "/books/\(id)"
-            let parameters: [String: Any] = [
-                "title": title,
-                "url": url ?? "",
-                "detail": detail,
-                "review": review
-            ]
-            
-            TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "PUT", body: parameters, headers: headers) { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        let decoder = JSONDecoder()
-                        let updatedBookReview = try decoder.decode(BookReview.self, from: data)
-                        completion(.success(updatedBookReview))
-                    } catch {
-                        completion(.failure(.underlyingError(.decodingError)))
-                    }
-                case .failure(let error):
-                    completion(.failure(error.toServiceError()))
-                }
-            }
+        id: String,
+        title: String,
+        url: String?,
+        detail: String,
+        review: String,
+        token: String
+    ) async throws(TechTrainAPIError.ServiceError) -> BookReview {
+        let headers = ["Authorization": "Bearer \(token)"]
+        let endpoint = "/books/\(id)"
+        let body: [String: Any] = [
+            "title": title,
+            "url": url ?? "",
+            "detail": detail,
+            "review": review
+        ]
+        do {
+            let postedBookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
+            let postedBookReview = try BookReview.decodeBookReview(postedBookReviewData)
+            return postedBookReview
+        } catch {
+            throw error.toServiceError()
         }
+    }
     
     // fetchBookReview・
-    func fetchBookReview(
-            id: String,
-            token: String,
-            completion: @escaping (Result<BookReview, TechTrainAPIError.ServiceError>) -> Void
+    func fetchAndReturnBookReviewDetail(
+        id: String,
+        token: String
     ) async throws(TechTrainAPIError.ServiceError) -> BookReview {
-            let headers = ["Authorization": "Bearer \(token)"]
-            let endpoint = "/books/\(id)"
-            
-            do {
-                let bookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
-                do {
-                    let decoder = JSONDecoder()
-                    let bookReview = try decoder.decode(BookReview.self, from: bookReviewData)
-                    return bookReview
-                } catch {
-                    throw TechTrainAPIError.ServiceError.underlyingError(TechTrainAPIError.decodingError)
-                }
-            } catch {
-                throw error.toServiceError()
-            }
-            
-            { result in
-                switch result {
-                case .success(let data):
-                    do {
-                        let decoder = JSONDecoder()
-                        let bookReview = try decoder.decode(BookReview.self, from: data)
-                        completion(.success(bookReview))
-                    } catch {
-                        completion(.failure())
-                    }
-                case .failure(let error):
-                    completion(.failure(error.toServiceError()))
-                }
-            }
+        let headers = ["Authorization": "Bearer \(token)"]
+        let endpoint = "/books/\(id)"
+        
+        do {
+            let bookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let decodedBookReview = try BookReview.decodeBookReview(bookReviewData)
+            return decodedBookReview
+        } catch {
+            throw error.toServiceError()
         }
+    }
     
     // fetch reviews
-    func fetchBookReviews(
+    func fetchAndReturnBookReviews(
         offset: Int = 0,
-        token: String,
-        completion: @escaping (Result<[BookReview], TechTrainAPIError.ServiceError>) -> Void
-    ) {
+        token: String
+    ) async throws(TechTrainAPIError.ServiceError) -> [BookReview] {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books?offset=\(offset)"
         
-        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "GET", body: nil, headers: headers) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let decoder = JSONDecoder()
-                    let bookReviews = try decoder.decode([BookReview].self, from: data)
-                    completion(.success(bookReviews))
-                } catch {
-                    print("fetchBookReviews デコードエラー: \(error)")
-                    completion(.failure(.underlyingError(.decodingError)))
-                }
-            case .failure(let error):
-                completion(.failure(error.toServiceError()))
-            }
+        do {
+            let data = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let decodedBookReviews = try BookReview.decodeBookReviews(data)
+            return decodedBookReviews
+        } catch {
+            throw error.toServiceError()
         }
     }
     
     // Delete a review
     func deleteBookReview(
         id: String,
-        token: String,
-        completion: @escaping (Result<Void, TechTrainAPIError.ServiceError>) -> Void
-    ) {
+        token: String
+    ) async throws(TechTrainAPIError.ServiceError) -> Void {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books/\(id)"
-        
-        TechTrainAPIClient.shared.makeRequest(to: endpoint, method: "DELETE", body: nil, headers: headers) { result in
-            switch result {
-            case .success:
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error.toServiceError()))
-            }
+        do {
+            let _ = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "DELETE", headers: headers, body: nil)
+        } catch {
+            throw error.toServiceError()
         }
     }
 }
