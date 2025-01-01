@@ -55,7 +55,7 @@ actor SecureTokenService {
         }
     }
     
-    func deleteAPIToken() -> Bool {
+    func deleteAPIToken() -> Void {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
@@ -65,10 +65,8 @@ actor SecureTokenService {
         let status = SecItemDelete(query as CFDictionary)
         if status == errSecSuccess {
             print("SecureTokenService: データを削除しました")
-            return true
         } else {
             print("SecureTokenService: データ削除に失敗しました（ステータスコード: \(status)）")
-            return false
         }
     }
 }

@@ -33,7 +33,7 @@ class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupRefreshControl()
-        loadInitialReviews()
+        loadInitialReviewsAsync()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -45,8 +45,10 @@ class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
     }
     
     // MARK: - UserNameChangeDelegate
-    func didChangeUserName() {
-        refreshReviews()
+    func didChangeUserName() async {
+        await MainActor.run { [weak self] in
+            self?.refreshReviews()
+        }
     }
     
     // MARK: - Local Methods
@@ -55,17 +57,21 @@ class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
         bookReviewListView.tableView.refreshControl = refreshControl
     }
     
-    private func loadInitialReviews() {
-        loadReviews(offset: 0)
-    }
-    
-    @objc private func refreshReviews() {
-        loadReviews(offset: 0) { [weak self] in
-            self?.refreshControl.endRefreshing()
+    private func loadInitialReviewsAsync() {
+        Task {
+            await loadReviews(offset: 0)
         }
     }
     
-    private func loadReviews(offset: Int, completion: (() -> Void)? = nil) {
-        bookReviewListView.loadBookReviews(offset: offset, completion: completion)
+    @objc private func refreshReviews() {
+        Task {
+            await loadReviews(offset: 0) { [weak self] in
+                self?.refreshControl.endRefreshing()
+            }
+        }
+    }
+    
+    private func loadReviews(offset: Int, completion: (() -> Void)? = nil) async {
+        await bookReviewListView.loadBookReviews(offset: offset, completion: completion)
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TBREmailAuthService {
+actor TBREmailAuthService {
     private let apiClient: TechTrainAPIClient
     
     init(apiClient: TechTrainAPIClient) {
@@ -33,25 +33,15 @@ class TBREmailAuthService {
         
         do {
             let data = try await apiClient.makeRequestAsync(to: endpoint, method: "POST", body: parameters)
-            let token = try extractToken(from: data)
+            // tokenを引き出す
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let token = json["token"] as? String else {
+                throw TechTrainAPIError.decodingError
+            }
             try await SecureTokenService.shared.saveAPIToken(data: Data(token.utf8))
             return token
         } catch {
             throw (error as? TechTrainAPIError)?.toServiceError() ?? TechTrainAPIError.ServiceError.underlyingError(.unknown)
-        }
-    }
-
-    /// JSONデータからトークンを抽出
-    private func extractToken(from data: Data) throws -> String {
-        do {
-            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-               let token = json["token"] as? String {
-                return token
-            } else {
-                throw TechTrainAPIError.decodingError
-            }
-        } catch {
-            throw TechTrainAPIError.decodingError
         }
     }
 }

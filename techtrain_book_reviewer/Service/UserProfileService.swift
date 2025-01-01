@@ -18,19 +18,16 @@ actor UserProfileService {
     }
     
     private func decodeUserProfile(token: String, profileData: Data) throws(TechTrainAPIError) -> TBRUser {
-        do {
-            if let jsonUserData = try JSONSerialization.jsonObject(with: profileData, options: []) as? [String: Any],
-               let name = jsonUserData["name"] as? String,
-               let iconUrl = jsonUserData["iconUrl"] as? String {
-                let user = TBRUser(token: token, name: name, iconUrl: iconUrl)
-                return user
-            } else {
-                throw TechTrainAPIError.decodingError
-            }
-        } catch {
+        guard let jsonUserData = try? JSONSerialization.jsonObject(with: profileData, options: []) as? [String: Any],
+              let name = jsonUserData["name"] as? String,
+              let iconUrl = jsonUserData["iconUrl"] as? String? else {
+            
             throw TechTrainAPIError.decodingError
         }
+        
+        return TBRUser(token: token, name: name, iconUrl: iconUrl)
     }
+
     
     
     /// ユーザー名を更新する
@@ -50,6 +47,7 @@ actor UserProfileService {
         
         do {
             let _ = try await apiClient.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: parameters)
+            UserProfileService.yourAccount?.name = newName
             print("UserProfileService: ユーザー名の更新に成功しました")
         } catch {
             throw error.toServiceError()

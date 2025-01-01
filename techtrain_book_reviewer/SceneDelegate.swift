@@ -24,27 +24,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         
         // トークン読み取りと画面遷移処理
-        handleTokenAndProceed()
+        Task {
+            await handleTokenAndProceed()
+        }
     }
     
-    private func handleTokenAndProceed() {
-        if let tokenData = SecureTokenService.shared.loadAPIToken(),
+    private func handleTokenAndProceed() async {
+        if let tokenData = await SecureTokenService.shared.loadAPIToken(),
            let token = String(data: tokenData, encoding: .utf8) {
             print("SceneDelegate: トークンを読み取りました: \(token)")
             
             let userProfileService = UserProfileService()
-            userProfileService.fetchUserProfile(withToken: token) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success:
-                        print("SceneDelegate: Profile取得成功")
-                        self?.showBookListScreen()
-                    case .failure:
-                        print("SceneDelegate: Profile取得失敗")
-                        let _ = SecureTokenService.shared.deleteAPIToken()
-                        self?.showAuthScreen()
-                    }
-                }
+            do {
+                try await userProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
+                    print("SceneDelegate: Profile取得成功")
+                    self.showBookListScreen()
+            } catch {
+                print("SceneDelegate: Profile取得失敗")
+                let _ = await SecureTokenService.shared.deleteAPIToken()
+                self.showAuthScreen()
             }
         } else {
             print("SceneDelegate: トークンが見つかりません")

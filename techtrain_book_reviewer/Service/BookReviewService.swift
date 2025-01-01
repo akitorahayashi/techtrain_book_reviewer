@@ -80,7 +80,7 @@ actor BookReviewService {
     }
     
     // fetch reviews
-    func fetchBookReviews(
+    func fetchAndReturnBookReviews(
         offset: Int = 0,
         token: String
     ) async throws(TechTrainAPIError.ServiceError) -> [BookReview] {

@@ -108,7 +108,7 @@ class AuthInputViewController: UIViewController {
         LoadingOverlayService.shared.show()
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password, signUpName: name)
-            await self.fetchAndSetUserProfile(token: token, isSignUp: true)
+            await self.fetchAndSetupUserProfile(token: token, isSignUp: true)
         } catch let serviceError {
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
         }
@@ -119,7 +119,7 @@ class AuthInputViewController: UIViewController {
         LoadingOverlayService.shared.show()
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password)
-            await self.fetchAndSetUserProfile(token: token, isSignUp: false)
+            await self.fetchAndSetupUserProfile(token: token, isSignUp: false)
         } catch let serviceError {
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
         }
@@ -127,7 +127,7 @@ class AuthInputViewController: UIViewController {
     }
     
     // MARK: - プロファイル取得
-    private func fetchAndSetUserProfile(token: String, isSignUp: Bool) async {
+    private func fetchAndSetupUserProfile(token: String, isSignUp: Bool) async {
         LoadingOverlayService.shared.show()
         let userProfileService = UserProfileService()
         do {
