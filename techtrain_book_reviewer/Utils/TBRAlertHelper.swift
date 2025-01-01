@@ -7,6 +7,7 @@
 
 import UIKit
 
+@MainActor
 class TBRAlertHelper {
     /// アラートを表示する汎用グローバルメソッド
     static func showSingleOptionAlert(on viewController: UIViewController?, title: String, message: String, handler: ((UIAlertAction) -> Void)? = nil) {

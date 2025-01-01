@@ -34,7 +34,7 @@ class AuthInputViewController: UIViewController {
     override func loadView() {
         authInputView = AuthInputView(
             authMode: authMode,
-            actionButtonAction: { [weak self] in self?.authenticate() },
+            authButtonAction: { [weak self] in self?.authButtonAction() },
             clearButtonAction: { [weak self] in self?.authInputView.clearInputFields() }
         )
         view = authInputView
@@ -65,54 +65,53 @@ class AuthInputViewController: UIViewController {
         return (email, password, name)
     }
     // MARK: - 認証処理
-    private func authenticate() {
+    private func authButtonAction() {
         guard let validatedInputs = validateAndShowErrors() else { return }
         let email = validatedInputs.email
         let password = validatedInputs.password
         
         if authMode == .signUp {
             guard let name = validatedInputs.name else { return }
-            
-            confirmPassword(password: password) { [weak self] confirmed in
-                guard let self = self, confirmed else {
-                    TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: "再入力されたパスワードが一致しません")
-                    return
+            Task {
+                await confirmPassword(password: password) { [weak self] confirmed in
+                    guard let self = self, confirmed else {
+                        TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: "再入力されたパスワードが一致しません")
+                        return
+                    }
+                    
+                    self.performSignUp(email: email, password: password, name: name)
                 }
-                
-                self.performSignUp(email: email, password: password, name: name)
             }
         } else {
-            performLogin(email: email, password: password)
+            performLoginAsync(email: email, password: password)
         }
     }
     // MARK: - パスワードを2回目に入力させるためのアラート
-    private func confirmPassword(password: String, completion: @escaping (Bool) -> Void) {
+    private func confirmPassword(password: String, completion: @escaping (Bool) -> Void) async {
         let alert = UIAlertController(title: "パスワード再確認", message: "もう一度パスワードを入力してください。", preferredStyle: .alert)
         alert.addTextField { $0.isSecureTextEntry = true }
-        alert.addAction(UIAlertAction(title: "確認", style: .default, handler: { _ in
+        alert.addAction(UIAlertAction(title: "確認", style: .default) { _ in
             let confirmedPassword = alert.textFields?.first?.text
             completion(confirmedPassword == password)
-        }))
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: { _ in
+        })
+        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel) { _ in
             completion(false)
-        }))
-        present(alert, animated: true, completion: nil)
+        })
+        await MainActor.run {
+            present(alert, animated: true, completion: nil)
+        }
     }
     
     // MARK: - ログイン処理
-    private func performLogin(email: String, password: String) {
+    private func performLoginAsync(email: String, password: String) async {
         LoadingOverlayService.shared.show()
-        authService.authenticate(email: email, password: password) { [weak self] result in
-            DispatchQueue.main.async {
-                LoadingOverlayService.shared.hide()
-                switch result {
-                case .success(let token):
-                    self?.fetchUserProfile(token: token, isSignUp: false)
-                case .failure(let error):
-                    TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: error.localizedDescription)
-                }
-            }
+        do {
+            let token = try await authService.authenticate(email: email, password: password)
+            self.fetchUserProfile(token: token, isSignUp: false)
+        } catch let serviceError {
+            TBRAlertHelper.showSingleOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
         }
+        LoadingOverlayService.shared.hide()
     }
     
     // MARK: - サインアップ処理

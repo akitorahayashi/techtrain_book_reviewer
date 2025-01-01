@@ -18,7 +18,8 @@ class TBREmailAuthService {
         email: String,
         password: String,
         signUpName: String? = nil // `signUp` の場合は名前がある
-    ) async throws {
+        // token: Stringを返す
+    ) async throws(TechTrainAPIError.ServiceError) -> String {
         let endpoint = signUpName == nil ? "/signin" : "/users" // `users` はサインアップ用エンドポイント
         var parameters: [String: Any] = [
             "email": email,

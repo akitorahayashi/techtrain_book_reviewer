@@ -19,9 +19,9 @@ class AuthInputView: UIView {
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton
     
-    init(authMode: AuthInputViewController.EmailAuthMode, actionButtonAction: @escaping () -> Void, clearButtonAction: @escaping () -> Void) {
+    init(authMode: AuthInputViewController.EmailAuthMode, authButtonAction: @escaping () -> Void, clearButtonAction: @escaping () -> Void) {
         let actionTitle = (authMode == .login) ? "ログイン" : "登録"
-        self.actionButton = TBRCardButton(title: actionTitle, action: actionButtonAction)
+        self.actionButton = TBRCardButton(title: actionTitle, action: authButtonAction)
         self.clearButton = TBRCardButton(title: "クリア", action: clearButtonAction)
         super.init(frame: .zero)
         setupUI(authMode: authMode)

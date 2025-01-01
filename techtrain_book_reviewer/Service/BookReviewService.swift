@@ -54,16 +54,16 @@ actor BookReviewService {
             "review": review
         ]
         do {
-            let bookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
-            let decodedBookReview = try BookReview.decodeBookReview(bookReviewData)
-            return decodedBookReview
+            let postedBookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
+            let postedBookReview = try BookReview.decodeBookReview(postedBookReviewData)
+            return postedBookReview
         } catch {
             throw error.toServiceError()
         }
     }
     
     // fetchBookReview・
-    func fetchBookReview(
+    func fetchBookReviewDetail(
         id: String,
         token: String
     ) async throws(TechTrainAPIError.ServiceError) -> BookReview {
