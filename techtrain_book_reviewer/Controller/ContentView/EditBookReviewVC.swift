@@ -64,9 +64,7 @@ class EditBookReviewVC: UIViewController {
                 self?.populateFields(with: fetchedBookReviewDetail)
             }
         } catch let serviceError {
-            await MainActor.run { [weak self] in
-                self?.showError(message: serviceError.localizedDescription)
-            }
+            TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
         // ローディング終了
         LoadingOverlayService.shared.hide()
@@ -103,15 +101,11 @@ class EditBookReviewVC: UIViewController {
                 review: editView.reviewInputField.text!,
                 token: token
             )
-            await MainActor.run { [weak self] in
-                self?.showAlert(title: "成功", message: "レビューが投稿されました", completion: {
-                    self?.clearFields()
-                })
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが投稿されました") { [weak self] _ in
+                self?.clearFields()
             }
-        } catch {
-            await MainActor.run { [weak self] in
-                self?.showError(message: error.localizedDescription)
-            }
+        } catch let serviceError {
+            TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
         LoadingOverlayService.shared.hide()
     }
@@ -129,12 +123,12 @@ class EditBookReviewVC: UIViewController {
                 review: editView.reviewInputField.text!,
                 token: token
             )
-            self.showAlert(title: "成功", message: "レビューが更新されました", completion: { [weak self] in
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました") { [weak self] _ in
                 self?.onCompliteEditingCompletion?()
                 self?.navigationController?.popViewController(animated: true)
-            })
+            }
         } catch let serviceError {
-            self.showError(message: serviceError.localizedDescription)
+            TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
     }
     
@@ -169,19 +163,19 @@ class EditBookReviewVC: UIViewController {
     // MARK: - 入力バリデーション
     private func validateInputs() -> Bool {
         if isBlank(text: editView.titleTextField.text) {
-            showError(message: "タイトルを入力してください。")
+            TBRAlertHelper.showErrorAlert(on: self, message: "タイトルを入力してください")
             return false
         }
         if isBlank(text: editView.urlTextField.text) {
-            showError(message: "URLを入力してください。")
+            TBRAlertHelper.showErrorAlert(on: self, message: "URLを入力してください")
             return false
         }
         if isBlank(text: editView.detailInputField.text) {
-            showError(message: "詳細を入力してください。")
+            TBRAlertHelper.showErrorAlert(on: self, message: "詳細を入力してください")
             return false
         }
         if isBlank(text: editView.reviewInputField.text) {
-            showError(message: "レビューを入力してください。")
+            TBRAlertHelper.showErrorAlert(on: self, message: "レビューを入力してください")
             return false
         }
         return true
@@ -193,24 +187,9 @@ class EditBookReviewVC: UIViewController {
     }
     
     // MARK: - ユーティリティ
-    private func showError(message: String) {
-        let alert = UIAlertController(title: "エラー", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        present(alert, animated: true)
-    }
-    
-    private func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-            // 呼び出し元で指定された処理を実行
-            completion?()
-        }))
-        present(alert, animated: true)
-    }
-    
     private func getToken() -> String? {
         guard let token = UserProfileService.yourAccount?.token else {
-            showError(message: "認証情報が見つかりません。再度ログインしてください。")
+            TBRAlertHelper.showErrorAlert(on: self, message: "認証情報が見つかりません。再度ログインしてください。")
             return nil
         }
         return token

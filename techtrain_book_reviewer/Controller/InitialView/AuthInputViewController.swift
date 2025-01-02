@@ -57,7 +57,7 @@ class AuthInputViewController: UIViewController {
         
         // エラーがある場合、最初のエラーをアラートで表示
         if let firstErrorMessage = validationErrorMessages.first {
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "入力エラー", message: firstErrorMessage)
+            TBRAlertHelper.showErrorAlert(on: self, message: firstErrorMessage)
             return nil
         }
         
@@ -110,7 +110,7 @@ class AuthInputViewController: UIViewController {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password, signUpName: name)
             await self.fetchAndSetupUserProfile(token: token, isSignUp: true)
         } catch let serviceError {
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
+            TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
     }
     
@@ -121,7 +121,7 @@ class AuthInputViewController: UIViewController {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password)
             await self.fetchAndSetupUserProfile(token: token, isSignUp: false)
         } catch let serviceError {
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
+            TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
         LoadingOverlayService.shared.hide()
     }
@@ -137,7 +137,7 @@ class AuthInputViewController: UIViewController {
                 self?.navigateToMain()
             }
         } catch let serviceError {
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
+            TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
         LoadingOverlayService.shared.hide()
     }

@@ -160,7 +160,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
                         await self.didChangeUserName()
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")
                     } catch let serviceError {
-                        self.showAlert(title: "エラー", message: serviceError.localizedDescription)
+                        TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
                     }
                 }
                 // ローディング終了
@@ -193,12 +193,5 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
             }
         }
         print("ログアウトしました")
-    }
-    
-    /// アラートを表示する汎用メソッド
-    private func showAlert(title: String, message: String) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-        present(alert, animated: true)
     }
 }
