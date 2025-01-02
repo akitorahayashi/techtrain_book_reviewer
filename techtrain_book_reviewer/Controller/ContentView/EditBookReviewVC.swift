@@ -8,7 +8,7 @@
 import UIKit
 
 class EditBookReviewVC: UIViewController {
-    private let editView: EditBookReviewView
+    private let editView: EditBookReviewView?
     private let bookReviewId: String? // nilの場合は新規作成
     var onCompliteEditingCompletion: (() -> Void)?
     
@@ -46,11 +46,11 @@ class EditBookReviewVC: UIViewController {
     // MARK: - EditBookReviewViewのボタンのセットアップ
     private func setupEditBookReviewViewButton() {
         // 新規作成用のボタンテキスト設定
-        editView.compliteButton.setTitle(bookReviewId == nil ? "Post" : "Edit", for: .normal)
-        editView.clearButton.setTitle("Clear", for: .normal)
+        editView?.compliteButton.setTitle(bookReviewId == nil ? "Post" : "Edit", for: .normal)
+        editView?.clearButton.setTitle("Clear", for: .normal)
         
-        editView.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-        editView.clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
+        editView?.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        editView?.clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
     }
     
     // MARK: - データ取得
@@ -71,10 +71,10 @@ class EditBookReviewVC: UIViewController {
     }
     
     private func populateFields(with bookReview: BookReview) {
-        editView.titleTextField.text = bookReview.title
-        editView.urlTextField.text = bookReview.url
-        editView.detailInputField.text = bookReview.detail
-        editView.reviewInputField.text = bookReview.review
+        editView?.titleTextField.text = bookReview.title
+        editView?.urlTextField.text = bookReview.url
+        editView?.detailInputField.text = bookReview.detail
+        editView?.reviewInputField.text = bookReview.review
     }
     
     // MARK: - 保存/投稿処理
@@ -89,16 +89,21 @@ class EditBookReviewVC: UIViewController {
     }
     
     private func createReviewAsync() async {
-        guard validateInputs(), let token = getToken() else { return }
+        guard validateInputs(),
+              let token = getToken(),
+              let title = editView?.titleTextField.text,
+              let url = editView?.urlTextField.text,
+              let detail = editView?.detailInputField.text,
+              let review = editView?.reviewInputField.text, let token = getToken() else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         do {
             // A successful response. が返ってきただけなので使わない
             let _  = try await BookReviewService.shared.postBookReview(
-                title: editView.titleTextField.text!,
-                url: editView.urlTextField.text!,
-                detail: editView.detailInputField.text!,
-                review: editView.reviewInputField.text!,
+                title: title,
+                url: url,
+                detail: detail,
+                review: review,
                 token: token
             )
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが投稿されました") { [weak self] _ in
@@ -111,16 +116,21 @@ class EditBookReviewVC: UIViewController {
     }
     
     private func updateReviewAsync() async {
-        guard validateInputs(), let token = getToken(), let id = bookReviewId else { return }
+        guard validateInputs(),
+              let token = getToken(),
+              let title = editView?.titleTextField.text,
+              let url = editView?.urlTextField.text,
+              let detail = editView?.detailInputField.text,
+              let review = editView?.reviewInputField.text, let token = getToken(), let id = bookReviewId else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         do {
             let postedBookReview = try await BookReviewService.shared.updateBookReview(
                 id: id,
-                title: editView.titleTextField.text!,
-                url: editView.urlTextField.text!,
-                detail: editView.detailInputField.text!,
-                review: editView.reviewInputField.text!,
+                title: title,
+                url: url,
+                detail: detail,
+                review: review,
                 token: token
             )
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました") { [weak self] _ in
@@ -154,27 +164,27 @@ class EditBookReviewVC: UIViewController {
     }
     
     private func clearFields() {
-        editView.titleTextField.text = ""
-        editView.urlTextField.text = ""
-        editView.detailInputField.text = ""
-        editView.reviewInputField.text = ""
+        editView?.titleTextField.text = ""
+        editView?.urlTextField.text = ""
+        editView?.detailInputField.text = ""
+        editView?.reviewInputField.text = ""
     }
     
     // MARK: - 入力バリデーション
     private func validateInputs() -> Bool {
-        if isBlank(text: editView.titleTextField.text) {
+        if isBlank(text: editView?.titleTextField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "タイトルを入力してください")
             return false
         }
-        if isBlank(text: editView.urlTextField.text) {
+        if isBlank(text: editView?.urlTextField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "URLを入力してください")
             return false
         }
-        if isBlank(text: editView.detailInputField.text) {
+        if isBlank(text: editView?.detailInputField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "詳細を入力してください")
             return false
         }
-        if isBlank(text: editView.reviewInputField.text) {
+        if isBlank(text: editView?.reviewInputField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "レビューを入力してください")
             return false
         }

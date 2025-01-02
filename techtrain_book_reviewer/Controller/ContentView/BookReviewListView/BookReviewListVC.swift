@@ -7,25 +7,27 @@
 
 import UIKit
 
-class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
+class BookReviewListVC: UIViewController, UserNameChangeDelegate {
     weak var userNameChangeDelegate: UserNameChangeDelegate?
     
-    private let bookReviewListView = BookReviewListView()
+    private var bookReviewListView: BookReviewListView?
     private let refreshControl = UIRefreshControl()
     var shouldRefreshOnReturn: Bool = false
     
     override func loadView() {
-        view = UIView()
-        view.backgroundColor = .systemBackground
-        
-        view.addSubview(bookReviewListView)
-        bookReviewListView.translatesAutoresizingMaskIntoConstraints = false
-        
+        let reviewList = BookReviewListView()
+        reviewList.translatesAutoresizingMaskIntoConstraints = false
+        self.bookReviewListView = reviewList
+
+        let containerView = UIView()
+        containerView.addSubview(reviewList)
+        view = containerView
+
         NSLayoutConstraint.activate([
-            bookReviewListView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            bookReviewListView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            bookReviewListView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bookReviewListView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            reviewList.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
+            reviewList.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            reviewList.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            reviewList.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
     }
     
@@ -54,7 +56,7 @@ class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
     // MARK: - Local Methods
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
-        bookReviewListView.tableView.refreshControl = refreshControl
+        bookReviewListView?.tableView.refreshControl = refreshControl
     }
     
     private func loadInitialReviewsAsync() {
@@ -72,6 +74,6 @@ class BookReviewListViewController: UIViewController, UserNameChangeDelegate {
     }
     
     private func loadReviews(offset: Int, completion: (() -> Void)? = nil) async {
-        await bookReviewListView.loadBookReviews(offset: offset, completion: completion)
+        await bookReviewListView?.loadBookReviews(offset: offset, completion: completion)
     }
 }

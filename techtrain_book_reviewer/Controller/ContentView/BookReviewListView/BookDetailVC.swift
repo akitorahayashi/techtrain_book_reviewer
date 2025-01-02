@@ -33,19 +33,19 @@ class BookDetailVC: UIViewController {
                 self?.navigationController?.popViewController(animated: true)
             }
         )
+        loadBookDetail()
         view = detailView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupActions()
-        loadBookDetail()
         navigationItem.hidesBackButton = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if let parent = navigationController?.viewControllers.last as? BookReviewListViewController {
+        if let parent = navigationController?.viewControllers.last as? BookReviewListVC {
             parent.shouldRefreshOnReturn = isUpdated // 親にフラグを渡す
         }
     }
