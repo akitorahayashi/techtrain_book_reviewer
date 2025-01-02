@@ -55,7 +55,7 @@ class EditBookReviewVC: UIViewController {
     
     // MARK: - データ取得
     private func fetchBookDetailsForEdit(reviewId: String) async {
-        guard let token = getToken() else { return }
+        guard let token = SecureTokenService.shared.getToken(on: self) else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         do {
@@ -90,7 +90,7 @@ class EditBookReviewVC: UIViewController {
     
     private func createReviewAsync() async {
         guard validateInputs(),
-              let token = getToken(),
+              let token = SecureTokenService.shared.getToken(on: self),
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,
@@ -117,7 +117,7 @@ class EditBookReviewVC: UIViewController {
     
     private func updateReviewAsync() async {
         guard validateInputs(),
-              let token = getToken(),
+              let token = SecureTokenService.shared.getToken(on: self),
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,
@@ -194,14 +194,5 @@ class EditBookReviewVC: UIViewController {
     private func isBlank(text: String?) -> Bool {
         guard let text = text else { return true }
         return text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-    }
-    
-    // MARK: - ユーティリティ
-    private func getToken() -> String? {
-        guard let token = UserProfileService.yourAccount?.token else {
-            TBRAlertHelper.showErrorAlert(on: self, message: "認証情報が見つかりません。再度ログインしてください。")
-            return nil
-        }
-        return token
     }
 }
