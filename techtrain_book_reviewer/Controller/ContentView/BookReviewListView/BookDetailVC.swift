@@ -60,7 +60,7 @@ class BookDetailVC: UIViewController {
                 let bookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: bookId, token: token)
                 self.updateUI(with: bookDetail)
             } catch let serviceError {
-                TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: serviceError.localizedDescription)
+                TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
             }
         }
         // ローディング終了
@@ -139,7 +139,7 @@ class BookDetailVC: UIViewController {
                 self.navigationController?.popViewController(animated: true)
                 TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "削除されました！")
             } catch let serviceError {
-                TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "削除失敗", message: serviceError.localizedDescription)
+                TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
             }
         }
         // ローディング終了
@@ -147,7 +147,6 @@ class BookDetailVC: UIViewController {
     }
     
     // MARK: - Helpers
-    
     private func getToken() -> String? {
         guard let token = UserProfileService.yourAccount?.token else {
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が見つかりません。再度ログインしてください")
