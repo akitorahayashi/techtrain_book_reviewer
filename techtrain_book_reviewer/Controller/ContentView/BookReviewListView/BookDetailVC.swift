@@ -52,7 +52,7 @@ class BookDetailVC: UIViewController {
     
     // MARK: - Setup View
     private func loadBookDetail() {
-        guard let token = getToken() else { return }
+        guard let token = SecureTokenService.shared.getToken(on: self) else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         Task {
@@ -100,7 +100,7 @@ class BookDetailVC: UIViewController {
     }
     
     @objc private func navigateToEditView() {
-        guard getToken() != nil else { return }
+        guard SecureTokenService.shared.getToken(on: self) != nil else { return }
         
         let editVC = EditBookReviewVC(bookReviewId: bookId)
         editVC.onCompliteEditingCompletion = { [weak self] in
@@ -129,7 +129,7 @@ class BookDetailVC: UIViewController {
     }
     
     private func deleteBookReview() {
-        guard let token = getToken() else { return }
+        guard let token = SecureTokenService.shared.getToken(on: self) else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         Task {
@@ -144,14 +144,5 @@ class BookDetailVC: UIViewController {
             // ローディング終了
             LoadingOverlayService.shared.hide()
         }
-    }
-    
-    // MARK: - Helpers
-    private func getToken() -> String? {
-        guard let token = UserProfileService.yourAccount?.token else {
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が見つかりません。再度ログインしてください")
-            return nil
-        }
-        return token
     }
 }

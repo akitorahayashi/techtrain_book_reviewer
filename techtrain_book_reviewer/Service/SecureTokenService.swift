@@ -5,7 +5,7 @@
 //  Created by 林 明虎 on 2024/12/11.
 //
 
-import Foundation
+import UIKit
 import Security
 
 actor SecureTokenService {
@@ -14,6 +14,15 @@ actor SecureTokenService {
     private init() {}
     
     private let service = Bundle.main.bundleIdentifier ?? "com.akitorahayashi.techtrain-book-reviewer"
+    
+    @MainActor
+    func getToken(on viewController: UIViewController?) -> String? {
+        guard let token = UserProfileService.yourAccount?.token else {
+                TBRAlertHelper.showErrorAlert(on: viewController, message: "認証情報が見つかりません。再度ログインしてください。")
+            return nil
+        }
+        return token
+    }
     
     func saveAPIToken(data: Data) throws(TechTrainAPIError) -> Void {
         let _ = deleteAPIToken() // 既存データの削除
