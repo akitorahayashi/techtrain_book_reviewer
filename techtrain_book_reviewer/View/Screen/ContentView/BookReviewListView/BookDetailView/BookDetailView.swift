@@ -33,7 +33,6 @@ class BookDetailView: UIView {
         self.onBackAction = onBack
         super.init(frame: .zero)
         setupUI()
-        setupActions()
         updateUI(title: title, detail: detail, review: review, url: bookUrl, isMine: isMine)
     }
     
@@ -48,7 +47,6 @@ class BookDetailView: UIView {
         let scrollView = UIScrollView()
         let contentView = UIView()
         
-        // コンテンツセットアップ
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
@@ -56,14 +54,14 @@ class BookDetailView: UIView {
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
             
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -200),
             contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
         
@@ -156,25 +154,6 @@ class BookDetailView: UIView {
         ])
     }
     
-    // MARK: - アクションのセットアップ
-    private func setupActions() {
-        openUrlButton.addTarget(self, action: #selector(openUrlTapped), for: .touchUpInside)
-        backButton.addTarget(self, action: #selector(backTapped), for: .touchUpInside)
-    }
-    
-    @objc private func openUrlTapped() {
-        guard let url = URL(string: bookUrl) else {
-            showAlert(title: "Error", message: "Invalid or missing URL")
-            return
-        }
-        
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-    }
-    
-    @objc private func backTapped() {
-        onBackAction?()
-    }
-    
     // MARK: - UI更新
     func updateUI(title: String, detail: String, review: String, url: String, isMine: Bool?) {
         titleLabel.text = title
@@ -187,13 +166,6 @@ class BookDetailView: UIView {
         let isUserOwner = isMine ?? false
         editButton.isHidden = !isUserOwner
         deleteButton.isHidden = !isUserOwner
-    }
-    
-    private func showAlert(title: String, message: String) {
-        guard let viewController = findViewController() else { return }
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
-        viewController.present(alert, animated: true)
     }
     
     private func findViewController() -> UIViewController? {

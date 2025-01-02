@@ -141,9 +141,9 @@ class BookDetailVC: UIViewController {
             } catch let serviceError {
                 TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
             }
+            // ローディング終了
+            LoadingOverlayService.shared.hide()
         }
-        // ローディング終了
-        LoadingOverlayService.shared.hide()
     }
     
     // MARK: - Helpers

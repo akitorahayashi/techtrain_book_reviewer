@@ -16,19 +16,8 @@ class BookReviewListVC: UIViewController, UserNameChangeDelegate {
     
     override func loadView() {
         let reviewList = BookReviewListView()
-        reviewList.translatesAutoresizingMaskIntoConstraints = false
         self.bookReviewListView = reviewList
-
-        let containerView = UIView()
-        containerView.addSubview(reviewList)
-        view = containerView
-
-        NSLayoutConstraint.activate([
-            reviewList.topAnchor.constraint(equalTo: containerView.safeAreaLayoutGuide.topAnchor),
-            reviewList.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            reviewList.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            reviewList.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-        ])
+        view = reviewList
     }
     
     // MARK: - Lifecycle Methods

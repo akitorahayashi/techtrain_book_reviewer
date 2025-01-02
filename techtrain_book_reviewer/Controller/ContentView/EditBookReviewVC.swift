@@ -94,7 +94,7 @@ class EditBookReviewVC: UIViewController {
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,
-              let review = editView?.reviewInputField.text, let token = getToken() else { return }
+              let review = editView?.reviewInputField.text else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         do {
@@ -121,11 +121,11 @@ class EditBookReviewVC: UIViewController {
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,
-              let review = editView?.reviewInputField.text, let token = getToken(), let id = bookReviewId else { return }
+              let review = editView?.reviewInputField.text, let id = bookReviewId else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         do {
-            let postedBookReview = try await BookReviewService.shared.updateBookReview(
+            let _ = try await BookReviewService.shared.updateAndReturnBookReview(
                 id: id,
                 title: title,
                 url: url,
