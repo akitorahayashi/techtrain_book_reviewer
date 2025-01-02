@@ -19,7 +19,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         self.delegate = self
         
         // BookReviewListViewControllerにデリゲートを設定
-        let bookListVC = BookReviewListViewController()
+        let bookListVC = BookReviewListVC()
         bookListVC.userNameChangeDelegate = self
         
         let homeVC = UINavigationController(rootViewController: bookListVC)
@@ -37,7 +37,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     /// "Book List" タブを選択したときにリフレッシュ
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
         if let navController = viewController as? UINavigationController,
-           let bookListVC = navController.viewControllers.first as? BookReviewListViewController {
+           let bookListVC = navController.viewControllers.first as? BookReviewListVC {
             // フラグを設定し、次回表示時にリフレッシュ
             bookListVC.shouldRefreshOnReturn = true
         }
@@ -48,7 +48,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     /// ユーザー名が変更された際に呼び出される
     func didChangeUserName() async {
         if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
-           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListViewController {
+           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListVC {
             await bookListVC.didChangeUserName()
         }
     }

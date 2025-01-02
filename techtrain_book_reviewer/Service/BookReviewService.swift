@@ -37,7 +37,7 @@ actor BookReviewService {
     }
     
     // updateBookReview
-    func updateBookReview(
+    func updateAndReturnBookReview(
         id: String,
         title: String,
         url: String?,

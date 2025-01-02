@@ -55,11 +55,9 @@ actor TechTrainAPIClient {
                 throw TechTrainAPIError.invalidResponse
             }
             
-            print("レスポンスデータ解析成功")
-            
             
             switch httpResponse.statusCode {
-            case 200...299:
+            case 200:
                 return data
             default:
                 // エラーの内容を解析してローカライズ
