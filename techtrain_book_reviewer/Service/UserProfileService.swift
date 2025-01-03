@@ -17,7 +17,7 @@ actor UserProfileService {
         self.apiClient = apiClient
     }
     
-    private func decodeUserProfile(token: String, profileData: Data) throws(TechTrainAPIError) -> TBRUser {
+    static func decodeUserProfile(token: String, profileData: Data) throws(TechTrainAPIError) -> TBRUser {
         guard let jsonUserData = try? JSONSerialization.jsonObject(with: profileData, options: []) as? [String: Any],
               let name = jsonUserData["name"] as? String,
               let iconUrl = jsonUserData["iconUrl"] as? String? else {
@@ -31,7 +31,7 @@ actor UserProfileService {
     
     
     /// ユーザー名を更新する
-    func updateUserName(
+    static func updateUserName(
         withToken token: String,
         newName: String
     ) async throws(TechTrainAPIError.ServiceError) -> Void {
@@ -46,7 +46,7 @@ actor UserProfileService {
         ]
         
         do {
-            let _ = try await apiClient.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: parameters)
+            let _ = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: parameters)
             UserProfileService.yourAccount?.name = newName
             print("UserProfileService: ユーザー名の更新に成功しました")
         } catch {
@@ -55,7 +55,7 @@ actor UserProfileService {
     }
     
     /// ユーザープロファイルを取得する
-    func fetchUserProfileAndSetSelfAccount(
+    static func fetchUserProfileAndSetSelfAccount(
         withToken token: String
     ) async throws(TechTrainAPIError.ServiceError) -> Void {
         let endpoint = "/users"
@@ -65,7 +65,7 @@ actor UserProfileService {
         ]
         
         do {
-            let profileData = try await apiClient.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let profileData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedUserData = try decodeUserProfile(token: token, profileData: profileData)
             UserProfileService.yourAccount = decodedUserData
         } catch {

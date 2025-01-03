@@ -18,12 +18,12 @@ class SelectAuthView: UIView {
         return label
     }()
     
-    let signUpButton: TBRCardButton
-    let logInButton: TBRCardButton
+    let showSignUpPageButton: TBRCardButton
+    let showLogInPageButton: TBRCardButton
     
-    init(signUpAction: @escaping () -> Void, logInAction: @escaping () -> Void) {
-        self.signUpButton = TBRCardButton(title: "Sign Up", action: signUpAction)
-        self.logInButton = TBRCardButton(title: "Log In", action: logInAction)
+    init(showSignUpPageAction: @escaping () -> Void, showLogInPageAction: @escaping () -> Void) {
+        self.showSignUpPageButton = TBRCardButton(title: "Sign Up", action: showSignUpPageAction)
+        self.showLogInPageButton = TBRCardButton(title: "Log In", action: showLogInPageAction)
         super.init(frame: .zero)
         setupUI()
     }
@@ -43,7 +43,7 @@ class SelectAuthView: UIView {
         ])
         
         // ボタンのスタックビューを作成
-        let buttonStack = UIStackView(arrangedSubviews: [signUpButton, logInButton])
+        let buttonStack = UIStackView(arrangedSubviews: [showSignUpPageButton, showLogInPageButton])
         buttonStack.axis = .vertical
         buttonStack.spacing = 16
         buttonStack.alignment = .fill

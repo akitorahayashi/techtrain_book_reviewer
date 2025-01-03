@@ -8,27 +8,30 @@
 import UIKit
 
 class SelectAuthVC: UIViewController {
+    private weak var coordinator: SelectAuthCoordinatorProtocol?
+    
+    init(coordinator: SelectAuthCoordinatorProtocol?) {
+        self.coordinator = coordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func loadView() {
         let selectAuthView = SelectAuthView(
-            signUpAction: { [weak self] in self?.jumpToSignUpView() },
-            logInAction: { [weak self] in self?.jumpToLogInView() }
+            showSignUpPageAction: { [weak self] in
+                self?.coordinator?.navigateToSignUp()
+            },
+            showLogInPageAction: { [weak self] in
+                self?.coordinator?.navigateToLogIn()
+            }
         )
         view = selectAuthView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    private func jumpToSignUpView() {
-        print("Sign Up tapped")
-        let authInputVC = AuthInputViewController(authMode: .signUp)
-        navigationController?.pushViewController(authInputVC, animated: true)
-    }
-    
-    private func jumpToLogInView() {
-        print("Log In tapped")
-        let authInputVC = AuthInputViewController(authMode: .login)
-        navigationController?.pushViewController(authInputVC, animated: true)
     }
 }

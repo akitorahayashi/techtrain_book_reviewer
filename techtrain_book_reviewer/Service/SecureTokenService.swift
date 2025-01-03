@@ -16,7 +16,7 @@ actor SecureTokenService {
     private let service = Bundle.main.bundleIdentifier ?? "com.akitorahayashi.techtrain-book-reviewer"
     
     @MainActor
-    func getToken(on viewController: UIViewController?) -> String? {
+    func getTokenAfterLoad(on viewController: UIViewController?) -> String? {
         guard let token = UserProfileService.yourAccount?.token else {
                 TBRAlertHelper.showErrorAlert(on: viewController, message: "認証情報が見つかりません。再度ログインしてください。")
             return nil
