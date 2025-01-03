@@ -18,7 +18,8 @@ class AppCoordinator: CoordinatorProtocol {
     private let window: UIWindow?
     let navigationController: UINavigationController = UINavigationController()
     // child coordinator
-    private var selectAuthCoordinator: SelectAuthCoordinator?
+    private var selectAuthCoordinator: SelectAuthCoordinatorProtocol?
+    private var mainTabBarCoordinator: MainTabBarCoordinatorProtocol?
     
     init(window: UIWindow?) {
         self.window = window
@@ -53,7 +54,9 @@ class AppCoordinator: CoordinatorProtocol {
     }
     
     private func showBookListScreen() async {
-        let mainTabBarController = MainTabBarController()
+        let mainTabBarCoordinator = MainTabBarCoordinator(navigationController: self.navigationController)
+        self.mainTabBarCoordinator = mainTabBarCoordinator
+        let mainTabBarController = MainTabBarController(coordinator: mainTabBarCoordinator)
         navigationController.setViewControllers([mainTabBarController], animated: false)
     }
 }

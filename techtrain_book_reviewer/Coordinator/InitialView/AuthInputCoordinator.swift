@@ -10,6 +10,8 @@ import UIKit
 @MainActor
 class AuthInputCoordinator: CoordinatorProtocol {
     let navigationController: UINavigationController
+    // child coordinator
+    private var mainTabBarCoordinator: MainTabBarCoordinator?
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -17,7 +19,9 @@ class AuthInputCoordinator: CoordinatorProtocol {
     
     // MainTabBarControllerに進む
     func start() async {
-        let mainTabBarController = MainTabBarController()
+        let mainTabBarCoordinator = MainTabBarCoordinator(navigationController: self.navigationController)
+        self.mainTabBarCoordinator = mainTabBarCoordinator
+        let mainTabBarController = MainTabBarController(coordinator: mainTabBarCoordinator)
         mainTabBarController.navigationItem.hidesBackButton = true
         navigationController.pushViewController(mainTabBarController, animated: true)
     }

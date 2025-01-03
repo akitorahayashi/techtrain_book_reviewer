@@ -12,23 +12,32 @@ protocol UserNameChangeDelegate: AnyObject {
 }
 
 class MainTabBarController: UITabBarController, UITabBarControllerDelegate, UserNameChangeDelegate {
+    weak var coordinator: MainTabBarCoordinatorProtocol?
+    private var bookListVC = BookReviewListVC()
+    private var createReviewVC = EditBookReviewVC()
+    
+    init(coordinator: MainTabBarCoordinatorProtocol?) {
+        self.coordinator = coordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavigationBar()
+        setupTopNavigationBar()
         
+        // UITabBarControllerDelegateのデリゲートを設定
         self.delegate = self
-        
         // BookReviewListViewControllerにデリゲートを設定
-        let bookListVC = BookReviewListVC()
         bookListVC.userNameChangeDelegate = self
         
-        let homeVC = UINavigationController(rootViewController: bookListVC)
-        homeVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
-        
-        let createReviewVC = UINavigationController(rootViewController: EditBookReviewVC())
+        // tabBarItemの設定
+        bookListVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
         createReviewVC.tabBarItem = UITabBarItem(title: "Create Review", image: UIImage(systemName: "square.and.pencil"), tag: 1)
-        
-        viewControllers = [homeVC, createReviewVC]
+        viewControllers = [bookListVC, createReviewVC]
         tabBar.tintColor = .accent
     }
     
@@ -86,8 +95,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     }
     
     /// ナビゲーションバーを設定するメソッド
-    private func setupNavigationBar() {
-        // タイトル設定
+    private func setupTopNavigationBar() {
+        // 中央のタイトル設定
         let titleLabel = UILabel()
         titleLabel.text = "Book Reviewer"
         titleLabel.textColor = UIColor.accent
@@ -107,23 +116,22 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     // MARK: - Button Actions
     /// ユーザーアイコンがタップされた際に呼び出されるメソッド
     @objc private func userIconTapped() {
-        let userName: String = UserProfileService.yourAccount?.name ?? "Error"
-        let alert = UIAlertController(title: "アカウント設定: \(userName)", message: nil, preferredStyle: .actionSheet)
-        
-        alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
-            self?.changeUserName()
-        }))
-        
-        alert.addAction(UIAlertAction(title: "ログアウト", style: .destructive, handler: { [weak self] _ in
-            Task {
-                await self?.logout()
-            }
-        }))
-        
-        alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
-        
-        present(alert, animated: true)
-    }
+            let userName: String = UserProfileService.yourAccount?.name ?? "Error"
+            let alert = UIAlertController(title: "アカウント設定: \(userName)", message: nil, preferredStyle: .actionSheet)
+            
+            alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
+                self?.changeUserName()
+            }))
+            
+            alert.addAction(UIAlertAction(title: "ログアウト", style: .destructive, handler: { [weak self] _ in
+                Task {
+                    await self?.coordinator?.logout()
+                }
+            }))
+            
+            alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
+            present(alert, animated: true)
+        }
     
     /// ユーザー名を変更するアクション
     private func changeUserName() {
@@ -149,7 +157,6 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
                         // ローディング終了
                         LoadingOverlayService.shared.hide()
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が無効です。ログインし直してください")
-                        await self.logout()
                         return
                     }
                     
@@ -170,28 +177,5 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         })
         alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
         present(alert, animated: true)
-    }
-    
-    /// ログアウトを実行するアクション
-    private func logout() async {
-        UserProfileService.yourAccount = nil
-        
-        await SecureTokenService.shared.deleteAPIToken()
-        
-//        if let navigationController = navigationController {
-//            // 既存のスタックに SelectAuthVC があるか確認
-//            if !navigationController.viewControllers.contains(where: { $0 is SelectAuthVC }) {
-//                // SelectAuthVC がない場合は新規作成して表示
-//                let selectAuthVC = SelectAuthVC(coordinator: navigationController)
-//                navigationController.setViewControllers([selectAuthVC], animated: true)
-//            } else {
-//                // SelectAuthVC が既にスタックに存在する場合は戻る
-//                navigationController.popToViewController(
-//                    navigationController.viewControllers.first { $0 is SelectAuthVC }!,
-//                    animated: true
-//                )
-//            }
-//        }
-        print("ログアウトしました")
     }
 }

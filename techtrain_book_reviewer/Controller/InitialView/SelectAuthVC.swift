@@ -20,14 +20,11 @@ class SelectAuthVC: UIViewController {
     }
     
     override func loadView() {
-        print("Coordinator is \(coordinator != nil ? "set" : "nil")")
         let selectAuthView = SelectAuthView(
             showSignUpPageAction: { [weak self] in
-                print("SignUp button tapped")
                 self?.coordinator?.navigateToSignUp()
             },
             showLogInPageAction: { [weak self] in
-                print("LogIn button tapped")
                 self?.coordinator?.navigateToLogIn()
             }
         )
