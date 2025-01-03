@@ -8,7 +8,7 @@
 import UIKit
 
 class AuthInputVC: UIViewController {
-    // MARK: - Enums
+    // MARK: - EmailAuthMode
     enum EmailAuthMode {
         case login
         case signUp
@@ -16,13 +16,14 @@ class AuthInputVC: UIViewController {
     
     // MARK: - Properties
     private let authMode: EmailAuthMode
-    private let authService: TBREmailAuthService
-    private var authInputView: AuthInputView!
+    private var authInputView: AuthInputView?
+    private weak var authInputCoordinator: AuthInputCoordinator?
+    
     
     // MARK: - Initializers
-    init(authMode: EmailAuthMode, authService: TBREmailAuthService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)) {
+    init(authMode: EmailAuthMode, authInputCoordinator: AuthInputCoordinator?) {
         self.authMode = authMode
-        self.authService = authService
+        self.authInputCoordinator = authInputCoordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -35,7 +36,7 @@ class AuthInputVC: UIViewController {
         authInputView = AuthInputView(
             authMode: authMode,
             authButtonAction: { [weak self] in self?.authButtonAction() },
-            clearButtonAction: { [weak self] in self?.authInputView.clearInputFields() }
+            clearButtonAction: { [weak self] in self?.authInputView?.clearInputFields() }
         )
         view = authInputView
     }
@@ -47,12 +48,12 @@ class AuthInputVC: UIViewController {
     // MARK: - 入力検証とエラー表示
     /// 入力値を検証し、エラーがあればアラートを表示。すべてクリアした場合、入力値をタプルで返す。
     private func validateAndShowErrors() -> (email: String, password: String, name: String?)? {
-        guard let email = authInputView.emailTextField.text,
-              let password = authInputView.passwordTextField.text else {
+        guard let email = authInputView?.emailTextField.text,
+              let password = authInputView?.passwordTextField.text else {
             return nil
         }
         
-        let name = authInputView.nameTextField.text
+        let name = authInputView?.nameTextField.text
         let validationErrorMessages = TBRAuthInputValidator.validateAuthInput(email: email, password: password, name: name, mode: authMode)
         
         // エラーがある場合、最初のエラーをアラートで表示
@@ -106,6 +107,7 @@ class AuthInputVC: UIViewController {
     // MARK: - サインアップ処理
     private func performSignUp(email: String, password: String, name: String) async {
         LoadingOverlayService.shared.show()
+        let authService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password, signUpName: name)
             await self.fetchAndSetupUserProfile(token: token, isSignUp: true)
@@ -117,6 +119,7 @@ class AuthInputVC: UIViewController {
     // MARK: - ログイン処理
     private func performLoginAsync(email: String, password: String) async {
         LoadingOverlayService.shared.show()
+        let authService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password)
             await self.fetchAndSetupUserProfile(token: token, isSignUp: false)
@@ -133,18 +136,13 @@ class AuthInputVC: UIViewController {
             try await UserProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
             let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: message) { [weak self] _ in
-                self?.navigateToMain()
+                Task {
+                    await self?.authInputCoordinator?.start()
+                }
             }
         } catch let serviceError {
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
         LoadingOverlayService.shared.hide()
-    }
-    
-    // MARK: - ナビゲーション
-    private func navigateToMain() {
-        let mainTabBarController = MainTabBarController()
-        mainTabBarController.navigationItem.hidesBackButton = true
-        navigationController?.pushViewController(mainTabBarController, animated: true)
     }
 }

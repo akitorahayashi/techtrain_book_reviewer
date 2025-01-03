@@ -15,21 +15,27 @@ protocol SelectAuthCoordinatorProtocol: AnyObject {
 
 @MainActor
 class SelectAuthCoordinator: SelectAuthCoordinatorProtocol {
+    private var authInputCoordinator: AuthInputCoordinator?
+    
     let navigationController: UINavigationController
     
-    init(_ selectAuthVC: SelectAuthVC? = nil, navigationController: UINavigationController) {
+    init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
     
     func navigateToSignUp() {
         print("navigateToSignUp called")
-        let authInputVC = AuthInputVC(authMode: .signUp)
+        let authInputCoordinator = AuthInputCoordinator(navigationController: self.navigationController)
+        self.authInputCoordinator = authInputCoordinator
+        let authInputVC = AuthInputVC(authMode: .signUp, authInputCoordinator: authInputCoordinator)
         navigationController.pushViewController(authInputVC, animated: true)
     }
     
     func navigateToLogIn() {
         print("navigateToLogIn called")
-        let authInputVC = AuthInputVC(authMode: .login)
+        let authInputCoordinator = AuthInputCoordinator(navigationController: self.navigationController)
+        self.authInputCoordinator = authInputCoordinator
+        let authInputVC = AuthInputVC(authMode: .login, authInputCoordinator: authInputCoordinator)
         navigationController.pushViewController(authInputVC, animated: true)
     }
 }

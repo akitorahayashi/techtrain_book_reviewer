@@ -8,7 +8,7 @@
 import UIKit
 
 class SelectAuthVC: UIViewController {
-    weak var coordinator: SelectAuthCoordinatorProtocol?
+    private weak var coordinator: SelectAuthCoordinatorProtocol?
     
     init(coordinator: SelectAuthCoordinatorProtocol?) {
         self.coordinator = coordinator
