@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AuthInputViewController: UIViewController {
+class AuthInputVC: UIViewController {
     // MARK: - Enums
     enum EmailAuthMode {
         case login

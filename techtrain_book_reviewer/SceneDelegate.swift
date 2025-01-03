@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
+    private var appCoordinator: AppCoordinator?
     
     // シーンがアプリと連携されるときに呼び出されるメソッド
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -23,10 +24,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.backgroundColor = UIColor.systemBackground
         window.makeKeyAndVisible()
         
-        let appCoordinator = AppCoordinator(window: self.window)
+        self.appCoordinator = AppCoordinator(window: self.window)
         // トークン読み取りと画面遷移処理
         Task {
-            await appCoordinator.start()
+            await self.appCoordinator?.start()
         }
     }
     

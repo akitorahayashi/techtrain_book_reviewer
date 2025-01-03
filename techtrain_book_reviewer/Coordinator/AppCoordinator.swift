@@ -8,20 +8,28 @@
 import UIKit
 
 @MainActor
-class AppCoordinator: Coordinator {
-    
+protocol AppCoordinatorProtocol: AnyObject {
+    func start() async
+}
+
+@MainActor
+class AppCoordinator: AppCoordinatorProtocol {
     private let window: UIWindow?
-    let navigationController: UINavigationController
+    private let navigationController: UINavigationController = UINavigationController()
+    // child coordinator
+    private var selectAuthCoordinator: SelectAuthCoordinator?
     
     init(window: UIWindow?) {
         self.window = window
-        self.navigationController = UINavigationController()
+        self.window?.rootViewController = navigationController
+        self.window?.makeKeyAndVisible()
     }
     
     func start() async {
-        guard let tokenData = await SecureTokenService.shared.loadAPIToken(), let token = String(data: tokenData, encoding: .utf8) else {
+        guard let tokenData = await SecureTokenService.shared.loadAPIToken(),
+              let token = String(data: tokenData, encoding: .utf8) else {
             print("AppCoordinator: トークンが見つかりません")
-            await showAuthScreen()
+            await showAuthInputScreen()
             return
         }
         
@@ -32,19 +40,19 @@ class AppCoordinator: Coordinator {
         } catch {
             print("AppCoordinator: Profile取得失敗")
             let _ = await SecureTokenService.shared.deleteAPIToken()
-            await showAuthScreen()
+            await showAuthInputScreen()
         }
     }
     
-    private func showAuthScreen() async {
-        let authVC = SelectAuthVC()
-        navigationController.setViewControllers([authVC], animated: false)
-        window?.rootViewController = navigationController
+    private func showAuthInputScreen() async {
+        let selectAuthCoordinator = SelectAuthCoordinator(navigationController: self.navigationController)
+        self.selectAuthCoordinator = selectAuthCoordinator
+        let selectAuthVC = SelectAuthVC(coordinator: selectAuthCoordinator)
+        navigationController.setViewControllers([selectAuthVC], animated: false)
     }
     
     private func showBookListScreen() async {
         let mainTabBarController = MainTabBarController()
-        navigationController.setViewControllers([mainTabBarController], animated: true)
-        window?.rootViewController = navigationController
+        navigationController.setViewControllers([mainTabBarController], animated: false)
     }
 }

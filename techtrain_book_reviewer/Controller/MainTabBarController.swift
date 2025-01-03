@@ -178,20 +178,20 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         
         await SecureTokenService.shared.deleteAPIToken()
         
-        if let navigationController = navigationController {
-            // 既存のスタックに SelectAuthVC があるか確認
-            if !navigationController.viewControllers.contains(where: { $0 is SelectAuthVC }) {
-                // SelectAuthVC がない場合は新規作成して表示
-                let selectAuthVC = SelectAuthVC()
-                navigationController.setViewControllers([selectAuthVC], animated: true)
-            } else {
-                // SelectAuthVC が既にスタックに存在する場合は戻る
-                navigationController.popToViewController(
-                    navigationController.viewControllers.first { $0 is SelectAuthVC }!,
-                    animated: true
-                )
-            }
-        }
+//        if let navigationController = navigationController {
+//            // 既存のスタックに SelectAuthVC があるか確認
+//            if !navigationController.viewControllers.contains(where: { $0 is SelectAuthVC }) {
+//                // SelectAuthVC がない場合は新規作成して表示
+//                let selectAuthVC = SelectAuthVC(coordinator: navigationController)
+//                navigationController.setViewControllers([selectAuthVC], animated: true)
+//            } else {
+//                // SelectAuthVC が既にスタックに存在する場合は戻る
+//                navigationController.popToViewController(
+//                    navigationController.viewControllers.first { $0 is SelectAuthVC }!,
+//                    animated: true
+//                )
+//            }
+//        }
         print("ログアウトしました")
     }
 }
