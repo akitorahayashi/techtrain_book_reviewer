@@ -155,7 +155,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
                     
                     // サーバーに名前変更リクエストを送信
                     do {
-                        try await UserProfileService().updateUserName(withToken: token, newName: newName)
+                        try await UserProfileService.updateUserName(withToken: token, newName: newName)
                         // デリゲートを利用してリフレッシュするように通知を送る
                         await self.didChangeUserName()
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")

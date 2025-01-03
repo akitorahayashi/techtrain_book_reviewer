@@ -55,7 +55,7 @@ class EditBookReviewVC: UIViewController {
     
     // MARK: - データ取得
     private func fetchBookDetailsForEdit(reviewId: String) async {
-        guard let token = SecureTokenService.shared.getToken(on: self) else { return }
+        guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         do {
@@ -90,7 +90,7 @@ class EditBookReviewVC: UIViewController {
     
     private func createReviewAsync() async {
         guard validateInputs(),
-              let token = SecureTokenService.shared.getToken(on: self),
+              let token = SecureTokenService.shared.getTokenAfterLoad(on: self),
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,
@@ -117,7 +117,7 @@ class EditBookReviewVC: UIViewController {
     
     private func updateReviewAsync() async {
         guard validateInputs(),
-              let token = SecureTokenService.shared.getToken(on: self),
+              let token = SecureTokenService.shared.getTokenAfterLoad(on: self),
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,

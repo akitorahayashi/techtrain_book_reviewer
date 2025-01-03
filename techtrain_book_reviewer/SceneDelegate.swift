@@ -23,49 +23,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.backgroundColor = UIColor.systemBackground
         window.makeKeyAndVisible()
         
+        let appCoordinator = AppCoordinator(window: self.window)
         // トークン読み取りと画面遷移処理
         Task {
-            await handleTokenAndProceed()
+            await appCoordinator.start()
         }
-    }
-    
-    private func handleTokenAndProceed() async {
-        if let tokenData = await SecureTokenService.shared.loadAPIToken(),
-           let token = String(data: tokenData, encoding: .utf8) {
-            print("SceneDelegate: トークンを読み取りました: \(token)")
-            
-            let userProfileService = UserProfileService()
-            do {
-                try await userProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
-                    print("SceneDelegate: Profile取得成功")
-                    self.showBookListScreen()
-            } catch {
-                print("SceneDelegate: Profile取得失敗")
-                let _ = await SecureTokenService.shared.deleteAPIToken()
-                self.showAuthScreen()
-            }
-        } else {
-            print("SceneDelegate: トークンが見つかりません")
-            self.showAuthScreen()
-        }
-    }
-    
-    private func showAuthScreen() {
-        // サインアップ/ログイン画面を表示
-        let navigationController = UINavigationController(rootViewController: SelectAuthVC())
-        window?.rootViewController = navigationController
-    }
-    
-    private func showBookListScreen() {
-        // SelectAuthVC をルートとして設定
-        let selectAuthVC = SelectAuthVC()
-        let navigationController = UINavigationController(rootViewController: selectAuthVC)
-        window?.rootViewController = navigationController
-        window?.makeKeyAndVisible()
-        
-        // SelectAuthVC から HomeViewController に遷移
-        let mainVC = MainTabBarController()
-        navigationController.pushViewController(mainVC, animated: false)
     }
     
     // シーンが切断されたときに呼び出される（リソース解放などに使用可能）

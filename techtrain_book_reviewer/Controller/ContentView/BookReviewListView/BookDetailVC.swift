@@ -52,7 +52,7 @@ class BookDetailVC: UIViewController {
     
     // MARK: - Setup View
     private func loadBookDetail() {
-        guard let token = SecureTokenService.shared.getToken(on: self) else { return }
+        guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         Task {
@@ -100,7 +100,7 @@ class BookDetailVC: UIViewController {
     }
     
     @objc private func navigateToEditView() {
-        guard SecureTokenService.shared.getToken(on: self) != nil else { return }
+        guard SecureTokenService.shared.getTokenAfterLoad(on: self) != nil else { return }
         
         let editVC = EditBookReviewVC(bookReviewId: bookId)
         editVC.onCompliteEditingCompletion = { [weak self] in
@@ -129,7 +129,7 @@ class BookDetailVC: UIViewController {
     }
     
     private func deleteBookReview() {
-        guard let token = SecureTokenService.shared.getToken(on: self) else { return }
+        guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
         LoadingOverlayService.shared.show()
         Task {
