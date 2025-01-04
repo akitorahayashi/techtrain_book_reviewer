@@ -43,13 +43,6 @@ class BookDetailVC: UIViewController {
         navigationItem.hidesBackButton = true
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//        if let parent = navigationController?.viewControllers.last as? BookReviewListVC {
-//            parent.shouldRefreshOnReturn = isUpdated // 親にフラグを渡す
-//        }
-//    }
-    
     // MARK: - Setup View
     private func loadBookDetail() {
         guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
@@ -83,12 +76,16 @@ class BookDetailVC: UIViewController {
         detailView?.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
         detailView?.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)
         detailView?.deleteButton.addTarget(self, action: #selector(confirmAndDeleteBookReview), for: .touchUpInside)
+        
+//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openInBrowserTapped))
+//        detailView?.urlContent.isUserInteractionEnabled = true
+//        detailView?.urlContent.addGestureRecognizer(tapGesture)
     }
     
     
-    // MARK: - User Actions
+    // MARK: - Button Actions
     @objc private func openInBrowserTapped() {
-        guard let urlString = detailView?.bookUrl, let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
+        guard let urlString = detailView?.urlContent.text, let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "URLが無効です")
             return
         }
@@ -128,6 +125,7 @@ class BookDetailVC: UIViewController {
         present(alert, animated: true)
     }
     
+    // レビューを削除する
     private func deleteBookReview() {
         guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始

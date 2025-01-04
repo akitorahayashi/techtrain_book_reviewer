@@ -8,19 +8,25 @@
 import UIKit
 
 class BookDetailView: UIView {
-    private let titleLabel = UILabel()
-    private let titleDescriptionLabel = UILabel()
-    private let detailLabel = UILabel()
-    private let detailDescriptionLabel = UILabel()
-    private let reviewLabel = UILabel()
-    private let reviewDescriptionLabel = UILabel()
+    // title
+    private let titleHeader = UILabel()
+    private let titleContent = UILabel()
+    // detail
+    private let detailHeader = UILabel()
+    private let detailContent = UILabel()
+    // review
+    private let reviewHeader = UILabel()
+    private let reviewContent = UILabel()
+    // url
+    private let urlHeader = UILabel()
+    let urlContent = UILabel()
+    // buttons
     let openUrlButton: TBRCardButton
     let backButton: TBRCardButton
     let editButton: TBRCardButton
     let deleteButton: TBRCardButton
     
     private var onBackAction: (() -> Void)?
-    var bookUrl: String
     private var isMine: Bool?
     
     init(title: String, detail: String, review: String, url: String, isMine: Bool?, onBack: @escaping () -> Void) {
@@ -28,12 +34,11 @@ class BookDetailView: UIView {
         self.backButton = TBRCardButton(title: "Back", action: {})
         self.editButton = TBRCardButton(title: "Edit", action: {})
         self.deleteButton = TBRCardButton(title: "Delete", action: {})
-        self.bookUrl = url
         self.isMine = isMine
         self.onBackAction = onBack
         super.init(frame: .zero)
         setupUI()
-        updateUI(title: title, detail: detail, review: review, url: bookUrl, isMine: isMine)
+        updateUI(title: title, detail: detail, review: review, url: url, isMine: isMine)
     }
     
     required init?(coder: NSCoder) {
@@ -71,64 +76,81 @@ class BookDetailView: UIView {
         
         // テキスト関連の設定
         setupLabels(in: containerView)
+        // ボタン関連の設定
         setupButtons(in: containerView)
     }
     
     private func setupLabels(in contentView: UIView) {
-        [titleDescriptionLabel, titleLabel, detailDescriptionLabel, detailLabel, reviewDescriptionLabel, reviewLabel].forEach {
+        [titleHeader, titleContent, urlHeader, urlContent, detailHeader, detailContent, reviewHeader, reviewContent].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview($0)
         }
         
+        // ラベルの内容
+        titleHeader.text = "- Title -"
+        titleHeader.font = UIFont.boldSystemFont(ofSize: 14)
+        titleHeader.textColor = .gray
+        
+        detailHeader.text = "- Detail -"
+        detailHeader.font = UIFont.boldSystemFont(ofSize: 14)
+        detailHeader.textColor = .gray
+        
+        reviewHeader.text = "- Review -"
+        reviewHeader.font = UIFont.boldSystemFont(ofSize: 14)
+        reviewHeader.textColor = .gray
+        
+        urlHeader.text = "- Url -"
+        urlHeader.font = UIFont.boldSystemFont(ofSize: 14)
+        urlHeader.textColor = .gray
+        
+        titleContent.font = UIFont.boldSystemFont(ofSize: 24)
+        titleContent.numberOfLines = 0
+        
+        detailContent.font = UIFont.systemFont(ofSize: 16)
+        detailContent.numberOfLines = 0
+        
+        reviewContent.font = UIFont.systemFont(ofSize: 16)
+        reviewContent.numberOfLines = 0
+        
+        urlContent.font = UIFont.boldSystemFont(ofSize: 16)
+        urlContent.numberOfLines = 0
+        urlContent.textColor = .link
+        
         // ラベルのレイアウト
         NSLayoutConstraint.activate([
-            titleDescriptionLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            titleDescriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleHeader.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
+            titleHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            titleLabel.topAnchor.constraint(equalTo: titleDescriptionLabel.bottomAnchor, constant: 8),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            titleContent.topAnchor.constraint(equalTo: titleHeader.bottomAnchor, constant: 8),
+            titleContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            titleContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            detailDescriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 32),
-            detailDescriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            detailDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            detailHeader.topAnchor.constraint(equalTo: titleContent.bottomAnchor, constant: 32),
+            detailHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            detailHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            detailLabel.topAnchor.constraint(equalTo: detailDescriptionLabel.bottomAnchor, constant: 8),
-            detailLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            detailLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            detailContent.topAnchor.constraint(equalTo: detailHeader.bottomAnchor, constant: 8),
+            detailContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            detailContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            reviewDescriptionLabel.topAnchor.constraint(equalTo: detailLabel.bottomAnchor, constant: 20),
-            reviewDescriptionLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            reviewDescriptionLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            reviewHeader.topAnchor.constraint(equalTo: detailContent.bottomAnchor, constant: 12),
+            reviewHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            reviewHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             
-            reviewLabel.topAnchor.constraint(equalTo: reviewDescriptionLabel.bottomAnchor, constant: 8),
-            reviewLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            reviewLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            reviewLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
+            reviewContent.topAnchor.constraint(equalTo: reviewHeader.bottomAnchor, constant: 8),
+            reviewContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            reviewContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            reviewContent.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
+            
+            urlHeader.topAnchor.constraint(equalTo: reviewContent.bottomAnchor, constant: 12),
+            urlHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            urlHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            
+            urlContent.topAnchor.constraint(equalTo: urlHeader.bottomAnchor, constant: 8),
+            urlContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            urlContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
         ])
-        
-        // ラベルスタイル
-        titleDescriptionLabel.text = "- Title -"
-        titleDescriptionLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        titleDescriptionLabel.textColor = .gray
-        
-        detailDescriptionLabel.text = "- Detail -"
-        detailDescriptionLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        detailDescriptionLabel.textColor = .gray
-        
-        reviewDescriptionLabel.text = "- Review -"
-        reviewDescriptionLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        reviewDescriptionLabel.textColor = .gray
-        
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
-        titleLabel.numberOfLines = 0
-        
-        detailLabel.font = UIFont.systemFont(ofSize: 16)
-        detailLabel.numberOfLines = 0
-        
-        reviewLabel.font = UIFont.systemFont(ofSize: 16)
-        reviewLabel.numberOfLines = 0
     }
     
     private func setupButtons(in contentView: UIView) {
@@ -160,10 +182,10 @@ class BookDetailView: UIView {
     
     // MARK: - UI更新
     func updateUI(title: String, detail: String, review: String, url: String, isMine: Bool?) {
-        titleLabel.text = title
-        detailLabel.text = detail
-        reviewLabel.text = review
-        bookUrl = url
+        titleContent.text = title
+        detailContent.text = detail
+        reviewContent.text = review
+        urlContent.text = url
         self.isMine = isMine
         
         // ボタンの表示/非表示
