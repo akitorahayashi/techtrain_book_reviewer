@@ -7,62 +7,98 @@
 
 import UIKit
 
-class BookReviewListVC: UIViewController, UserNameChangeDelegate {
-    weak var userNameChangeDelegate: UserNameChangeDelegate?
-    
-    private var bookReviewListView: BookReviewListView?
+class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    private var bookReviewListView: BookReviewListView!
+    private var bookReviews: [BookReview] = []
+    private var isLoading = false
+    private var currentOffset = 0
     private let refreshControl = UIRefreshControl()
-    var shouldRefreshOnReturn: Bool = false
     
     override func loadView() {
-        let reviewList = BookReviewListView()
-        self.bookReviewListView = reviewList
-        view = reviewList
+        bookReviewListView = BookReviewListView()
+        view = bookReviewListView
     }
     
-    // MARK: - Lifecycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupTableView()
         setupRefreshControl()
-        loadInitialReviewsAsync()
+        loadReviews(offset: 0)
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if shouldRefreshOnReturn {
-            refreshReviews()
-            shouldRefreshOnReturn = false // フラグをリセット
-        }
+        bookReviewListView.reloadData()
     }
     
-    // MARK: - UserNameChangeDelegate
-    func didChangeUserName() async {
-        await MainActor.run { [weak self] in
-            self?.refreshReviews()
-        }
+    // MARK: - Setup Methods
+    private func setupTableView() {
+        bookReviewListView.tableView.delegate = self
+        bookReviewListView.tableView.dataSource = self
     }
     
-    // MARK: - Local Methods
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
-        bookReviewListView?.tableView.refreshControl = refreshControl
+        bookReviewListView.tableView.refreshControl = refreshControl
     }
     
-    private func loadInitialReviewsAsync() {
+    // MARK: - Data Methods
+    private func loadReviews(offset: Int) {
+        guard !isLoading, let token = UserProfileService.yourAccount?.token else { return }
+        isLoading = true
+        
         Task {
-            await loadReviews(offset: 0)
+            do {
+                let fetchedReviews = try await BookReviewService.shared.fetchAndReturnBookReviews(offset: offset, token: token)
+                if offset == 0 {
+                    bookReviews = fetchedReviews
+                } else {
+                    bookReviews.append(contentsOf: fetchedReviews)
+                }
+                currentOffset = offset + fetchedReviews.count
+                await MainActor.run {
+                    self.bookReviewListView.reloadData()
+                }
+            } catch {
+                print("Failed to load reviews: \(error.localizedDescription)")
+            }
+            isLoading = false
         }
     }
     
     @objc private func refreshReviews() {
-        Task {
-            await loadReviews(offset: 0) { [weak self] in
-                self?.refreshControl.endRefreshing()
-            }
-        }
+        loadReviews(offset: 0)
+        refreshControl.endRefreshing()
     }
     
-    private func loadReviews(offset: Int, completion: (() -> Void)? = nil) async {
-        await bookReviewListView?.loadBookReviews(offset: offset, completion: completion)
+    // MARK: - UserNameChangeDelegate
+    func didChangeUserName() async {
+        loadReviews(offset: 0)
+    }
+    
+    // MARK: - UITableViewDataSource
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return bookReviews.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "BookReviewCell", for: indexPath) as? BookReviewCell else {
+            return UITableViewCell()
+        }
+        cell.configure(with: bookReviews[indexPath.row])
+        return cell
+    }
+    
+    // MARK: - UITableViewDelegate
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let review = bookReviews[indexPath.row]
+        navigationController?.pushViewController(BookDetailVC(book: review), animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row == bookReviews.count - 1 {
+            loadReviews(offset: currentOffset)
+        }
     }
 }

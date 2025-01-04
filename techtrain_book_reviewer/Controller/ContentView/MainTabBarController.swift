@@ -7,11 +7,7 @@
 
 import UIKit
 
-protocol UserNameChangeDelegate: AnyObject {
-    func didChangeUserName() async
-}
-
-class MainTabBarController: UITabBarController, UITabBarControllerDelegate, UserNameChangeDelegate {
+class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     weak var coordinator: MainTabBarCoordinatorProtocol?
     private var bookListVC = BookReviewListVC()
     private var createReviewVC = EditBookReviewVC()
@@ -31,8 +27,6 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
         
         // UITabBarControllerDelegateのデリゲートを設定
         self.delegate = self
-        // BookReviewListViewControllerにデリゲートを設定
-        bookListVC.userNameChangeDelegate = self
         
         // tabBarItemの設定
         bookListVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
@@ -44,13 +38,13 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
     // MARK: - UITabBarControllerDelegate
     /// タブが選択された際に呼び出されるメソッド
     /// "Book List" タブを選択したときにリフレッシュ
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        if let navController = viewController as? UINavigationController,
-           let bookListVC = navController.viewControllers.first as? BookReviewListVC {
-            // フラグを設定し、次回表示時にリフレッシュ
-            bookListVC.shouldRefreshOnReturn = true
-        }
-    }
+//    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+//        if let navController = viewController as? UINavigationController,
+//           let bookListVC = navController.viewControllers.first as? BookReviewListVC {
+//            // フラグを設定し、次回表示時にリフレッシュ
+//            bookListVC.shouldRefreshOnReturn = true
+//        }
+//    }
     
     // MARK: - UserNameChangeDelegate
     /// UserNameChangeDelegateプロトコルのメソッド

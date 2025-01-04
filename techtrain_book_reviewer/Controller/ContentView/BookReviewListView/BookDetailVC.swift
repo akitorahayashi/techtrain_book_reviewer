@@ -43,12 +43,12 @@ class BookDetailVC: UIViewController {
         navigationItem.hidesBackButton = true
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        if let parent = navigationController?.viewControllers.last as? BookReviewListVC {
-            parent.shouldRefreshOnReturn = isUpdated // 親にフラグを渡す
-        }
-    }
+//    override func viewWillDisappear(_ animated: Bool) {
+//        super.viewWillDisappear(animated)
+//        if let parent = navigationController?.viewControllers.last as? BookReviewListVC {
+//            parent.shouldRefreshOnReturn = isUpdated // 親にフラグを渡す
+//        }
+//    }
     
     // MARK: - Setup View
     private func loadBookDetail() {
