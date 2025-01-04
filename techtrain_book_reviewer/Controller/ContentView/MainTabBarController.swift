@@ -49,12 +49,12 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     // MARK: - UserNameChangeDelegate
     /// UserNameChangeDelegateプロトコルのメソッド
     /// ユーザー名が変更された際に呼び出される
-    func didChangeUserName() async {
-        if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
-           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListVC {
-            await bookListVC.didChangeUserName()
-        }
-    }
+//    func didChangeUserName() async {
+//        if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
+//           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListVC {
+//            await bookListVC.didChangeUserName()
+//        }
+//    }
     
     // MARK: - Custom Methods
     /// ユーザーアイコンボタンを作成するメソッド
@@ -137,7 +137,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
             guard let self = self else { return }
             if let newName = alert.textFields?.first?.text {
                 // 名前をバリデーション
-                guard !TBRAuthInputValidator.isValidName(newName) else { // 名前の長さが10文字以下であることを確認
+                guard TBRAuthInputValidator.isValidName(newName) else { // 名前の長さが10文字以下であることを確認
                     TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "名前は10文字以下で空白以外の文字を含めてください。")
                     return
                 }
@@ -158,7 +158,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                     do {
                         try await UserProfileService.updateUserName(withToken: token, newName: newName)
                         // デリゲートを利用してリフレッシュするように通知を送る
-                        await self.didChangeUserName()
+//                        await self.didChangeUserName()
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")
                     } catch let serviceError {
                         TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
