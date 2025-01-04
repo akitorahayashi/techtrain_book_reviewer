@@ -8,8 +8,8 @@
 import UIKit
 
 @MainActor
-class LoadingOverlayService {
-    static let shared = LoadingOverlayService()
+class LoadingOverlay {
+    static let shared = LoadingOverlay()
     
     private var overlayView: UIView?
     

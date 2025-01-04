@@ -57,7 +57,7 @@ class EditBookReviewVC: UIViewController {
     private func fetchBookDetailsForEdit(reviewId: String) async {
         guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         do {
             let fetchedBookReviewDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: reviewId, token: token)
             await MainActor.run { [weak self] in
@@ -67,7 +67,7 @@ class EditBookReviewVC: UIViewController {
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
         // ローディング終了
-        LoadingOverlayService.shared.hide()
+        LoadingOverlay.shared.hide()
     }
     
     private func populateFields(with bookReview: BookReview) {
@@ -96,7 +96,7 @@ class EditBookReviewVC: UIViewController {
               let detail = editView?.detailInputField.text,
               let review = editView?.reviewInputField.text else { return }
         // ローディング開始
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         do {
             // A successful response. が返ってきただけなので使わない
             let _  = try await BookReviewService.shared.postBookReview(
@@ -112,7 +112,7 @@ class EditBookReviewVC: UIViewController {
         } catch let serviceError {
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
-        LoadingOverlayService.shared.hide()
+        LoadingOverlay.shared.hide()
     }
     
     private func updateReviewAsync() async {
@@ -123,7 +123,7 @@ class EditBookReviewVC: UIViewController {
               let detail = editView?.detailInputField.text,
               let review = editView?.reviewInputField.text, let id = bookReviewId else { return }
         // ローディング開始
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         do {
             let _ = try await BookReviewService.shared.updateAndReturnBookReview(
                 id: id,

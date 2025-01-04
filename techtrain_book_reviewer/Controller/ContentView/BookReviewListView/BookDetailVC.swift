@@ -54,7 +54,7 @@ class BookDetailVC: UIViewController {
     private func loadBookDetail() {
         guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         Task {
             do {
                 let bookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: bookId, token: token)
@@ -64,7 +64,7 @@ class BookDetailVC: UIViewController {
             }
         }
         // ローディング終了
-        LoadingOverlayService.shared.hide()
+        LoadingOverlay.shared.hide()
     }
     
     private func updateUI(with bookReview: BookReview) {
@@ -131,7 +131,7 @@ class BookDetailVC: UIViewController {
     private func deleteBookReview() {
         guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         Task {
             do {
                 try await BookReviewService.shared.deleteBookReview(id: bookId, token: token)
@@ -142,7 +142,7 @@ class BookDetailVC: UIViewController {
                 TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
             }
             // ローディング終了
-            LoadingOverlayService.shared.hide()
+            LoadingOverlay.shared.hide()
         }
     }
 }

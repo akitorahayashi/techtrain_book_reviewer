@@ -149,13 +149,13 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
                 }
                 
                 // ローディング開始
-                LoadingOverlayService.shared.show()
+                LoadingOverlay.shared.show()
                 
                 Task {
                     // トークン取得
                     guard let token = UserProfileService.yourAccount?.token else {
                         // ローディング終了
-                        LoadingOverlayService.shared.hide()
+                        LoadingOverlay.shared.hide()
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が無効です。ログインし直してください")
                         return
                     }
@@ -171,7 +171,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate, User
                     }
                 }
                 // ローディング終了
-                LoadingOverlayService.shared.hide()
+                LoadingOverlay.shared.hide()
                 
             }
         })
