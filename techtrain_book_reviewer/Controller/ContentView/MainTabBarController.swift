@@ -38,13 +38,12 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     // MARK: - UITabBarControllerDelegate
     /// タブが選択された際に呼び出されるメソッド
     /// "Book List" タブを選択したときにリフレッシュ
-//    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-//        if let navController = viewController as? UINavigationController,
-//           let bookListVC = navController.viewControllers.first as? BookReviewListVC {
-//            // フラグを設定し、次回表示時にリフレッシュ
-//            bookListVC.shouldRefreshOnReturn = true
-//        }
-//    }
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        if let navController = viewController as? UINavigationController,
+           let bookListVC = navController.viewControllers.first as? BookReviewListVC {
+            bookListVC.loadReviews(offset: 0)
+        }
+    }
     
     // MARK: - UserNameChangeDelegate
     /// UserNameChangeDelegateプロトコルのメソッド
@@ -157,8 +156,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                     // サーバーに名前変更リクエストを送信
                     do {
                         try await UserProfileService.updateUserName(withToken: token, newName: newName)
-                        // デリゲートを利用してリフレッシュするように通知を送る
-//                        await self.didChangeUserName()
+                        // リフレッシュする
+                        bookListVC.loadReviews(offset: 0)
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")
                     } catch let serviceError {
                         TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)

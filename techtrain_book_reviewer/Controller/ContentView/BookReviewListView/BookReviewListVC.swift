@@ -8,9 +8,8 @@
 import UIKit
 
 class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    private var bookReviewListView: BookReviewListView!
+    private var bookReviewListView: BookReviewListView?
     private var bookReviews: [BookReview] = []
-    private var isLoading = false
     private var currentOffset = 0
     private let refreshControl = UIRefreshControl()
     
@@ -28,24 +27,23 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        bookReviewListView.reloadData()
+        bookReviewListView?.reloadData()
     }
     
     // MARK: - Setup Methods
     private func setupTableView() {
-        bookReviewListView.tableView.delegate = self
-        bookReviewListView.tableView.dataSource = self
+        bookReviewListView?.tableView.delegate = self
+        bookReviewListView?.tableView.dataSource = self
     }
     
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
-        bookReviewListView.tableView.refreshControl = refreshControl
+        bookReviewListView?.tableView.refreshControl = refreshControl
     }
     
     // MARK: - Data Methods
-    private func loadReviews(offset: Int) {
-        guard !isLoading, let token = UserProfileService.yourAccount?.token else { return }
-        isLoading = true
+    func loadReviews(offset: Int) {
+        guard let token = UserProfileService.yourAccount?.token else { return }
         
         Task {
             do {
@@ -57,23 +55,17 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
                 }
                 currentOffset = offset + fetchedReviews.count
                 await MainActor.run {
-                    self.bookReviewListView.reloadData()
+                    self.bookReviewListView?.reloadData()
                 }
             } catch {
                 print("Failed to load reviews: \(error.localizedDescription)")
             }
-            isLoading = false
         }
     }
     
     @objc private func refreshReviews() {
         loadReviews(offset: 0)
         refreshControl.endRefreshing()
-    }
-    
-    // MARK: - UserNameChangeDelegate
-    func didChangeUserName() async {
-        loadReviews(offset: 0)
     }
     
     // MARK: - UITableViewDataSource
