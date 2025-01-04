@@ -106,7 +106,7 @@ class AuthInputVC: UIViewController {
     
     // MARK: - サインアップ処理
     private func performSignUp(email: String, password: String, name: String) async {
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         let authService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password, signUpName: name)
@@ -118,7 +118,7 @@ class AuthInputVC: UIViewController {
     
     // MARK: - ログイン処理
     private func performLoginAsync(email: String, password: String) async {
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         let authService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password)
@@ -126,12 +126,12 @@ class AuthInputVC: UIViewController {
         } catch let serviceError {
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
-        LoadingOverlayService.shared.hide()
+        LoadingOverlay.shared.hide()
     }
     
     // MARK: - プロファイル取得
     private func fetchAndSetupUserProfile(token: String, isSignUp: Bool) async {
-        LoadingOverlayService.shared.show()
+        LoadingOverlay.shared.show()
         do {
             try await UserProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
             let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
@@ -143,6 +143,6 @@ class AuthInputVC: UIViewController {
         } catch let serviceError {
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
-        LoadingOverlayService.shared.hide()
+        LoadingOverlay.shared.hide()
     }
 }
