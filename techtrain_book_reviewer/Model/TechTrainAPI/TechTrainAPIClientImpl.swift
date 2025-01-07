@@ -7,9 +7,18 @@
 
 import Foundation
 
-actor TechTrainAPIClient {
+protocol TechTrainAPIClient {
+    func makeRequestAsync(
+        to endpoint: String,
+        method: String,
+        headers: [String: String]?,
+        body: [String: Any]?
+    ) async throws(TechTrainAPIError) -> Data
+}
+
+actor TechTrainAPIClientImpl {
     // インスタンス
-    static let shared = TechTrainAPIClient()
+    static let shared = TechTrainAPIClientImpl()
     // その他のメンバー
     private let baseURL = "https://railway.bookreview.techtrain.dev"
     private let session: URLSession

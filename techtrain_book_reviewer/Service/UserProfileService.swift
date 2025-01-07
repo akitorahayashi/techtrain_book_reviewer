@@ -11,9 +11,9 @@ actor UserProfileService {
     
     static var yourAccount: TBRUser? = nil
     
-    private let apiClient: TechTrainAPIClient
+    private let apiClient: TechTrainAPIClientImpl
     
-    init(apiClient: TechTrainAPIClient = .shared) {
+    init(apiClient: TechTrainAPIClientImpl = .shared) {
         self.apiClient = apiClient
     }
     
@@ -46,7 +46,7 @@ actor UserProfileService {
         ]
         
         do {
-            let _ = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: parameters)
+            let _ = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: parameters)
             UserProfileService.yourAccount?.name = newName
             print("UserProfileService: ユーザー名の更新に成功しました")
         } catch {
@@ -65,7 +65,7 @@ actor UserProfileService {
         ]
         
         do {
-            let profileData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let profileData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedUserData = try decodeUserProfile(token: token, profileData: profileData)
             UserProfileService.yourAccount = decodedUserData
         } catch {
