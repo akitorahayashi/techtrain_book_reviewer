@@ -22,14 +22,14 @@ actor BookReviewService {
     ) async throws(TechTrainAPIError.ServiceError) -> Data {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books"
-        let parameters: [String: Any] = [
+        let body: [String: String] = [
             "title": title,
             "url": url,
             "detail": detail,
             "review": review
         ]
         do {
-            let data = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "POST", headers: headers, body: parameters)
+            let data = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "POST", headers: headers, body: body)
             return data
         } catch {
             throw error.toServiceError()
@@ -47,7 +47,7 @@ actor BookReviewService {
     ) async throws(TechTrainAPIError.ServiceError) -> BookReview {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books/\(id)"
-        let body: [String: Any] = [
+        let body: [String: String] = [
             "title": title,
             "url": url ?? "",
             "detail": detail,

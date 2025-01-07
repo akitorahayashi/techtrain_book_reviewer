@@ -9,11 +9,11 @@ import Foundation
 
 actor UserProfileService {
     
+    private let apiClient: TechTrainAPIClient
+    
     static var yourAccount: TBRUser? = nil
     
-    private let apiClient: TechTrainAPIClientImpl
-    
-    init(apiClient: TechTrainAPIClientImpl = .shared) {
+    init(apiClient: TechTrainAPIClient = TechTrainAPIClientImpl.shared) {
         self.apiClient = apiClient
     }
     
@@ -41,12 +41,12 @@ actor UserProfileService {
             "Authorization": "Bearer \(token)"
         ]
         
-        let parameters = [
+        let body = [
             "name": newName
         ]
         
         do {
-            let _ = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: parameters)
+            let _ = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
             UserProfileService.yourAccount?.name = newName
             print("UserProfileService: ユーザー名の更新に成功しました")
         } catch {

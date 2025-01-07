@@ -12,11 +12,11 @@ protocol TechTrainAPIClient {
         to endpoint: String,
         method: String,
         headers: [String: String]?,
-        body: [String: Any]?
+        body: [String: String]?
     ) async throws(TechTrainAPIError) -> Data
 }
 
-actor TechTrainAPIClientImpl {
+actor TechTrainAPIClientImpl: TechTrainAPIClient {
     // インスタンス
     static let shared = TechTrainAPIClientImpl()
     // その他のメンバー
@@ -27,11 +27,12 @@ actor TechTrainAPIClientImpl {
         self.session = session
     }
     
+    // Non-sendable type '[String : Any]?' in parameter of the protocol requirement satisfied by actor-isolated instance method 'makeRequestAsync(to:method:headers:body:)' cannot cross actor boundary
     func makeRequestAsync(
         to endpoint: String,
         method: String,
         headers: [String: String]? = nil,
-        body: [String: Any]?
+        body: [String: String]?
     ) async throws(TechTrainAPIError) -> Data {
         guard let url = URL(string: baseURL + endpoint) else {
             print("URLが無効: \(baseURL + endpoint)")

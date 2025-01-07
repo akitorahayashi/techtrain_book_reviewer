@@ -8,31 +8,32 @@
 import Foundation
 
 actor TBREmailAuthService {
-    private let apiClient: TechTrainAPIClientImpl
+    private let apiClient: TechTrainAPIClient
     
-    init(apiClient: TechTrainAPIClientImpl) {
+    init(apiClient: TechTrainAPIClient) {
         self.apiClient = apiClient
     }
     
-    func authenticateAndReturnToken(
+    static func authenticateAndReturnToken(
         email: String,
         password: String,
         signUpName: String? = nil // `signUp` の場合は名前がある
         // token: Stringを返す
     ) async throws(TechTrainAPIError.ServiceError) -> String {
         let endpoint = signUpName == nil ? "/signin" : "/users" // `users` はサインアップ用エンドポイント
-        var parameters: [String: Any] = [
+        var body: [String: String] = [
             "email": email,
             "password": password
         ]
         
         // `signUp` の場合は名前を追加
         if let name = signUpName {
-            parameters["name"] = name
+            body["name"] = name
         }
         
         do {
-            let data = try await apiClient.makeRequestAsync(to: endpoint, method: "POST", body: parameters)
+            // Instance member 'apiClient' cannot be used on type 'TBREmailAuthService'
+            let data = try await apiClient.makeRequestAsync(to: endpoint, method: "POST", headers: nil, body: body)
             // tokenを引き出す
             guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                   let token = json["token"] as? String else {
