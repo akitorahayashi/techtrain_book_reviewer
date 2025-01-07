@@ -46,12 +46,10 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     private var reviewHeightConstraint: NSLayoutConstraint!
     private var detailHeightConstraint: NSLayoutConstraint!
     
-    let compliteButton: TBRCardButton
-    let clearButton: TBRCardButton
+    let compliteButton = TBRCardButton(title: "")
+    let clearButton = TBRCardButton(title: "")
     
     init(compliteAction: @escaping () -> Void, clearAction: @escaping () -> Void) {
-        self.compliteButton = TBRCardButton(title: "", action: compliteAction)
-        self.clearButton = TBRCardButton(title: "", action: clearAction)
         super.init(frame: .zero)
         setupUI()
         setupDynamicHeight()

@@ -18,12 +18,10 @@ class SelectAuthView: UIView {
         return label
     }()
     
-    let showSignUpPageButton: TBRCardButton
-    let showLogInPageButton: TBRCardButton
+    let showSignUpPageButton = TBRCardButton(title: "Sign Up")
+    let showLogInPageButton = TBRCardButton(title: "Log In")
     
-    init(showSignUpPageAction: @escaping () -> Void, showLogInPageAction: @escaping () -> Void) {
-        self.showSignUpPageButton = TBRCardButton(title: "Sign Up", action: showSignUpPageAction)
-        self.showLogInPageButton = TBRCardButton(title: "Log In", action: showLogInPageAction)
+    init() {
         super.init(frame: .zero)
         setupUI()
     }

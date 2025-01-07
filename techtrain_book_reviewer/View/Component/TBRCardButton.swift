@@ -8,10 +8,9 @@
 import UIKit
 
 class TBRCardButton: UIButton {
-    init(title: String, action: @escaping () -> Void) {
+    init(title: String) {
         super.init(frame: .zero)
         setupUI(title: title)
-        addAction(action)
     }
     
     required init?(coder: NSCoder) {
@@ -37,20 +36,6 @@ class TBRCardButton: UIButton {
         heightAnchor.constraint(equalToConstant: 44).isActive = true
     }
     
-    private func addAction(_ action: @escaping () -> Void) {
-        // タップアクションを追加
-        addTarget(self, action: #selector(handleTap), for: .touchUpInside)
-        // アクションを関連付け
-        objc_setAssociatedObject(self, &TBRCardButton.actionKey, action, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-    }
-    
-    @objc private func handleTap() {
-        // 保存されたアクションを実行
-        if let action = objc_getAssociatedObject(self, &TBRCardButton.actionKey) as? () -> Void {
-            action()
-        }
-    }
-    
     // タップ時の視覚効果
     override var isHighlighted: Bool {
         didSet {
@@ -59,7 +44,4 @@ class TBRCardButton: UIButton {
             }
         }
     }
-    
-    // メモリアドレスをキーとして保存
-    static private var actionKey: Void? = nil
 }

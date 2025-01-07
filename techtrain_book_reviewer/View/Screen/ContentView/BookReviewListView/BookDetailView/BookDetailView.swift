@@ -21,19 +21,15 @@ class BookDetailView: UIView {
     private let urlHeader = UILabel()
     let urlContent = UILabel()
     // buttons
-    let openUrlButton: TBRCardButton
-    let backButton: TBRCardButton
-    let editButton: TBRCardButton
-    let deleteButton: TBRCardButton
+    let openUrlButton = TBRCardButton(title: "Browser")
+    let backButton = TBRCardButton(title: "Back")
+    let editButton = TBRCardButton(title: "Edit")
+    let deleteButton = TBRCardButton(title: "Delete")
     
     private var onBackAction: (() -> Void)?
     private var isMine: Bool?
     
     init(title: String, detail: String, review: String, url: String, isMine: Bool?, onBack: @escaping () -> Void) {
-        self.openUrlButton = TBRCardButton(title: "Browser", action: {})
-        self.backButton = TBRCardButton(title: "Back", action: {})
-        self.editButton = TBRCardButton(title: "Edit", action: {})
-        self.deleteButton = TBRCardButton(title: "Delete", action: {})
         self.isMine = isMine
         self.onBackAction = onBack
         super.init(frame: .zero)
@@ -51,10 +47,10 @@ class BookDetailView: UIView {
         
         let scrollView = UIScrollView()
         
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = true
         scrollView.isDirectionalLockEnabled = true
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
         
         let containerView = UIView()
@@ -188,20 +184,20 @@ class BookDetailView: UIView {
         urlContent.text = url
         self.isMine = isMine
         
-        // ボタンの表示/非表示
+        // 編集ボタンの表示/非表示
         let isUserOwner = isMine ?? false
         editButton.isHidden = !isUserOwner
         deleteButton.isHidden = !isUserOwner
     }
     
-    private func findViewController() -> UIViewController? {
-        var nextResponder: UIResponder? = self
-        while let responder = nextResponder {
-            if let viewController = responder as? UIViewController {
-                return viewController
-            }
-            nextResponder = responder.next
-        }
-        return nil
-    }
+//    private func findViewController() -> UIViewController? {
+//        var nextResponder: UIResponder? = self
+//        while let responder = nextResponder {
+//            if let viewController = responder as? UIViewController {
+//                return viewController
+//            }
+//            nextResponder = responder.next
+//        }
+//        return nil
+//    }
 }

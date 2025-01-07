@@ -8,17 +8,16 @@
 import UIKit
 
 class AuthInputVC: UIViewController {
-    // MARK: - EmailAuthMode
-    enum EmailAuthMode {
-        case login
-        case signUp
-    }
-    
     // MARK: - Properties
     private let authMode: EmailAuthMode
     private var authInputView: AuthInputView?
     private weak var authInputCoordinator: AuthInputCoordinator?
     
+    // MARK: - EmailAuthMode
+    enum EmailAuthMode {
+        case login
+        case signUp
+    }
     
     // MARK: - Initializers
     init(authMode: EmailAuthMode, authInputCoordinator: AuthInputCoordinator?) {
@@ -33,18 +32,24 @@ class AuthInputVC: UIViewController {
     
     // MARK: - Lifecycle Methods
     override func loadView() {
-        authInputView = AuthInputView(
-            authMode: authMode,
-            authButtonAction: { [weak self] in self?.authButtonAction() },
-            clearButtonAction: { [weak self] in self?.authInputView?.clearInputFields() }
-        )
+        authInputView = AuthInputView(authMode: authMode)
         view = authInputView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        authInputView?.actionButton.addTarget(self, action: #selector(authButtonAction), for: .touchUpInside)
+        authInputView?.clearButton.addTarget(self, action: #selector(clearInputFields), for: .touchUpInside)
         setupKeyboardDismissTapGesture()
     }
+    
+    // MARK: - 入力フォームをクリアする処理
+    @objc func clearInputFields() {
+        self.authInputView?.nameTextField.text = ""
+        self.authInputView?.emailTextField.text = ""
+        self.authInputView?.passwordTextField.text = ""
+    }
+    
     // MARK: - 入力検証とエラー表示
     /// 入力値を検証し、エラーがあればアラートを表示。すべてクリアした場合、入力値をタプルで返す。
     private func validateAndShowErrors() -> (email: String, password: String, name: String?)? {
@@ -66,7 +71,7 @@ class AuthInputVC: UIViewController {
         return (email, password, name)
     }
     // MARK: - 認証処理
-    private func authButtonAction() {
+    @objc private func authButtonAction() {
         guard let validatedInputs = validateAndShowErrors() else { return }
         let email = validatedInputs.email
         let password = validatedInputs.password

@@ -9,6 +9,7 @@ import UIKit
 
 class SelectAuthVC: UIViewController {
     private weak var coordinator: SelectAuthCoordinatorProtocol?
+    private var selectAuthView: SelectAuthView?
     
     init(coordinator: SelectAuthCoordinatorProtocol?) {
         self.coordinator = coordinator
@@ -20,18 +21,21 @@ class SelectAuthVC: UIViewController {
     }
     
     override func loadView() {
-        let selectAuthView = SelectAuthView(
-            showSignUpPageAction: { [weak self] in
-                self?.coordinator?.navigateToSignUp()
-            },
-            showLogInPageAction: { [weak self] in
-                self?.coordinator?.navigateToLogIn()
-            }
-        )
+        self.selectAuthView = SelectAuthView()
         view = selectAuthView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        selectAuthView?.showSignUpPageButton.addTarget(self, action: #selector(signupButtonAction), for: .touchUpInside)
+        selectAuthView?.showLogInPageButton.addTarget(self, action: #selector(loginButtonAction), for: .touchUpInside)
+    }
+    
+    @objc func signupButtonAction() {
+        self.coordinator?.navigateToSignUp()
+    }
+    
+    @objc func loginButtonAction() {
+        self.coordinator?.navigateToLogIn()
     }
 }

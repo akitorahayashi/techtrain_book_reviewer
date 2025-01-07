@@ -19,10 +19,10 @@ class AuthInputView: UIView {
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton
     
-    init(authMode: AuthInputVC.EmailAuthMode, authButtonAction: @escaping () -> Void, clearButtonAction: @escaping () -> Void) {
+    init(authMode: AuthInputVC.EmailAuthMode) {
         let actionTitle = (authMode == .login) ? "ログイン" : "登録"
-        self.actionButton = TBRCardButton(title: actionTitle, action: authButtonAction)
-        self.clearButton = TBRCardButton(title: "クリア", action: clearButtonAction)
+        self.actionButton = TBRCardButton(title: actionTitle)
+        self.clearButton = TBRCardButton(title: "クリア")
         super.init(frame: .zero)
         setupUI(authMode: authMode)
     }
@@ -76,11 +76,5 @@ class AuthInputView: UIView {
             stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
         ])
-    }
-    
-    func clearInputFields() {
-        nameTextField.text = ""
-        emailTextField.text = ""
-        passwordTextField.text = ""
     }
 }
