@@ -8,7 +8,6 @@
 import Foundation
 
 actor UserProfileService {
-    
     private let apiClient: TechTrainAPIClient
     
     static var yourAccount: TBRUser? = nil
@@ -17,7 +16,7 @@ actor UserProfileService {
         self.apiClient = apiClient
     }
     
-    static func decodeUserProfile(token: String, profileData: Data) throws(TechTrainAPIError) -> TBRUser {
+    func decodeUserProfile(token: String, profileData: Data) throws(TechTrainAPIError) -> TBRUser {
         guard let jsonUserData = try? JSONSerialization.jsonObject(with: profileData, options: []) as? [String: Any],
               let name = jsonUserData["name"] as? String,
               let iconUrl = jsonUserData["iconUrl"] as? String? else {
@@ -31,7 +30,7 @@ actor UserProfileService {
     
     
     /// ユーザー名を更新する
-    static func updateUserName(
+    func updateUserName(
         withToken token: String,
         newName: String
     ) async throws(TechTrainAPIError.ServiceError) -> Void {
@@ -55,7 +54,7 @@ actor UserProfileService {
     }
     
     /// ユーザープロファイルを取得する
-    static func fetchUserProfileAndSetSelfAccount(
+    func fetchUserProfileAndSetSelfAccount(
         withToken token: String
     ) async throws(TechTrainAPIError.ServiceError) -> Void {
         let endpoint = "/users"
