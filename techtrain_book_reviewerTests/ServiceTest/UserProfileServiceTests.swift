@@ -10,17 +10,17 @@ import XCTest
 
 final class UserProfileServiceTests: XCTestCase {
     private var mockAPIClient: MockTechTrainAPIClient!
-    private var userProfileServiceWithMock: UserProfileService!
+    private var mockUserProfileService: UserProfileService!
     
     override func setUp() {
         super.setUp()
         self.mockAPIClient = MockTechTrainAPIClient()
-        self.userProfileServiceWithMock = UserProfileService(apiClient: self.mockAPIClient)
+        self.mockUserProfileService = UserProfileService(apiClient: self.mockAPIClient)
     }
     
     override func tearDown() {
         mockAPIClient = nil
-        userProfileServiceWithMock = nil
+        mockUserProfileService = nil
         super.tearDown()
     }
     
@@ -29,15 +29,15 @@ final class UserProfileServiceTests: XCTestCase {
         let testToken = "test-token"
         let enteredNewName = "NewUserName"
         // 変更前アカウントを設定
-        await self.userProfileServiceWithMock.updateAccountState(newState: TBRUser(token: testToken, name: "Unknown"))
+        await self.mockUserProfileService.updateAccountState(newState: TBRUser(token: testToken, name: "Unknown"))
         // レスポンスデータを設定
         let responseDict: [String: String] = ["name": "NewUserName"]
         let responseData = try? JSONSerialization.data(withJSONObject: responseDict, options: [])
         await mockAPIClient.setResponseData(responseData)
         // Act
-        try await self.userProfileServiceWithMock.updateAndSetUserName(withToken: testToken, enteredNewName: enteredNewName)
+        try await self.mockUserProfileService.updateAndSetUserName(withToken: testToken, enteredNewName: enteredNewName)
         // Assert
-        let nameResult = await userProfileServiceWithMock.getAccountData()?.name
+        let nameResult = await mockUserProfileService.getAccountData()?.name
         XCTAssertEqual(nameResult, enteredNewName)
     }
     
@@ -45,11 +45,11 @@ final class UserProfileServiceTests: XCTestCase {
         // Arrange
         let testToken = "test-token"
         let enteredNewName = "NewUserName"
-        await self.userProfileServiceWithMock.updateAccountState(newState: TBRUser(token: testToken, name: enteredNewName))
+        await self.mockUserProfileService.updateAccountState(newState: TBRUser(token: testToken, name: enteredNewName))
         await mockAPIClient.setShouldThrowError(true) // Simulate an error
         // Act & Assert
         do {
-            try await self.userProfileServiceWithMock.fetchUserProfileAndSetSelfAccount(withToken: testToken)
+            try await self.mockUserProfileService.fetchUserProfileAndSetSelfAccount(withToken: testToken)
             XCTFail("Expected an error to be thrown")
         } catch {
             // Success
@@ -64,9 +64,9 @@ final class UserProfileServiceTests: XCTestCase {
         let responseData = try? JSONSerialization.data(withJSONObject: responseDict, options: [])
         await mockAPIClient.setResponseData(responseData)
         // Act
-        try await self.userProfileServiceWithMock.fetchUserProfileAndSetSelfAccount(withToken: testToken)
+        try await self.mockUserProfileService.fetchUserProfileAndSetSelfAccount(withToken: testToken)
         // Assert
-        let accountData = await self.userProfileServiceWithMock.getAccountData()
+        let accountData = await self.mockUserProfileService.getAccountData()
         XCTAssertNotNil(accountData)
         XCTAssertEqual(accountData?.name, "Test User")
         XCTAssertEqual(accountData?.iconUrl, "https://example.com/icon.png")
@@ -78,7 +78,7 @@ final class UserProfileServiceTests: XCTestCase {
         await mockAPIClient.setShouldThrowError(true)
         // Act & Assert
         do {
-            try await self.userProfileServiceWithMock.fetchUserProfileAndSetSelfAccount(withToken: testToken)
+            try await self.mockUserProfileService.fetchUserProfileAndSetSelfAccount(withToken: testToken)
             XCTFail("Expected an error to be thrown")
         } catch {
             // Success

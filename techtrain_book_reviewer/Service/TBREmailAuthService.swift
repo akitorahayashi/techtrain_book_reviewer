@@ -8,7 +8,7 @@
 import Foundation
 
 actor TBREmailAuthService {
-    nonisolated private let apiClient: TechTrainAPIClient
+    private let apiClient: TechTrainAPIClient
     
     init(apiClient: TechTrainAPIClient = TechTrainAPIClientImpl.shared) {
         self.apiClient = apiClient
