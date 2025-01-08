@@ -25,7 +25,7 @@ final class UserProfileServiceTests: XCTestCase {
     }
     
     // MARK: - updateUserName
-    func testUpdateUserNameSuccess() async throws {
+    func testUpdateAndSetUserNameSuccess() async throws {
         let testToken = "test-token"
         let enteredNewName = "NewUserName"
         // 変更前アカウントを設定
@@ -41,13 +41,12 @@ final class UserProfileServiceTests: XCTestCase {
         XCTAssertEqual(nameResult, enteredNewName)
     }
     
-    func testUpdateUserNameFailure() async {
+    func testUpdateAndSetUserNameFailure() async {
         // Arrange
         let testToken = "test-token"
         let enteredNewName = "NewUserName"
         await self.userProfileServiceWithMock.updateAccountState(newState: TBRUser(token: testToken, name: enteredNewName))
         await mockAPIClient.setShouldThrowError(true) // Simulate an error
-        
         // Act & Assert
         do {
             try await self.userProfileServiceWithMock.fetchUserProfileAndSetSelfAccount(withToken: testToken)
@@ -71,5 +70,18 @@ final class UserProfileServiceTests: XCTestCase {
         XCTAssertNotNil(accountData)
         XCTAssertEqual(accountData?.name, "Test User")
         XCTAssertEqual(accountData?.iconUrl, "https://example.com/icon.png")
+    }
+    
+    func testFetchUserProfileAndSetSelfAccountFailure() async throws {
+        // Arrange
+        let testToken = "test-token"
+        await mockAPIClient.setShouldThrowError(true)
+        // Act & Assert
+        do {
+            try await self.userProfileServiceWithMock.fetchUserProfileAndSetSelfAccount(withToken: testToken)
+            XCTFail("Expected an error to be thrown")
+        } catch {
+            // Success
+        }
     }
 }
