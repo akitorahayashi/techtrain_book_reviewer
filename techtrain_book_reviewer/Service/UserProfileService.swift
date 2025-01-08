@@ -32,7 +32,7 @@ actor UserProfileService {
     /// ユーザー名を更新する
     func updateUserName(
         withToken token: String,
-        newName: String
+        enteredNewName: String
     ) async throws(TechTrainAPIError.ServiceError) -> Void {
         let endpoint = "/users"
         
@@ -41,15 +41,20 @@ actor UserProfileService {
         ]
         
         let body = [
-            "name": newName
+            "name": enteredNewName
         ]
         
         do {
-            let _ = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
+            let newNameData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
+            guard let newNameJson = try JSONSerialization.jsonObject(with: newNameData) as? [String: String], let newName = newNameJson["name"] else {
+                throw TechTrainAPIError.ServiceError.underlyingError(.decodingError)
+            }
             UserProfileService.yourAccount?.name = newName
             print("UserProfileService: ユーザー名の更新に成功しました")
-        } catch {
+        } catch let error as TechTrainAPIError {
             throw error.toServiceError()
+        } catch {
+            throw TechTrainAPIError.ServiceError.unknown
         }
     }
     

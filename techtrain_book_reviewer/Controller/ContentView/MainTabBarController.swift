@@ -156,7 +156,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                     // サーバーに名前変更リクエストを送信
                     let userProfileService = UserProfileService()
                     do {
-                        try await userProfileService.updateUserName(withToken: token, newName: newName)
+                        try await userProfileService.updateUserName(withToken: token, enteredNewName: newName)
                         // リフレッシュする
                         bookListVC.loadReviews(offset: 0)
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")

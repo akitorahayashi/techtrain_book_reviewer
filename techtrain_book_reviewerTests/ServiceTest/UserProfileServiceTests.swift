@@ -15,6 +15,22 @@ final class UserProfileServiceTests: XCTestCase {
     override func setUp() {
         super.setUp()
         self.mockAPIClient = MockTechTrainAPIClient()
-        userProfileService = UserProfileService(apiClient: self.mockAPIClient)
+        self.userProfileService = UserProfileService(apiClient: self.mockAPIClient)
+    }
+    
+    override func tearDown() {
+        mockAPIClient = nil
+        userProfileService = nil
+        super.tearDown()
+    }
+    
+    func testUpdateUserNameSuccess() async throws {
+        let token = "test-token"
+        let newName = "NewUserName"
+        await mockAPIClient.setResponseData(Data())
+        
+//        try await self.userProfileService.updateUserName(withToken: token, newName: newName)
+//        
+//        XCTAssertEqual(UserProfileService.yourAccount?.name, newName)
     }
 }
