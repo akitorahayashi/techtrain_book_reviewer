@@ -55,8 +55,6 @@ actor UserProfileService {
                 throw TechTrainAPIError.ServiceError.underlyingError(.decodingError)
             }
             UserProfileService.yourAccount?.name = newName
-            print("newName - \(newName)")
-            print("resultName - \(UserProfileService.yourAccount?.name)")
             print("UserProfileService: ユーザー名の更新に成功しました")
         } catch let error as TechTrainAPIError {
             throw error.toServiceError()
@@ -76,7 +74,7 @@ actor UserProfileService {
         ]
         
         do {
-            let profileData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let profileData = try await self.apiClient.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedUserData = try decodeUserProfile(token: token, profileData: profileData)
             updateAccountState(newState: decodedUserData)
         } catch {
