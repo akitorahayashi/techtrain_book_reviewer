@@ -76,7 +76,7 @@ actor UserProfileService {
         ]
         
         do {
-            let profileData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let profileData = try await self.apiClient.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedUserData = try decodeUserProfile(token: token, profileData: profileData)
             updateAccountState(newState: decodedUserData)
         } catch {
