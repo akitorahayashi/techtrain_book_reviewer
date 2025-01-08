@@ -8,29 +8,34 @@
 import Foundation
 
 actor UserProfileService {
-    private let apiClient: TechTrainAPIClient
-    
     static var yourAccount: TBRUser? = nil
+    private let apiClient: TechTrainAPIClient
     
     init(apiClient: TechTrainAPIClient = TechTrainAPIClientImpl.shared) {
         self.apiClient = apiClient
     }
     
+    func getAccountData() -> TBRUser? {
+        return UserProfileService.yourAccount
+    }
+    
+    func updateAccountState(newState: TBRUser?) {
+        UserProfileService.yourAccount = newState
+    }
+    
     func decodeUserProfile(token: String, profileData: Data) throws(TechTrainAPIError) -> TBRUser {
-        guard let jsonUserData = try? JSONSerialization.jsonObject(with: profileData, options: []) as? [String: Any],
-              let name = jsonUserData["name"] as? String,
-              let iconUrl = jsonUserData["iconUrl"] as? String? else {
+        guard let jsonUserData = try? JSONSerialization.jsonObject(with: profileData, options: []) as? [String: String],
+              let name = jsonUserData["name"],
+              let iconUrl = jsonUserData["iconUrl"] else {
             
             throw TechTrainAPIError.decodingError
         }
         
         return TBRUser(token: token, name: name, iconUrl: iconUrl)
     }
-
-    
     
     /// ユーザー名を更新する
-    func updateUserName(
+    func updateAndSetUserName(
         withToken token: String,
         enteredNewName: String
     ) async throws(TechTrainAPIError.ServiceError) -> Void {
@@ -45,11 +50,13 @@ actor UserProfileService {
         ]
         
         do {
-            let newNameData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
+            let newNameData = try await self.apiClient.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
             guard let newNameJson = try JSONSerialization.jsonObject(with: newNameData) as? [String: String], let newName = newNameJson["name"] else {
                 throw TechTrainAPIError.ServiceError.underlyingError(.decodingError)
             }
             UserProfileService.yourAccount?.name = newName
+            print("newName - \(newName)")
+            print("resultName - \(UserProfileService.yourAccount?.name)")
             print("UserProfileService: ユーザー名の更新に成功しました")
         } catch let error as TechTrainAPIError {
             throw error.toServiceError()
@@ -71,7 +78,7 @@ actor UserProfileService {
         do {
             let profileData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedUserData = try decodeUserProfile(token: token, profileData: profileData)
-            UserProfileService.yourAccount = decodedUserData
+            updateAccountState(newState: decodedUserData)
         } catch {
             throw error.toServiceError()
         }

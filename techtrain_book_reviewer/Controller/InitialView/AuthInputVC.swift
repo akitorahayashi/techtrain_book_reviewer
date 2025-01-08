@@ -137,9 +137,8 @@ class AuthInputVC: UIViewController {
     // MARK: - プロファイル取得
     private func fetchAndSetupUserProfile(token: String, isSignUp: Bool) async {
         LoadingOverlay.shared.show()
-        let userProfileService = UserProfileService()
         do {
-            try await userProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
+            try await UserProfileService().fetchUserProfileAndSetSelfAccount(withToken: token)
             let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: message) { [weak self] _ in
                 Task {

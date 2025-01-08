@@ -40,7 +40,7 @@ actor TBREmailAuthService {
                 throw TechTrainAPIError.decodingError
             }
             
-            // APIトークンをセキュアに保存
+            // APIトークンをkeychainに保存
             try await SecureTokenService.shared.saveAPIToken(data: Data(token.utf8))
             return token
         } catch {

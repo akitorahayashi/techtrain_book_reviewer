@@ -43,9 +43,8 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
     
     // MARK: - Data Methods
     func loadReviews(offset: Int) {
-        guard let token = UserProfileService.yourAccount?.token else { return }
-        
         Task {
+            guard let token = await UserProfileService().getAccountData()?.token else { return }
             do {
                 let fetchedReviews = try await BookReviewService.shared.fetchAndReturnBookReviews(offset: offset, token: token)
                 if offset == 0 {
