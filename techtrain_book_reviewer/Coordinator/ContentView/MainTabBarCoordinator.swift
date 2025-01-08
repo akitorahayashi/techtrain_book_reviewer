@@ -9,7 +9,7 @@ import UIKit
 
 @MainActor
 protocol MainTabBarCoordinatorProtocol: AnyObject {
-    func logout() async
+    func logoutToSelectAuthVC() async
 }
 
 @MainActor
@@ -23,8 +23,8 @@ class MainTabBarCoordinator: MainTabBarCoordinatorProtocol {
         self.selectAuthCoordinator = SelectAuthCoordinator(navigationController: navigationController)
     }
     
-    func logout() async {
-        UserProfileService.yourAccount = nil
+    func logoutToSelectAuthVC() async {
+        await UserProfileService().updateAccountState(newState: nil)
         await SecureTokenService.shared.deleteAPIToken()
         
         // 既存のスタックに SelectAuthVC があるか確認

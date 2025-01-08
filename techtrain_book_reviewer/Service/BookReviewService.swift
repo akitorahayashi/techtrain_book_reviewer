@@ -22,14 +22,14 @@ actor BookReviewService {
     ) async throws(TechTrainAPIError.ServiceError) -> Data {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books"
-        let parameters: [String: Any] = [
+        let body: [String: String] = [
             "title": title,
             "url": url,
             "detail": detail,
             "review": review
         ]
         do {
-            let data = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "POST", headers: headers, body: parameters)
+            let data = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "POST", headers: headers, body: body)
             return data
         } catch {
             throw error.toServiceError()
@@ -47,14 +47,14 @@ actor BookReviewService {
     ) async throws(TechTrainAPIError.ServiceError) -> BookReview {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books/\(id)"
-        let body: [String: Any] = [
+        let body: [String: String] = [
             "title": title,
             "url": url ?? "",
             "detail": detail,
             "review": review
         ]
         do {
-            let postedBookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
+            let postedBookReviewData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
             let postedBookReview = try BookReview.decodeBookReview(postedBookReviewData)
             return postedBookReview
         } catch {
@@ -71,7 +71,7 @@ actor BookReviewService {
         let endpoint = "/books/\(id)"
         
         do {
-            let bookReviewData = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let bookReviewData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedBookReview = try BookReview.decodeBookReview(bookReviewData)
             return decodedBookReview
         } catch {
@@ -88,7 +88,7 @@ actor BookReviewService {
         let endpoint = "/books?offset=\(offset)"
         
         do {
-            let data = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
+            let data = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
             let decodedBookReviews = try BookReview.decodeBookReviews(data)
             return decodedBookReviews
         } catch {
@@ -104,7 +104,7 @@ actor BookReviewService {
         let headers = ["Authorization": "Bearer \(token)"]
         let endpoint = "/books/\(id)"
         do {
-            let _ = try await TechTrainAPIClient.shared.makeRequestAsync(to: endpoint, method: "DELETE", headers: headers, body: nil)
+            let _ = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "DELETE", headers: headers, body: nil)
         } catch {
             throw error.toServiceError()
         }

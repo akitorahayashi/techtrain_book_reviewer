@@ -1,3 +1,6 @@
+## APIの仕様書
+https://app.swaggerhub.com/apis/INFO_3/BookReviewApplication/1.0.0
+
 ## アカウント登録時の認証要素
 ### 名前
 

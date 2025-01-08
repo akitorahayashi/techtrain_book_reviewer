@@ -112,7 +112,7 @@ class AuthInputVC: UIViewController {
     // MARK: - サインアップ処理
     private func performSignUp(email: String, password: String, name: String) async {
         LoadingOverlay.shared.show()
-        let authService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)
+        let authService = TBREmailAuthService(apiClient: TechTrainAPIClientImpl.shared)
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password, signUpName: name)
             await self.fetchAndSetupUserProfile(token: token, isSignUp: true)
@@ -124,7 +124,7 @@ class AuthInputVC: UIViewController {
     // MARK: - ログイン処理
     private func performLoginAsync(email: String, password: String) async {
         LoadingOverlay.shared.show()
-        let authService = TBREmailAuthService(apiClient: TechTrainAPIClient.shared)
+        let authService = TBREmailAuthService(apiClient: TechTrainAPIClientImpl.shared)
         do {
             let token = try await authService.authenticateAndReturnToken(email: email, password: password)
             await self.fetchAndSetupUserProfile(token: token, isSignUp: false)
@@ -138,7 +138,7 @@ class AuthInputVC: UIViewController {
     private func fetchAndSetupUserProfile(token: String, isSignUp: Bool) async {
         LoadingOverlay.shared.show()
         do {
-            try await UserProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
+            try await UserProfileService().fetchUserProfileAndSetSelfAccount(withToken: token)
             let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: message) { [weak self] _ in
                 Task {

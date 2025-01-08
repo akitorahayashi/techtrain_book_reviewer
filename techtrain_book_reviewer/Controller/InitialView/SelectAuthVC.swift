@@ -27,8 +27,12 @@ class SelectAuthVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        selectAuthView?.showSignUpPageButton.addTarget(self, action: #selector(signupButtonAction), for: .touchUpInside)
-        selectAuthView?.showLogInPageButton.addTarget(self, action: #selector(loginButtonAction), for: .touchUpInside)
+        setupButtonActions()
+    }
+    
+    private func setupButtonActions() {
+        self.selectAuthView?.showSignUpPageButton.addTarget(self, action: #selector(signupButtonAction), for: .touchUpInside)
+        self.selectAuthView?.showLogInPageButton.addTarget(self, action: #selector(loginButtonAction), for: .touchUpInside)
     }
     
     @objc func signupButtonAction() {

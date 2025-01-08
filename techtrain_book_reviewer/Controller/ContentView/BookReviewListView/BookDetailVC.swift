@@ -45,10 +45,10 @@ class BookDetailVC: UIViewController {
     
     // MARK: - Setup View
     private func loadBookDetail() {
-        guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
         LoadingOverlay.shared.show()
         Task {
+            guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
             do {
                 let bookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: bookId, token: token)
                 self.updateUI(with: bookDetail)
@@ -97,8 +97,6 @@ class BookDetailVC: UIViewController {
     }
     
     @objc private func navigateToEditView() {
-        guard SecureTokenService.shared.getTokenAfterLoad(on: self) != nil else { return }
-        
         let editVC = EditBookReviewVC(bookReviewId: bookId)
         editVC.onCompliteEditingCompletion = { [weak self] in
             print("Editing completed, refreshing data...")
@@ -127,10 +125,10 @@ class BookDetailVC: UIViewController {
     
     // レビューを削除する
     private func deleteBookReview() {
-        guard let token = SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
         LoadingOverlay.shared.show()
         Task {
+            guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
             do {
                 try await BookReviewService.shared.deleteBookReview(id: bookId, token: token)
                 self.isUpdated = true

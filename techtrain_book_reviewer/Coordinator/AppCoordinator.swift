@@ -34,9 +34,8 @@ class AppCoordinator: CoordinatorProtocol {
             await showAuthInputScreen()
             return
         }
-        
         do {
-            try await UserProfileService.fetchUserProfileAndSetSelfAccount(withToken: token)
+            try await UserProfileService().fetchUserProfileAndSetSelfAccount(withToken: token)
             print("AppCoordinator: Profile取得成功")
             await showBookListScreen()
         } catch {

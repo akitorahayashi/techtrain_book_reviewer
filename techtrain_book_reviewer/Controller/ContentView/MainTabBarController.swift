@@ -48,35 +48,20 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     // MARK: - UserNameChangeDelegate
     /// UserNameChangeDelegateプロトコルのメソッド
     /// ユーザー名が変更された際に呼び出される
-//    func didChangeUserName() async {
-//        if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
-//           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListVC {
-//            await bookListVC.didChangeUserName()
-//        }
-//    }
+    //    func didChangeUserName() async {
+    //        if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
+    //           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListVC {
+    //            await bookListVC.didChangeUserName()
+    //        }
+    //    }
     
     // MARK: - Custom Methods
     /// ユーザーアイコンボタンを作成するメソッド
     func createUserIconButton() -> UIButton {
         let userIconButton = UIButton(type: .custom)
         
-        if let iconUrlString = UserProfileService.yourAccount?.iconUrl, let iconUrl = URL(string: iconUrlString) {
-            DispatchQueue.global().async {
-                if let data = try? Data(contentsOf: iconUrl), let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        userIconButton.setImage(image, for: .normal)
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
-                        userIconButton.tintColor = .accent
-                    }
-                }
-            }
-        } else {
-            userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
-            userIconButton.tintColor = .accent
-        }
+        userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
+        userIconButton.tintColor = .accent
         
         userIconButton.layer.cornerRadius = 18
         userIconButton.clipsToBounds = true
@@ -109,7 +94,8 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
     // MARK: - Button Actions
     /// ユーザーアイコンがタップされた際に呼び出されるメソッド
     @objc private func userIconTapped() {
-            let userName: String = UserProfileService.yourAccount?.name ?? "Error"
+        Task {
+            let userName: String = await UserProfileService().getAccountData()?.name ?? "Unknown"
             let alert = UIAlertController(title: "アカウント設定: \(userName)", message: nil, preferredStyle: .actionSheet)
             
             alert.addAction(UIAlertAction(title: "名前を変更", style: .default, handler: { [weak self] _ in
@@ -118,13 +104,14 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
             
             alert.addAction(UIAlertAction(title: "ログアウト", style: .destructive, handler: { [weak self] _ in
                 Task {
-                    await self?.coordinator?.logout()
+                    await self?.coordinator?.logoutToSelectAuthVC()
                 }
             }))
             
             alert.addAction(UIAlertAction(title: "キャンセル", style: .cancel, handler: nil))
             present(alert, animated: true)
         }
+    }
     
     /// ユーザー名を変更するアクション
     private func changeUserName() {
@@ -145,8 +132,9 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                 LoadingOverlay.shared.show()
                 
                 Task {
+                    let userProfileService = UserProfileService()
                     // トークン取得
-                    guard let token = UserProfileService.yourAccount?.token else {
+                    guard let token = await userProfileService.getAccountData()?.token else {
                         // ローディング終了
                         LoadingOverlay.shared.hide()
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "認証情報が無効です。ログインし直してください")
@@ -155,7 +143,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                     
                     // サーバーに名前変更リクエストを送信
                     do {
-                        try await UserProfileService.updateUserName(withToken: token, newName: newName)
+                        try await userProfileService.updateAndSetUserName(withToken: token, enteredNewName: newName)
                         // リフレッシュする
                         bookListVC.loadReviews(offset: 0)
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")

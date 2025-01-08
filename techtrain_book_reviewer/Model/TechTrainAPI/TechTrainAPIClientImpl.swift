@@ -7,22 +7,30 @@
 
 import Foundation
 
-actor TechTrainAPIClient {
+protocol TechTrainAPIClient: Sendable {
+    func makeRequestAsync(
+        to endpoint: String,
+        method: String,
+        headers: [String: String]?,
+        body: [String: String]?
+    ) async throws(TechTrainAPIError) -> Data
+}
+
+actor TechTrainAPIClientImpl: TechTrainAPIClient {
     // インスタンス
-    static let shared = TechTrainAPIClient()
+    static let shared = TechTrainAPIClientImpl()
     // その他のメンバー
     private let baseURL = "https://railway.bookreview.techtrain.dev"
-    private let session: URLSession
+    private let session = URLSession.shared
     
-    private init(session: URLSession = .shared) {
-        self.session = session
-    }
+    private init() {}
     
+    // Non-sendable type '[String : Any]?' in parameter of the protocol requirement satisfied by actor-isolated instance method 'makeRequestAsync(to:method:headers:body:)' cannot cross actor boundary
     func makeRequestAsync(
         to endpoint: String,
         method: String,
         headers: [String: String]? = nil,
-        body: [String: Any]?
+        body: [String: String]?
     ) async throws(TechTrainAPIError) -> Data {
         guard let url = URL(string: baseURL + endpoint) else {
             print("URLが無効: \(baseURL + endpoint)")
