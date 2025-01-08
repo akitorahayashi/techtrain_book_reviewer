@@ -55,8 +55,6 @@ actor UserProfileService {
                 throw TechTrainAPIError.ServiceError.underlyingError(.decodingError)
             }
             UserProfileService.yourAccount?.name = newName
-            print("newName - \(newName)")
-            print("resultName - \(UserProfileService.yourAccount?.name)")
             print("UserProfileService: ユーザー名の更新に成功しました")
         } catch let error as TechTrainAPIError {
             throw error.toServiceError()
