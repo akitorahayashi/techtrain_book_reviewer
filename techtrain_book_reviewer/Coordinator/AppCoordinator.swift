@@ -8,13 +8,12 @@
 import UIKit
 
 @MainActor
-protocol CoordinatorProtocol: AnyObject {
-    var navigationController: UINavigationController { get }
+protocol AppCoordinatorProtocol: AnyObject {
     func start() async
 }
 
 @MainActor
-class AppCoordinator: CoordinatorProtocol {
+class AppCoordinator: AppCoordinatorProtocol {
     private let window: UIWindow?
     let navigationController: UINavigationController = UINavigationController()
     // child coordinator

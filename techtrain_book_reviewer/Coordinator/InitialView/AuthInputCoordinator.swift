@@ -8,7 +8,7 @@
 import UIKit
 
 @MainActor
-class AuthInputCoordinator: CoordinatorProtocol {
+class AuthInputCoordinator: AppCoordinatorProtocol {
     let navigationController: UINavigationController
     // child coordinator
     private var mainTabBarCoordinator: MainTabBarCoordinator?
