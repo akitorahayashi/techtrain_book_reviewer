@@ -21,7 +21,7 @@ class BookDetailView: UIView {
     private let urlHeader = UILabel()
     let urlContent = UILabel()
     // buttons
-    let openUrlButton = TBRCardButton(title: "Browser")
+    let openUrlButton = TBRCardButton(title: "Check")
     let backButton = TBRCardButton(title: "Back")
     let editButton = TBRCardButton(title: "Edit")
     let deleteButton = TBRCardButton(title: "Delete")
@@ -59,7 +59,7 @@ class BookDetailView: UIView {
         
         let spacerView = UIView()
         spacerView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(spacerView)
+        containerView.addSubview(spacerView)
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
@@ -72,88 +72,92 @@ class BookDetailView: UIView {
             containerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
             containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
             
-            spacerView.heightAnchor.constraint(equalToConstant: 200),
+            spacerView.heightAnchor.constraint(equalToConstant: 400),
             spacerView.topAnchor.constraint(equalTo: containerView.bottomAnchor),
             spacerView.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor)
         ])
         
         
         // テキスト関連の設定
-        setupLabels(in: containerView)
+        setupLabelsAndSpacer(in: containerView)
         // ボタン関連の設定
         setupButtons(in: containerView)
     }
     
-    private func setupLabels(in contentView: UIView) {
-        [titleHeader, titleContent, urlHeader, urlContent, detailHeader, detailContent, reviewHeader, reviewContent].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            contentView.addSubview($0)
+    private func setupLabelsAndSpacer(in contentView: UIView) {
+        // ラベルの内容
+        let headers: [(label: UILabel, text: String)] = [
+            (titleHeader, "- Title -"),
+            (detailHeader, "- Detail -"),
+            (reviewHeader, "- Review -"),
+            (urlHeader, "- Url -")
+        ]
+
+        let contents: [(label: UILabel, font: UIFont, color: UIColor?, lines: Int)] = [
+            (titleContent, UIFont.boldSystemFont(ofSize: 24), nil, 0),
+            (detailContent, UIFont.systemFont(ofSize: 16), nil, 0),
+            (reviewContent, UIFont.systemFont(ofSize: 16), nil, 0),
+            (urlContent, UIFont.boldSystemFont(ofSize: 16), .link, 0)
+        ]
+
+        // ヘッダーの設定
+        for (header, text) in headers {
+            header.text = text
+            header.font = UIFont.boldSystemFont(ofSize: 14)
+            header.textColor = .gray
+            header.translatesAutoresizingMaskIntoConstraints = false
+            contentView.addSubview(header)
+        }
+
+        // コンテンツの設定
+        for (content, font, color, lines) in contents {
+            content.font = font
+            content.translatesAutoresizingMaskIntoConstraints = false
+            content.numberOfLines = lines
+            if let textColor = color {
+                content.textColor = textColor
+            }
+            contentView.addSubview(content)
         }
         
-        // ラベルの内容
-        titleHeader.text = "- Title -"
-        titleHeader.font = UIFont.boldSystemFont(ofSize: 14)
-        titleHeader.textColor = .gray
-        
-        detailHeader.text = "- Detail -"
-        detailHeader.font = UIFont.boldSystemFont(ofSize: 14)
-        detailHeader.textColor = .gray
-        
-        reviewHeader.text = "- Review -"
-        reviewHeader.font = UIFont.boldSystemFont(ofSize: 14)
-        reviewHeader.textColor = .gray
-        
-        urlHeader.text = "- Url -"
-        urlHeader.font = UIFont.boldSystemFont(ofSize: 14)
-        urlHeader.textColor = .gray
-        
-        titleContent.font = UIFont.boldSystemFont(ofSize: 24)
-        titleContent.numberOfLines = 0
-        
-        detailContent.font = UIFont.systemFont(ofSize: 16)
-        detailContent.numberOfLines = 0
-        
-        reviewContent.font = UIFont.systemFont(ofSize: 16)
-        reviewContent.numberOfLines = 0
-        
-        urlContent.font = UIFont.boldSystemFont(ofSize: 16)
-        urlContent.numberOfLines = 0
-        urlContent.textColor = .link
-        
-        // ラベルのレイアウト
+        // それぞれの要素のレイアウトをする
+        let elements: [(header: UIView, content: UIView, spacing: CGFloat)] = [
+            (titleHeader, titleContent, 16),
+            (detailHeader, detailContent, 32),
+            (reviewHeader, reviewContent, 12),
+            (urlHeader, urlContent, 12)
+        ]
+
+        var previousContent: UIView? = nil
+
+        // 繰り返し処理で要素を配置
+        for (header, content, spacing) in elements {
+            NSLayoutConstraint.activate([
+                // Header の制約
+                header.topAnchor.constraint(equalTo: previousContent?.bottomAnchor ?? contentView.topAnchor, constant: spacing),
+                header.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                header.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+                
+                // Content の制約
+                content.topAnchor.constraint(equalTo: header.bottomAnchor, constant: 8),
+                content.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+                content.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+            ])
+            // 次の要素のために現在の Content を記録
+            previousContent = content
+        }
+
+        // SpacerView を配置
+        let spacerView = UIView()
+        spacerView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(spacerView)
+
         NSLayoutConstraint.activate([
-            titleHeader.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 16),
-            titleHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            titleContent.topAnchor.constraint(equalTo: titleHeader.bottomAnchor, constant: 8),
-            titleContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            titleContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            detailHeader.topAnchor.constraint(equalTo: titleContent.bottomAnchor, constant: 32),
-            detailHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            detailHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            detailContent.topAnchor.constraint(equalTo: detailHeader.bottomAnchor, constant: 8),
-            detailContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            detailContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            reviewHeader.topAnchor.constraint(equalTo: detailContent.bottomAnchor, constant: 12),
-            reviewHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            reviewHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            reviewContent.topAnchor.constraint(equalTo: reviewHeader.bottomAnchor, constant: 8),
-            reviewContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            reviewContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            reviewContent.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16),
-            
-            urlHeader.topAnchor.constraint(equalTo: reviewContent.bottomAnchor, constant: 12),
-            urlHeader.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            urlHeader.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            
-            urlContent.topAnchor.constraint(equalTo: urlHeader.bottomAnchor, constant: 8),
-            urlContent.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            urlContent.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
+            spacerView.topAnchor.constraint(equalTo: previousContent?.bottomAnchor ?? contentView.topAnchor, constant: 16),
+            spacerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            spacerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            spacerView.heightAnchor.constraint(equalToConstant: 200),
+            spacerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -16)
         ])
     }
     

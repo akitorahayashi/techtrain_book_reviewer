@@ -55,9 +55,9 @@ class BookDetailVC: UIViewController {
             } catch let serviceError {
                 TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
             }
+            // ローディング終了
+            LoadingOverlay.shared.hide()
         }
-        // ローディング終了
-        LoadingOverlay.shared.hide()
     }
     
     private func updateUI(with bookReview: BookReview) {
@@ -125,9 +125,9 @@ class BookDetailVC: UIViewController {
     
     // レビューを削除する
     private func deleteBookReview() {
-        // ローディング開始
-        LoadingOverlay.shared.show()
         Task {
+            // ローディング開始
+            LoadingOverlay.shared.show()
             guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
             do {
                 try await BookReviewService.shared.deleteBookReview(id: bookId, token: token)
