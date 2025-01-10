@@ -36,8 +36,8 @@ class EditBookReviewVC: UIViewController {
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
-        Task {
-            if let id = bookReviewId {
+        if let id = bookReviewId {
+            Task {
                 await fetchBookDetailsForEdit(reviewId: id)
             }
         }

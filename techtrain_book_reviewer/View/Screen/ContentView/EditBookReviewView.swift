@@ -9,166 +9,159 @@ import UIKit
 
 class EditBookReviewView: UIView, UITextViewDelegate {
     private let scrollView = UIScrollView()
-    private let contentView = UIView()
-    
-    private let titleLabel = UILabel()
+    private let containerView = UIView()
+
+    private let titleHeader = UILabel()
     let titleTextField = TBRInputField(nil)
-    private let urlLabel = UILabel()
+    private let urlHeader = UILabel()
     let urlTextField = TBRInputField(nil)
-    
-    private let detailLabel = UILabel()
-    let detailInputField: UITextView = {
-        let textView = UITextView()
-        textView.layer.borderWidth = 1.0
-        textView.layer.borderColor = UIColor.systemGray5.cgColor
-        textView.layer.cornerRadius = 5.0
-        textView.font = UIFont.systemFont(ofSize: 16)
-        textView.isScrollEnabled = false
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
-        return textView
-    }()
-    
-    private let reviewLabel = UILabel()
-    let reviewInputField: UITextView = {
-        let textView = UITextView()
-        textView.layer.borderWidth = 1.0
-        textView.layer.borderColor = UIColor.systemGray5.cgColor
-        textView.layer.cornerRadius = 5.0
-        textView.font = UIFont.systemFont(ofSize: 16)
-        textView.isScrollEnabled = false
-        textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
-        return textView
-    }()
-    
-    
+
+    private let detailHeader = UILabel()
+    let detailInputField = UITextView()
+    private let reviewHeader = UILabel()
+    let reviewInputField = UITextView()
+
     private var reviewHeightConstraint: NSLayoutConstraint!
     private var detailHeightConstraint: NSLayoutConstraint!
-    
+
     let compliteButton = TBRCardButton(title: "")
     let clearButton = TBRCardButton(title: "")
-    
+
+    // 定数
+    private let containerPadding: CGFloat = 20
+    private let inputStackSpacing: CGFloat = 20
+    private let inputFieldHeight: CGFloat = 60
+    private let textViewMinHeight: CGFloat = 90
+    private let spacerViewHeight: CGFloat = 200
+    private let buttonHeight: CGFloat = 44
+
     init(compliteAction: @escaping () -> Void, clearAction: @escaping () -> Void) {
         super.init(frame: .zero)
+        reviewInputField.delegate = self
+        detailInputField.delegate = self
         setupUI()
-        setupDynamicHeight()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func configureTextView(_ textView: UITextView) {
+        textView.layer.borderWidth = 1.0
+        textView.layer.borderColor = UIColor.systemGray5.cgColor
+        textView.layer.cornerRadius = 5.0
+        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.isScrollEnabled = false
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
+    }
+
     func configureButtons(saveButtonTitle: String, cancelButtonTitle: String) {
         compliteButton.setTitle(saveButtonTitle, for: .normal)
         clearButton.setTitle(cancelButtonTitle, for: .normal)
     }
-    
+
     private func setupUI() {
         backgroundColor = .white
-        
-        // スクロールビューとコンテンツビューの設定
+
+        // スクロールビューとコンテナビューの設定
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        
+        scrollView.addSubview(containerView)
+
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
             
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            containerView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
         ])
-        
-        // 各ラベルの設定
-        titleLabel.text = "- Title -"
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        titleLabel.textColor = .gray
-        
-        urlLabel.text = "- URL -"
-        urlLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        urlLabel.textColor = .gray
-        
-        detailLabel.text = "- Detail -"
-        detailLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        detailLabel.textColor = .gray
-        
-        reviewLabel.text = "- Review -"
-        reviewLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        reviewLabel.textColor = .gray
-        
-        // 各フィールドのラベルとTextFieldのペアを作成
-        let titleStack = UIStackView(arrangedSubviews: [titleLabel, titleTextField])
-        titleStack.axis = .vertical
-        titleStack.spacing = 8
-        
-        let urlStack = UIStackView(arrangedSubviews: [urlLabel, urlTextField])
-        urlStack.axis = .vertical
-        urlStack.spacing = 8
-        
-        let detailStack = UIStackView(arrangedSubviews: [detailLabel, detailInputField])
-        detailStack.axis = .vertical
-        detailStack.spacing = 8
-        
-        let reviewStack = UIStackView(arrangedSubviews: [reviewLabel, reviewInputField])
-        reviewStack.axis = .vertical
-        reviewStack.spacing = 8
-        
-        // フォームフィールドのスタックビュー
-        let inputFields: [UIView] = [titleStack, urlStack, detailStack, reviewStack]
-        let stackView = UIStackView(arrangedSubviews: inputFields)
-        stackView.axis = .vertical
-        stackView.spacing = 20
-        stackView.alignment = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(stackView)
-        
+
+        // 各ヘッダー設定
+        setupHeader(titleHeader, text: "- Title -")
+        setupHeader(urlHeader, text: "- URL -")
+        setupHeader(detailHeader, text: "- Detail -")
+        setupHeader(reviewHeader, text: "- Review -")
+
+        // テキストビュー設定
+        configureTextView(detailInputField)
+        configureTextView(reviewInputField)
+
+        // 入力フィールドのペアを作成
+        let titleStack = createInputFormStackView(withHeader: titleHeader, inputField: titleTextField)
+        let urlStack = createInputFormStackView(withHeader: urlHeader, inputField: urlTextField)
+        let detailStack = createInputFormStackView(withHeader: detailHeader, inputField: detailInputField)
+        let reviewStack = createInputFormStackView(withHeader: reviewHeader, inputField: reviewInputField)
+
+        // スタックビューの配置
+        let inputFieldStackView = UIStackView(arrangedSubviews: [titleStack, urlStack, detailStack, reviewStack])
+        inputFieldStackView.axis = .vertical
+        inputFieldStackView.spacing = inputStackSpacing
+        inputFieldStackView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(inputFieldStackView)
+
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20)
+            inputFieldStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: inputStackSpacing),
+            inputFieldStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: containerPadding),
+            inputFieldStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -containerPadding)
         ])
-        
-        // ボタンスタックビュー（画面下部に固定）
+
+        // Spacerの設定
+        let spacerView = UIView()
+        spacerView.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(spacerView)
+
+        NSLayoutConstraint.activate([
+            spacerView.topAnchor.constraint(equalTo: inputFieldStackView.bottomAnchor),
+            spacerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            spacerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            spacerView.heightAnchor.constraint(equalToConstant: spacerViewHeight),
+            spacerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        // ボタンスタックビューの配置
         let buttonStackView = UIStackView(arrangedSubviews: [clearButton, compliteButton])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = 16
         buttonStackView.distribution = .fillEqually
         buttonStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(buttonStackView)
-        
+
         NSLayoutConstraint.activate([
-            buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: containerPadding),
+            buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -containerPadding),
             buttonStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -10),
-            buttonStackView.heightAnchor.constraint(equalToConstant: 44)
+            buttonStackView.heightAnchor.constraint(equalToConstant: buttonHeight)
         ])
-        
-        // contentViewの高さ制約
-        NSLayoutConstraint.activate([
-            contentView.bottomAnchor.constraint(greaterThanOrEqualTo: stackView.bottomAnchor, constant: 300)
-        ])
-        
-        // 動的な高さ制約の設定
-        reviewHeightConstraint = reviewInputField.heightAnchor.constraint(equalToConstant: 90)
-        reviewHeightConstraint.isActive = true
-        
-        detailHeightConstraint = detailInputField.heightAnchor.constraint(equalToConstant: 90)
-        detailHeightConstraint.isActive = true
     }
 
-    
-    private func setupDynamicHeight() {
-        reviewInputField.delegate = self
-        detailInputField.delegate = self
+    private func setupHeader(_ header: UILabel, text: String) {
+        header.text = text
+        header.font = UIFont.boldSystemFont(ofSize: 14)
+        header.textColor = .gray
     }
-    
+
+    private func createInputFormStackView(withHeader header: UILabel, inputField: UIView) -> UIStackView {
+        let stackView = UIStackView(arrangedSubviews: [header, inputField])
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        stackView.alignment = .fill
+        inputField.translatesAutoresizingMaskIntoConstraints = false
+
+        if let textField = inputField as? UITextField {
+            textField.heightAnchor.constraint(equalToConstant: inputFieldHeight).isActive = true
+        } else if let textView = inputField as? UITextView {
+            textView.heightAnchor.constraint(equalToConstant: textViewMinHeight).isActive = true
+        }
+        return stackView
+    }
+
     func textViewDidChange(_ textView: UITextView) {
         if textView == reviewInputField {
             adjustHeight(for: textView, constraint: reviewHeightConstraint)
@@ -176,9 +169,9 @@ class EditBookReviewView: UIView, UITextViewDelegate {
             adjustHeight(for: textView, constraint: detailHeightConstraint)
         }
     }
-    
+
     private func adjustHeight(for textView: UITextView, constraint: NSLayoutConstraint) {
         let size = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
-        constraint.constant = max(90, size.height) // 最低高さ90を確保
+        constraint.constant = max(textViewMinHeight, size.height)
     }
 }
