@@ -25,11 +25,12 @@ actor UserProfileService {
     
     func decodeUserProfile(token: String, profileData: Data) throws(TechTrainAPIError) -> TBRUser {
         guard let jsonUserData = try? JSONSerialization.jsonObject(with: profileData, options: []) as? [String: String],
-              let name = jsonUserData["name"],
-              let iconUrl = jsonUserData["iconUrl"] else {
-            
+              let name = jsonUserData["name"] else {
             throw TechTrainAPIError.decodingError
         }
+        
+        // アイコンのurlはオプショナル
+        let iconUrl = jsonUserData["iconUrl"]
         
         return TBRUser(token: token, name: name, iconUrl: iconUrl)
     }

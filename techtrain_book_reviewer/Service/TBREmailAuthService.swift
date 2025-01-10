@@ -31,7 +31,7 @@ actor TBREmailAuthService {
         }
         
         do {
-            // アクター内で非同期タスクを安全に呼び出す
+            // ユーザー認証API
             let data = try await self.apiClient.makeRequestAsync(to: endpoint, method: "POST", headers: nil, body: body)
             
             // tokenを引き出す

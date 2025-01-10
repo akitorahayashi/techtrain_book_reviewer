@@ -14,15 +14,16 @@ protocol AppCoordinatorProtocol: AnyObject {
 
 @MainActor
 class AppCoordinator: AppCoordinatorProtocol {
-    private let window: UIWindow?
-    let navigationController: UINavigationController = UINavigationController()
+    var window: UIWindow?
+    let navigationController = UINavigationController()
     // child coordinator
     private var selectAuthCoordinator: SelectAuthCoordinatorProtocol?
     private var mainTabBarCoordinator: MainTabBarCoordinatorProtocol?
     
-    init(window: UIWindow?) {
-        self.window = window
+    init(windowScene: UIWindowScene) {
+        self.window = UIWindow(windowScene: windowScene)
         self.window?.rootViewController = navigationController
+        self.window?.backgroundColor = UIColor.systemBackground
         self.window?.makeKeyAndVisible()
     }
     

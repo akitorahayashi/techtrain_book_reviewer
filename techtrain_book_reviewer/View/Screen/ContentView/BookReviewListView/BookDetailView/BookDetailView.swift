@@ -57,6 +57,10 @@ class BookDetailView: UIView {
         containerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(containerView)
         
+        let spacerView = UIView()
+        spacerView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(spacerView)
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor),
             scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -66,7 +70,11 @@ class BookDetailView: UIView {
             containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             containerView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor),
             containerView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor),
-            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor, constant: -200)
+            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            
+            spacerView.heightAnchor.constraint(equalToConstant: 200),
+            spacerView.topAnchor.constraint(equalTo: containerView.bottomAnchor),
+            spacerView.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor)
         ])
         
         
@@ -189,15 +197,4 @@ class BookDetailView: UIView {
         editButton.isHidden = !isUserOwner
         deleteButton.isHidden = !isUserOwner
     }
-    
-//    private func findViewController() -> UIViewController? {
-//        var nextResponder: UIResponder? = self
-//        while let responder = nextResponder {
-//            if let viewController = responder as? UIViewController {
-//                return viewController
-//            }
-//            nextResponder = responder.next
-//        }
-//        return nil
-//    }
 }

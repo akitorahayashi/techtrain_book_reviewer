@@ -9,7 +9,6 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
-    var window: UIWindow?
     private var appCoordinator: AppCoordinator?
     
     // シーンがアプリと連携されるときに呼び出されるメソッド
@@ -17,14 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("SceneDelegate: シーンがアプリに接続されました")
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        let window = UIWindow(windowScene: windowScene)
-        self.window = window
-        
-        // Launch Screen と同じ背景色を設定
-        window.backgroundColor = UIColor.systemBackground
-        window.makeKeyAndVisible()
-        
-        self.appCoordinator = AppCoordinator(window: self.window)
+        self.appCoordinator = AppCoordinator(windowScene: windowScene)
         // トークン読み取りと画面遷移処理
         Task {
             await self.appCoordinator?.start()
