@@ -48,7 +48,7 @@ class TBRAuthInputValidator {
     }
 
     /// 入力項目のバリデーションをまとめて実行
-    static func validateAuthInput(email: String?, password: String?, name: String?, mode: AuthInputVC.EmailAuthMode) -> [String] {
+    static func validateAuthInput(email: String?, password: String?, name: String?, mode: EmailAuthMode) -> [String] {
         var errors: [String] = []
         
         // メールアドレスのバリデーション

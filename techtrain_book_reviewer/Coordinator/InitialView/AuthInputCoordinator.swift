@@ -8,7 +8,12 @@
 import UIKit
 
 @MainActor
-class AuthInputCoordinator: AppCoordinatorProtocol {
+protocol AuthInputCoordinatorProtocol {
+    func navigateToMainTabBarView()
+}
+
+@MainActor
+class AuthInputCoordinator: AuthInputCoordinatorProtocol {
     let navigationController: UINavigationController
     // child coordinator
     private var mainTabBarCoordinator: MainTabBarCoordinator?
@@ -18,7 +23,7 @@ class AuthInputCoordinator: AppCoordinatorProtocol {
     }
     
     // MainTabBarControllerに進む
-    func start() async {
+    func navigateToMainTabBarView() {
         let mainTabBarCoordinator = MainTabBarCoordinator(navigationController: self.navigationController)
         self.mainTabBarCoordinator = mainTabBarCoordinator
         let mainTabBarController = MainTabBarController(coordinator: mainTabBarCoordinator)

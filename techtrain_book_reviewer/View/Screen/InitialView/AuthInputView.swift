@@ -19,7 +19,7 @@ class AuthInputView: UIView {
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton
     
-    init(authMode: AuthInputVC.EmailAuthMode) {
+    init(authMode: EmailAuthMode) {
         let actionTitle = (authMode == .login) ? "ログイン" : "登録"
         self.actionButton = TBRCardButton(title: actionTitle)
         self.clearButton = TBRCardButton(title: "クリア")
@@ -31,12 +31,13 @@ class AuthInputView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI(authMode: AuthInputVC.EmailAuthMode) {
+    private func setupUI(authMode: EmailAuthMode) {
         backgroundColor = .systemBackground
         
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
+        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
         
         NSLayoutConstraint.activate([
@@ -63,18 +64,18 @@ class AuthInputView: UIView {
         ? [nameTextField, emailTextField, passwordTextField]
         : [emailTextField, passwordTextField]
         
-        let stackView = UIStackView(arrangedSubviews: inputFields + [buttonStackView])
-        stackView.axis = .vertical
-        stackView.spacing = 20
-        stackView.alignment = .fill
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(stackView)
+        let formStackView = UIStackView(arrangedSubviews: inputFields + [buttonStackView])
+        formStackView.axis = .vertical
+        formStackView.spacing = 20
+        formStackView.alignment = .fill
+        formStackView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(formStackView)
         
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
+            formStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
+            formStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            formStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            formStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20)
         ])
     }
 }

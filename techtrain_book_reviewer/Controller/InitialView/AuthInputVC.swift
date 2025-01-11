@@ -7,17 +7,16 @@
 
 import UIKit
 
+enum EmailAuthMode {
+    case login
+    case signUp
+}
+
 class AuthInputVC: UIViewController {
-    // MARK: - Properties
     private let authMode: EmailAuthMode
     private var authInputView: AuthInputView?
     private weak var authInputCoordinator: AuthInputCoordinator?
     
-    // MARK: - EmailAuthMode
-    enum EmailAuthMode {
-        case login
-        case signUp
-    }
     
     // MARK: - Initializers
     init(authMode: EmailAuthMode, authInputCoordinator: AuthInputCoordinator?) {
@@ -32,7 +31,8 @@ class AuthInputVC: UIViewController {
     
     // MARK: - Lifecycle Methods
     override func loadView() {
-        authInputView = AuthInputView(authMode: authMode)
+        super.loadView()
+        authInputView = AuthInputView(authMode: self.authMode)
         view = authInputView
     }
     
@@ -142,7 +142,7 @@ class AuthInputVC: UIViewController {
             let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: message) { [weak self] _ in
                 Task {
-                    await self?.authInputCoordinator?.start()
+                    await self?.authInputCoordinator?.navigateToMainTabBarView()
                 }
             }
         } catch let serviceError {
