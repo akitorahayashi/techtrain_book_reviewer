@@ -15,8 +15,8 @@ struct BookReview: Codable {
     let reviewer: String
     let isMine: Bool?
     
-    /// 単一形式に対する`BookReview`のデコード
-    static func decodeBookReview(_ data: Data) throws(TechTrainAPIError) -> BookReview {
+    /// 単一のBookReviewに対するデコード
+    static func decodeSingleBookReview(_ data: Data) throws(TechTrainAPIError) -> BookReview {
         do {
             let decoder = JSONDecoder()
             return try decoder.decode(BookReview.self, from: data)
@@ -26,7 +26,7 @@ struct BookReview: Codable {
     }
     
     /// 配列形式に対する`BookReview`のデコード
-    static func decodeBookReviews(_ data: Data) throws(TechTrainAPIError) -> [BookReview] {
+    static func decodeBookReviewList(_ data: Data) throws(TechTrainAPIError) -> [BookReview] {
         do {
             let decoder = JSONDecoder()
             return try decoder.decode([BookReview].self, from: data)

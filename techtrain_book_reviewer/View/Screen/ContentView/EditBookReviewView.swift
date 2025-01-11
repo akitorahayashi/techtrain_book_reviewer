@@ -35,7 +35,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     private let spacerViewHeight: CGFloat = 200
     private let buttonHeight: CGFloat = 44
 
-    init(compliteAction: @escaping () -> Void, clearAction: @escaping () -> Void) {
+    init() {
         super.init(frame: .zero)
         reviewInputField.delegate = self
         detailInputField.delegate = self

@@ -55,7 +55,7 @@ actor BookReviewService {
         ]
         do {
             let postedBookReviewData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "PUT", headers: headers, body: body)
-            let postedBookReview = try BookReview.decodeBookReview(postedBookReviewData)
+            let postedBookReview = try BookReview.decodeSingleBookReview(postedBookReviewData)
             return postedBookReview
         } catch {
             throw error.toServiceError()
@@ -72,7 +72,7 @@ actor BookReviewService {
         
         do {
             let bookReviewData = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
-            let decodedBookReview = try BookReview.decodeBookReview(bookReviewData)
+            let decodedBookReview = try BookReview.decodeSingleBookReview(bookReviewData)
             return decodedBookReview
         } catch {
             throw error.toServiceError()
@@ -89,7 +89,7 @@ actor BookReviewService {
         
         do {
             let data = try await TechTrainAPIClientImpl.shared.makeRequestAsync(to: endpoint, method: "GET", headers: headers, body: nil)
-            let decodedBookReviews = try BookReview.decodeBookReviews(data)
+            let decodedBookReviews = try BookReview.decodeBookReviewList(data)
             return decodedBookReviews
         } catch {
             throw error.toServiceError()

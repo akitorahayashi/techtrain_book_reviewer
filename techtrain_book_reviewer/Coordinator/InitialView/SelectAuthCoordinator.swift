@@ -15,6 +15,7 @@ protocol SelectAuthCoordinatorProtocol: AnyObject {
 
 @MainActor
 class SelectAuthCoordinator: SelectAuthCoordinatorProtocol {
+    // child coordinator
     private var authInputCoordinator: AuthInputCoordinator?
     
     let navigationController: UINavigationController

@@ -8,15 +8,7 @@
 import UIKit
 
 class SelectAuthView: UIView {
-    private let appNameLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Book Reviewer"
-        label.font = UIFont.systemFont(ofSize: 28, weight: .bold)
-        label.textAlignment = .center
-        label.textColor = .accent
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private let appNameLabel = UILabel()
     
     let showSignUpPageButton = TBRCardButton(title: "Sign Up")
     let showLogInPageButton = TBRCardButton(title: "Log In")
@@ -34,6 +26,11 @@ class SelectAuthView: UIView {
         backgroundColor = .systemBackground
         
         // タイトルラベルを追加
+        appNameLabel.text = "Book Reviewer"
+        appNameLabel.font = UIFont.systemFont(ofSize: 28, weight: .bold)
+        appNameLabel.textAlignment = .center
+        appNameLabel.textColor = .accent
+        appNameLabel.translatesAutoresizingMaskIntoConstraints = false
         addSubview(appNameLabel)
         NSLayoutConstraint.activate([
             appNameLabel.centerXAnchor.constraint(equalTo: centerXAnchor),

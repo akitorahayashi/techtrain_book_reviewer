@@ -39,12 +39,12 @@ class BookDetailVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupActions()
+        setupButtonActions()
         navigationItem.hidesBackButton = true
     }
     
     // MARK: - Setup View
-    private func loadBookDetail() {
+    private func loadBookDetail()  {
         // ローディング開始
         LoadingOverlay.shared.show()
         Task {
@@ -71,7 +71,7 @@ class BookDetailVC: UIViewController {
     }
     
     // MARK: - Setup Actions
-    private func setupActions() {
+    private func setupButtonActions() {
         detailView?.openUrlButton.addTarget(self, action: #selector(openInBrowserTapped), for: .touchUpInside)
         detailView?.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
         detailView?.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)

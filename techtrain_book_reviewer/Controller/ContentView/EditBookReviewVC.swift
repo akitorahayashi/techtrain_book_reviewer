@@ -14,10 +14,7 @@ class EditBookReviewVC: UIViewController {
     
     init(bookReviewId: String? = nil) {
         self.bookReviewId = bookReviewId
-        self.editView = EditBookReviewView(
-            compliteAction: {},
-            clearAction: {}
-        )
+        self.editView = EditBookReviewView()
         super.init(nibName: nil, bundle: nil)
     }
     
