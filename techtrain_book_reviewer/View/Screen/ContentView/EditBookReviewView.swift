@@ -1,9 +1,7 @@
-//
 //  EditBookReviewView.swift
 //  techtrain_book_reviewer
 //
 //  Created by 林 明虎 on 2024/12/11.
-//
 
 import UIKit
 
@@ -21,19 +19,27 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     private let reviewHeader = UILabel()
     let reviewInputField = UITextView()
 
-    private var reviewHeightConstraint: NSLayoutConstraint!
-    private var detailHeightConstraint: NSLayoutConstraint!
-
     let compliteButton = TBRCardButton()
     let clearButton = TBRCardButton()
 
-    // 定数
-    private let containerPadding: CGFloat = 20
-    private let inputStackSpacing: CGFloat = 20
-    private let inputFieldHeight: CGFloat = 60
-    private let textViewMinHeight: CGFloat = 90
-    private let spacerViewHeight: CGFloat = 300
-    private let buttonHeight: CGFloat = 44
+    // 高さ制約をプロパティとして保持
+    private var detailInputFieldHeightConstraint: NSLayoutConstraint?
+    private var reviewInputFieldHeightConstraint: NSLayoutConstraint?
+
+    // レイアウト関連の定数
+    private struct LayoutConstants {
+        static let containerPadding: CGFloat = 20
+        static let inputStackSpacing: CGFloat = 20
+        static let inputFieldHeight: CGFloat = 60
+        static let spacerViewHeight: CGFloat = 300
+        static let buttonHeight: CGFloat = 44
+    }
+
+    // テキストビュー関連の定数
+    private struct TextViewConstants {
+        static let minLines: CGFloat = 3
+        static let lineHeight: CGFloat = 20
+    }
 
     init() {
         super.init(frame: .zero)
@@ -45,15 +51,21 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    private func configureTextView(_ textView: UITextView) {
+
+    private func configureTextView(_ textView: UITextView, heightConstraint: inout NSLayoutConstraint?) {
+        textView.isScrollEnabled = false
+        textView.font = UIFont.systemFont(ofSize: 16)
         textView.layer.borderWidth = 1.0
         textView.layer.borderColor = UIColor.systemGray5.cgColor
         textView.layer.cornerRadius = 5.0
-        textView.font = UIFont.systemFont(ofSize: 16)
-        textView.isScrollEnabled = false
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 20, right: 10)
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+
+        // 初期高さを3行分に設定
+        let minHeight = TextViewConstants.minLines * TextViewConstants.lineHeight + textView.textContainerInset.top + textView.textContainerInset.bottom
+        let heightConstraintInstance = textView.heightAnchor.constraint(equalToConstant: minHeight)
+        heightConstraintInstance.isActive = true
+        heightConstraint = heightConstraintInstance
     }
 
     func configureButtons(saveButtonTitle: String, cancelButtonTitle: String) {
@@ -90,8 +102,8 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         setupHeader(reviewHeader, text: "- Review -")
 
         // テキストビュー設定
-        configureTextView(detailInputField)
-        configureTextView(reviewInputField)
+        configureTextView(detailInputField, heightConstraint: &detailInputFieldHeightConstraint)
+        configureTextView(reviewInputField, heightConstraint: &reviewInputFieldHeightConstraint)
 
         // 入力フィールドのペアを作成
         let titleStack = createInputFormStackView(withHeader: titleHeader, inputField: titleTextField)
@@ -102,14 +114,14 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         // スタックビューの配置
         let inputFieldStackView = UIStackView(arrangedSubviews: [titleStack, urlStack, detailStack, reviewStack])
         inputFieldStackView.axis = .vertical
-        inputFieldStackView.spacing = inputStackSpacing
+        inputFieldStackView.spacing = LayoutConstants.inputStackSpacing
         inputFieldStackView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(inputFieldStackView)
 
         NSLayoutConstraint.activate([
-            inputFieldStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: inputStackSpacing),
-            inputFieldStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: containerPadding),
-            inputFieldStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -containerPadding)
+            inputFieldStackView.topAnchor.constraint(equalTo: containerView.topAnchor, constant: LayoutConstants.inputStackSpacing),
+            inputFieldStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: LayoutConstants.containerPadding),
+            inputFieldStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -LayoutConstants.containerPadding)
         ])
 
         // Spacerの設定
@@ -121,7 +133,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
             spacerView.topAnchor.constraint(equalTo: inputFieldStackView.bottomAnchor),
             spacerView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
             spacerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            spacerView.heightAnchor.constraint(equalToConstant: spacerViewHeight),
+            spacerView.heightAnchor.constraint(equalToConstant: LayoutConstants.spacerViewHeight),
             spacerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
 
@@ -134,10 +146,10 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         addSubview(buttonStackView)
 
         NSLayoutConstraint.activate([
-            buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: containerPadding),
-            buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -containerPadding),
+            buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: LayoutConstants.containerPadding),
+            buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -LayoutConstants.containerPadding),
             buttonStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -10),
-            buttonStackView.heightAnchor.constraint(equalToConstant: buttonHeight)
+            buttonStackView.heightAnchor.constraint(equalToConstant: LayoutConstants.buttonHeight)
         ])
     }
 
@@ -154,24 +166,26 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         stackView.alignment = .fill
         inputField.translatesAutoresizingMaskIntoConstraints = false
 
-        if let textField = inputField as? UITextField {
-            textField.heightAnchor.constraint(equalToConstant: inputFieldHeight).isActive = true
-        } else if let textView = inputField as? UITextView {
-            textView.heightAnchor.constraint(equalToConstant: textViewMinHeight).isActive = true
-        }
         return stackView
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        if textView == reviewInputField {
-            adjustHeight(for: textView, constraint: reviewHeightConstraint)
-        } else if textView == detailInputField {
-            adjustHeight(for: textView, constraint: detailHeightConstraint)
+        if textView == detailInputField, let constraint = detailInputFieldHeightConstraint {
+            adjustHeight(for: textView, constraint: constraint)
+        } else if textView == reviewInputField, let constraint = reviewInputFieldHeightConstraint {
+            adjustHeight(for: textView, constraint: constraint)
         }
     }
 
     private func adjustHeight(for textView: UITextView, constraint: NSLayoutConstraint) {
         let size = textView.sizeThatFits(CGSize(width: textView.frame.width, height: CGFloat.greatestFiniteMagnitude))
-        constraint.constant = max(textViewMinHeight, size.height)
+        let minHeight = TextViewConstants.minLines * TextViewConstants.lineHeight + textView.textContainerInset.top + textView.textContainerInset.bottom
+
+        constraint.constant = max(size.height, minHeight)
+
+        // レイアウトを更新
+        UIView.animate(withDuration: 0.2) {
+            self.layoutIfNeeded()
+        }
     }
 }
