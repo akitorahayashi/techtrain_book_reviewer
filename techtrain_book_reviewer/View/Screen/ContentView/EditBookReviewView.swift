@@ -12,9 +12,9 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     private let containerView = UIView()
 
     private let titleHeader = UILabel()
-    let titleTextField = TBRInputField(nil)
+    let titleTextField = TBRInputField()
     private let urlHeader = UILabel()
-    let urlTextField = TBRInputField(nil)
+    let urlTextField = TBRInputField()
 
     private let detailHeader = UILabel()
     let detailInputField = UITextView()
@@ -24,15 +24,15 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     private var reviewHeightConstraint: NSLayoutConstraint!
     private var detailHeightConstraint: NSLayoutConstraint!
 
-    let compliteButton = TBRCardButton(title: "")
-    let clearButton = TBRCardButton(title: "")
+    let compliteButton = TBRCardButton()
+    let clearButton = TBRCardButton()
 
     // 定数
     private let containerPadding: CGFloat = 20
     private let inputStackSpacing: CGFloat = 20
     private let inputFieldHeight: CGFloat = 60
     private let textViewMinHeight: CGFloat = 90
-    private let spacerViewHeight: CGFloat = 200
+    private let spacerViewHeight: CGFloat = 300
     private let buttonHeight: CGFloat = 44
 
     init() {
@@ -66,8 +66,8 @@ class EditBookReviewView: UIView, UITextViewDelegate {
 
         // スクロールビューとコンテナビューの設定
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(scrollView)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(containerView)
 
         NSLayoutConstraint.activate([

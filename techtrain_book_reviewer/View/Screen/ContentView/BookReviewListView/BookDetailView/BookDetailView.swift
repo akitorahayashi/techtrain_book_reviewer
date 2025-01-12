@@ -21,10 +21,10 @@ class BookDetailView: UIView {
     private let urlHeader = UILabel()
     let urlContent = UILabel()
     // buttons
-    let openUrlButton = TBRCardButton(title: "Check")
-    let backButton = TBRCardButton(title: "Back")
-    let editButton = TBRCardButton(title: "Edit")
-    let deleteButton = TBRCardButton(title: "Delete")
+    let openUrlButton = TBRCardButton()
+    let backButton = TBRCardButton()
+    let editButton = TBRCardButton()
+    let deleteButton = TBRCardButton()
     
     private var onBackAction: (() -> Void)?
     private var isMine: Bool?
@@ -173,6 +173,12 @@ class BookDetailView: UIView {
             $0.translatesAutoresizingMaskIntoConstraints = false
             addSubview($0)
         }
+        
+        // Cannot infer contextual base in reference to member 'normal'
+        self.openUrlButton.setTitle("Check", for: .normal)
+        self.backButton.setTitle("Back", for: .normal)
+        self.editButton.setTitle("Edit", for: .normal)
+        self.deleteButton.setTitle("Delete", for: .normal)
         
         NSLayoutConstraint.activate([
             buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),

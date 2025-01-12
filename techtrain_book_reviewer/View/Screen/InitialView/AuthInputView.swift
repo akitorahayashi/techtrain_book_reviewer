@@ -12,17 +12,16 @@ class AuthInputView: UIView {
     private let contentView = UIView()
     
     
-    let emailTextField = TBRInputField("メールアドレス")
-    let passwordTextField = TBRInputField("パスワード", isSecure: true)
-    let nameTextField = TBRInputField("名前")
+    let emailTextField = TBRInputField(placeholder: "メールアドレス")
+    let passwordTextField = TBRInputField(placeholder: "パスワード", isSecure: true)
+    let nameTextField = TBRInputField(placeholder: "名前")
     
     let actionButton: TBRCardButton
     let clearButton: TBRCardButton
     
     init(authMode: EmailAuthMode) {
-        let actionTitle = (authMode == .login) ? "ログイン" : "登録"
-        self.actionButton = TBRCardButton(title: actionTitle)
-        self.clearButton = TBRCardButton(title: "クリア")
+        self.actionButton = TBRCardButton()
+        self.clearButton = TBRCardButton()
         super.init(frame: .zero)
         setupUI(authMode: authMode)
     }
@@ -40,20 +39,9 @@ class AuthInputView: UIView {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(contentView)
         
-        NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
-            
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
-        ])
-        
         // ボタンスタックビュー
+        actionButton.setTitle((authMode == .login) ? "ログイン" : "登録", for: .normal)
+        clearButton.setTitle("クリア", for: .normal)
         let buttonStackView = UIStackView(arrangedSubviews: [clearButton, actionButton])
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = 16
@@ -72,6 +60,17 @@ class AuthInputView: UIView {
         addSubview(formStackView)
         
         NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
             formStackView.centerXAnchor.constraint(equalTo: centerXAnchor),
             formStackView.centerYAnchor.constraint(equalTo: centerYAnchor),
             formStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),

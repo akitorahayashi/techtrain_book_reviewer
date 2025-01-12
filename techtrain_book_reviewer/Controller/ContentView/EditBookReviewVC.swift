@@ -9,11 +9,11 @@ import UIKit
 
 class EditBookReviewVC: UIViewController {
     private let editView: EditBookReviewView?
-    private let bookReviewId: String? // nilの場合は新規作成
+    private let bookReviewID: String? // nilの場合は新規作成
     var onCompliteEditingCompletion: (() -> Void)?
     
     init(bookReviewId: String? = nil) {
-        self.bookReviewId = bookReviewId
+        self.bookReviewID = bookReviewId
         self.editView = EditBookReviewView()
         super.init(nibName: nil, bundle: nil)
     }
@@ -33,7 +33,7 @@ class EditBookReviewVC: UIViewController {
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
-        if let id = bookReviewId {
+        if let id = bookReviewID {
             Task {
                 await fetchBookDetailsForEdit(reviewId: id)
             }
@@ -43,7 +43,7 @@ class EditBookReviewVC: UIViewController {
     // MARK: - EditBookReviewViewのボタンのセットアップ
     private func setupEditBookReviewViewButton() {
         // 新規作成用のボタンテキスト設定
-        editView?.compliteButton.setTitle(bookReviewId == nil ? "Post" : "Edit", for: .normal)
+        editView?.compliteButton.setTitle(bookReviewID == nil ? "Post" : "Edit", for: .normal)
         editView?.clearButton.setTitle("Clear", for: .normal)
         
         editView?.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
@@ -77,7 +77,7 @@ class EditBookReviewVC: UIViewController {
     // MARK: - 保存/投稿処理
     @objc private func saveButtonTapped() {
         Task {
-            if bookReviewId == nil {
+            if bookReviewID == nil {
                 await createReviewAsync() // 新規作成
             } else {
                 await updateReviewAsync() // 編集
@@ -118,7 +118,7 @@ class EditBookReviewVC: UIViewController {
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,
-              let review = editView?.reviewInputField.text, let id = bookReviewId else { return }
+              let review = editView?.reviewInputField.text, let id = bookReviewID else { return }
         // ローディング開始
         LoadingOverlay.shared.show()
         do {

@@ -10,8 +10,8 @@ import UIKit
 class SelectAuthView: UIView {
     private let appNameLabel = UILabel()
     
-    let showSignUpPageButton = TBRCardButton(title: "Sign Up")
-    let showLogInPageButton = TBRCardButton(title: "Log In")
+    let showSignUpPageButton = TBRCardButton()
+    let showLogInPageButton = TBRCardButton()
     
     init() {
         super.init(frame: .zero)
@@ -38,6 +38,8 @@ class SelectAuthView: UIView {
         ])
         
         // ボタンのスタックビューを作成
+        showSignUpPageButton.setTitle("Sign up", for: .normal)
+        showLogInPageButton.setTitle("Log in", for: .normal)
         let buttonStack = UIStackView(arrangedSubviews: [showSignUpPageButton, showLogInPageButton])
         buttonStack.axis = .vertical
         buttonStack.spacing = 16

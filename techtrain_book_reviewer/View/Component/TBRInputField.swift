@@ -11,7 +11,7 @@ class TBRInputField: UITextField {
     let verticalPadding: CGFloat = 20
     let horizontalPadding: CGFloat = 10
 
-    init(_ placeholder: String?, isSecure: Bool = false) {
+    init(placeholder: String? = nil, isSecure: Bool = false) {
         super.init(frame: .zero)
         self.placeholder = placeholder
         self.isSecureTextEntry = isSecure
