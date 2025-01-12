@@ -14,7 +14,7 @@ class EditBookReviewVC: UIViewController {
     
     init(bookReviewId: String? = nil) {
         self.bookReviewID = bookReviewId
-        self.editView = EditBookReviewView()
+        self.editView = EditBookReviewView(bookReviewID: bookReviewID)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -29,7 +29,7 @@ class EditBookReviewVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.hidesBackButton = true
-        setupEditBookReviewViewButton()
+        setupEditBookReviewViewButtonAction()
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
@@ -41,11 +41,7 @@ class EditBookReviewVC: UIViewController {
     }
     
     // MARK: - EditBookReviewViewのボタンのセットアップ
-    private func setupEditBookReviewViewButton() {
-        // 新規作成用のボタンテキスト設定
-        editView?.compliteButton.setTitle(bookReviewID == nil ? "Post" : "Edit", for: .normal)
-        editView?.clearButton.setTitle("Clear", for: .normal)
-        
+    private func setupEditBookReviewViewButtonAction() {
         editView?.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         editView?.clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
     }
