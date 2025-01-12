@@ -29,8 +29,8 @@ class EditBookReviewView: UIView, UITextViewDelegate {
     
     // レイアウト関連の定数
     private struct LayoutConstants {
-        static let containerPadding: CGFloat = 20
-        static let inputStackSpacing: CGFloat = 20
+        static let containerPadding: CGFloat = 12
+        static let inputStackSpacing: CGFloat = 12
         static let inputFieldHeight: CGFloat = 60
         static let spacerViewHeight: CGFloat = 300
         static let buttonHeight: CGFloat = 44
@@ -76,18 +76,18 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         let detailStack = createInputFieldPair(header: detailHeader, inputField: detailInputField)
         let reviewStack = createInputFieldPair(header: reviewHeader, inputField: reviewInputField)
         
-        // テキストビューを設定
+        // UITextViewの設定
         configureTextView(detailInputField, heightConstraint: &detailInputFieldHeightConstraint)
         configureTextView(reviewInputField, heightConstraint: &reviewInputFieldHeightConstraint)
         
-        // InputForm全体のStackの設定
+        // InputForm全体のStackの配置
         let inputFieldFormStack = UIStackView(arrangedSubviews: [titleStack, urlStack, detailStack, reviewStack])
         inputFieldFormStack.axis = .vertical
         inputFieldFormStack.spacing = LayoutConstants.inputStackSpacing
         inputFieldFormStack.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(inputFieldFormStack)
         
-        // Spacerの設定
+        // Spacerの配置
         let spacerView = UIView()
         spacerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(spacerView)
@@ -130,9 +130,9 @@ class EditBookReviewView: UIView, UITextViewDelegate {
             spacerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
             
             // buttonStackViewの制約
-            buttonStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: LayoutConstants.containerPadding),
-            buttonStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -LayoutConstants.containerPadding),
-            buttonStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -10),
+            buttonStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: LayoutConstants.containerPadding),
+            buttonStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -LayoutConstants.containerPadding),
+            buttonStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -12),
             buttonStackView.heightAnchor.constraint(equalToConstant: LayoutConstants.buttonHeight)
         ])
     }
@@ -167,6 +167,10 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         textView.textContainerInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         // 初期高さを3行分かそれ以上に設定
+        let minHeight = TextViewConstants.textViewHeightInRows * TextViewConstants.oneLineHeight + textView.textContainerInset.top + textView.textContainerInset.bottom
+        let heightConstraintInstance = textView.heightAnchor.constraint(equalToConstant: minHeight)
+        heightConstraintInstance.isActive = true
+        heightConstraint = heightConstraintInstance
         self.adjustHeight(for: textView, constraint: heightConstraint)
     }
     
