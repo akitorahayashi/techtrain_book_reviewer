@@ -8,11 +8,11 @@
 import UIKit
 
 class SelectAuthVC: UIViewController {
-    private weak var coordinator: SelectAuthCoordinatorProtocol?
+    private weak var selectAuthCoordinator: SelectAuthCoordinatorProtocol?
     private var selectAuthView: SelectAuthView?
     
     init(coordinator: SelectAuthCoordinatorProtocol?) {
-        self.coordinator = coordinator
+        self.selectAuthCoordinator = coordinator
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -36,10 +36,10 @@ class SelectAuthVC: UIViewController {
     }
     
     @objc func signupButtonAction() {
-        self.coordinator?.navigateToSignUp()
+        self.selectAuthCoordinator?.navigateToSignUp()
     }
     
     @objc func loginButtonAction() {
-        self.coordinator?.navigateToLogIn()
+        self.selectAuthCoordinator?.navigateToLogIn()
     }
 }

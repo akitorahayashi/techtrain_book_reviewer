@@ -16,7 +16,7 @@ protocol MainTabBarCoordinatorProtocol: AnyObject {
 class MainTabBarCoordinator: MainTabBarCoordinatorProtocol {
     private let navigationController: UINavigationController
     // child coordinator
-    private let selectAuthCoordinator: SelectAuthCoordinator?
+    private let selectAuthCoordinator: SelectAuthCoordinator
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController

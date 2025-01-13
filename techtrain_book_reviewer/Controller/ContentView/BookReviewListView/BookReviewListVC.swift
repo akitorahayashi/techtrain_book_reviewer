@@ -8,13 +8,25 @@
 import UIKit
 
 class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    private weak var bookReviewListCoordinator: BookReviewListCoordinator?
     private var bookReviewListView: BookReviewListView?
     private var bookReviews: [BookReview] = []
     private var currentOffset = 0
     private let refreshControl = UIRefreshControl()
     
+    init(bookReviewListCoordinator: BookReviewListCoordinator) {
+        self.bookReviewListCoordinator = bookReviewListCoordinator
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Lifecycle methods
     override func loadView() {
-        bookReviewListView = BookReviewListView()
+        super.loadView()
+        self.bookReviewListView = BookReviewListView()
         view = bookReviewListView
     }
     
@@ -84,7 +96,8 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let review = bookReviews[indexPath.row]
-        navigationController?.pushViewController(BookDetailVC(book: review), animated: true)
+        print(bookReviewListCoordinator)
+        bookReviewListCoordinator?.navigateToBookDetailView(corrBookReview: review)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {

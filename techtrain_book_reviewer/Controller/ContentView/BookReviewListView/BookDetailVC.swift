@@ -8,12 +8,15 @@
 import UIKit
 
 class BookDetailVC: UIViewController {
-    private let bookId: String
-    private var detailView: BookDetailView?
+    private weak var bookDetailCoordinator: BookDetailCoordinatorProtocol?
+    private let corrBookReview: BookReview
+    private var detailView: BookDetailView
     var isUpdated: Bool = false
     
-    init(book: BookReview) {
-        self.bookId = book.id
+    init(bookDetailCoordinator: BookDetailCoordinatorProtocol?, corrBookReview: BookReview) {
+        self.bookDetailCoordinator = bookDetailCoordinator
+        self.corrBookReview = corrBookReview
+        self.detailView = BookDetailView(corrBookReview: corrBookReview)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -23,45 +26,33 @@ class BookDetailVC: UIViewController {
     
     // MARK: - Lifecycle Methods
     override func loadView() {
-        detailView = BookDetailView(
-            title: "",
-            detail: "",
-            review: "",
-            url: "",
-            isMine: nil,
-            onBack: { [weak self] in
-                self?.navigationController?.popViewController(animated: true)
-            }
-        )
-        loadBookDetail()
         view = detailView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupButtonActions()
-        navigationItem.hidesBackButton = true
     }
     
     // MARK: - Setup View
-    private func loadBookDetail()  {
-        // ローディング開始
-        LoadingOverlay.shared.show()
-        Task {
-            guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
-            do {
-                let bookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: bookId, token: token)
-                self.updateUI(with: bookDetail)
-            } catch let serviceError {
-                TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
-            }
-            // ローディング終了
-            LoadingOverlay.shared.hide()
-        }
-    }
+//    private func loadBookDetail()  {
+//        // ローディング開始
+//        LoadingOverlay.shared.show()
+//        Task {
+//            guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
+//            do {
+//                let bookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: bookId, token: token)
+//                self.updateUI(with: bookDetail)
+//            } catch let serviceError {
+//                TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
+//            }
+//            // ローディング終了
+//            LoadingOverlay.shared.hide()
+//        }
+//    }
     
     private func updateUI(with bookReview: BookReview) {
-        detailView?.updateUI(
+        detailView.updateUI(
             title: bookReview.title,
             detail: bookReview.detail,
             review: bookReview.review,
@@ -72,10 +63,10 @@ class BookDetailVC: UIViewController {
     
     // MARK: - Setup Actions
     private func setupButtonActions() {
-        detailView?.openUrlButton.addTarget(self, action: #selector(openInBrowserTapped), for: .touchUpInside)
-        detailView?.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
-        detailView?.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)
-        detailView?.deleteButton.addTarget(self, action: #selector(confirmAndDeleteBookReview), for: .touchUpInside)
+        detailView.openUrlButton.addTarget(self, action: #selector(openInBrowserTapped), for: .touchUpInside)
+        detailView.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
+        detailView.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)
+        detailView.deleteButton.addTarget(self, action: #selector(confirmAndDeleteBookReview), for: .touchUpInside)
         
 //        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openInBrowserTapped))
 //        detailView?.urlContent.isUserInteractionEnabled = true
@@ -85,7 +76,7 @@ class BookDetailVC: UIViewController {
     
     // MARK: - Button Actions
     @objc private func openInBrowserTapped() {
-        guard let urlString = detailView?.urlContent.text, let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
+        guard let urlString = detailView.urlContent.text, let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "URLが無効です")
             return
         }
@@ -97,12 +88,8 @@ class BookDetailVC: UIViewController {
     }
     
     @objc private func navigateToEditView() {
-        let editVC = EditBookReviewVC(bookReviewId: bookId)
-        editVC.onCompliteEditingCompletion = { [weak self] in
-            print("Editing completed, refreshing data...")
-            self?.isUpdated = true
-            self?.loadBookDetail()
-        }
+        self.bookDetailCoordinator?.navigateEditBookReview(corrBookReview: corrBookReview)
+        let editVC = EditBookReviewVC(corrBookReview: corrBookReview)
         navigationController?.pushViewController(editVC, animated: true)
     }
     
@@ -130,7 +117,7 @@ class BookDetailVC: UIViewController {
             LoadingOverlay.shared.show()
             guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
             do {
-                try await BookReviewService.shared.deleteBookReview(id: bookId, token: token)
+                try await BookReviewService.shared.deleteBookReview(id: corrBookReview.id, token: token)
                 self.isUpdated = true
                 self.navigationController?.popViewController(animated: true)
                 TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "削除されました！")

@@ -26,15 +26,10 @@ class BookDetailView: UIView {
     let editButton = TBRCardButton()
     let deleteButton = TBRCardButton()
     
-    private var onBackAction: (() -> Void)?
-    private var isMine: Bool?
-    
-    init(title: String, detail: String, review: String, url: String, isMine: Bool?, onBack: @escaping () -> Void) {
-        self.isMine = isMine
-        self.onBackAction = onBack
+    init(corrBookReview: BookReview) {
         super.init(frame: .zero)
         setupUI()
-        updateUI(title: title, detail: detail, review: review, url: url, isMine: isMine)
+        updateUI(title: corrBookReview.title, detail: corrBookReview.detail, review: corrBookReview.review, url: corrBookReview.url, isMine: corrBookReview.isMine)
     }
     
     required init?(coder: NSCoder) {
@@ -200,7 +195,6 @@ class BookDetailView: UIView {
         detailContent.text = detail
         reviewContent.text = review
         urlContent.text = url
-        self.isMine = isMine
         
         // 編集ボタンの表示/非表示
         let isUserOwner = isMine ?? false

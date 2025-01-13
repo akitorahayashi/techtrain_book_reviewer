@@ -8,12 +8,19 @@
 import UIKit
 
 class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
-    weak var coordinator: MainTabBarCoordinatorProtocol?
-    private var bookListVC = BookReviewListVC()
-    private var createReviewVC = EditBookReviewVC()
+    private weak var mainTabBarCoordinator: MainTabBarCoordinator?
+    private weak var bookReviewListCoordinator: BookReviewListCoordinator?
+    private var bookReviewListVC: BookReviewListVC
+    private var createReviewVC: EditBookReviewVC
     
-    init(coordinator: MainTabBarCoordinatorProtocol?) {
-        self.coordinator = coordinator
+    init(
+        mainTabBarCoordinator: MainTabBarCoordinator,
+        bookReviewListCoordinator: BookReviewListCoordinator
+    ) {
+        self.mainTabBarCoordinator = mainTabBarCoordinator
+        self.bookReviewListCoordinator = bookReviewListCoordinator
+        bookReviewListVC = BookReviewListVC(bookReviewListCoordinator: bookReviewListCoordinator)
+        createReviewVC = EditBookReviewVC()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -21,17 +28,23 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle メソッド
+    override func loadView() {
+        super.loadView()
+        setupTopNavigationBar()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTopNavigationBar()
-        
+
+        navigationItem.hidesBackButton = true
         // UITabBarControllerDelegateのデリゲートを設定
         self.delegate = self
         
         // tabBarItemの設定
-        bookListVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
+        bookReviewListVC.tabBarItem = UITabBarItem(title: "Book List", image: UIImage(systemName: "books.vertical"), tag: 0)
         createReviewVC.tabBarItem = UITabBarItem(title: "Create Review", image: UIImage(systemName: "square.and.pencil"), tag: 1)
-        viewControllers = [bookListVC, createReviewVC]
+        viewControllers = [bookReviewListVC, createReviewVC]
         tabBar.tintColor = .accent
     }
     
@@ -45,55 +58,45 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    // MARK: - UserNameChangeDelegate
-    /// UserNameChangeDelegateプロトコルのメソッド
-    /// ユーザー名が変更された際に呼び出される
-    //    func didChangeUserName() async {
-    //        if let bookListNavVC = viewControllers?.first(where: { $0 is UINavigationController }) as? UINavigationController,
-    //           let bookListVC = bookListNavVC.viewControllers.first as? BookReviewListVC {
-    //            await bookListVC.didChangeUserName()
-    //        }
-    //    }
-    
     // MARK: - Custom Methods
-    /// ユーザーアイコンボタンを作成するメソッド
-    func createUserIconButton() -> UIButton {
-        let userIconButton = UIButton(type: .custom)
-        
-        userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
-        userIconButton.tintColor = .accent
-        
-        userIconButton.layer.cornerRadius = 18
-        userIconButton.clipsToBounds = true
-        userIconButton.translatesAutoresizingMaskIntoConstraints = false
-        userIconButton.widthAnchor.constraint(equalToConstant: 36).isActive = true
-        userIconButton.heightAnchor.constraint(equalToConstant: 36).isActive = true
-        
-        return userIconButton
-    }
     
-    /// ナビゲーションバーを設定するメソッド
+    // ナビゲーションバーを設定するメソッド
     private func setupTopNavigationBar() {
         // 中央のタイトル設定
-        let titleLabel = UILabel()
-        titleLabel.text = "Book Reviewer"
-        titleLabel.textColor = UIColor.accent
-        titleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        navigationItem.titleView = titleLabel
+        let navigationBarTitleLabel = UILabel()
+        navigationBarTitleLabel.text = "Book Reviewer"
+        navigationBarTitleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+        navigationBarTitleLabel.textAlignment = .center
+        navigationBarTitleLabel.textColor = UIColor.accent
+        navigationItem.titleView = navigationBarTitleLabel
         
         // ナビゲーションバーのbackボタンを消す
         navigationItem.hidesBackButton = true
         
         // ユーザーアイコンボタン
         let userIconButton = createUserIconButton()
-        userIconButton.addTarget(self, action: #selector(userIconTapped), for: .touchUpInside)
-        let userIconBarButtonItem = UIBarButtonItem(customView: userIconButton)
-        navigationItem.rightBarButtonItem = userIconBarButtonItem
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: userIconButton)
+    }
+    
+    // ユーザーアイコンボタンを作成するメソッド
+    func createUserIconButton() -> UIButton {
+        let userIconButton = UIButton()
+        userIconButton.setImage(UIImage(systemName: "person.circle"), for: .normal)
+        userIconButton.tintColor = .accent
+        userIconButton.addTarget(self, action: #selector(userIconTappedAction), for: .touchUpInside)
+        userIconButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            userIconButton.widthAnchor.constraint(equalToConstant: 36),
+            userIconButton.heightAnchor.constraint(equalToConstant: 36)
+        ])
+        
+        return userIconButton
     }
     
     // MARK: - Button Actions
     /// ユーザーアイコンがタップされた際に呼び出されるメソッド
-    @objc private func userIconTapped() {
+    @objc private func userIconTappedAction() {
         Task {
             let userName: String = await UserProfileService().getAccountData()?.name ?? "Unknown"
             let alert = UIAlertController(title: "アカウント設定: \(userName)", message: nil, preferredStyle: .actionSheet)
@@ -104,7 +107,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
             
             alert.addAction(UIAlertAction(title: "ログアウト", style: .destructive, handler: { [weak self] _ in
                 Task {
-                    await self?.coordinator?.logoutToSelectAuthVC()
+                    await self?.mainTabBarCoordinator?.logoutToSelectAuthVC()
                 }
             }))
             
@@ -145,7 +148,7 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
                     do {
                         try await userProfileService.updateAndSetUserName(withToken: token, enteredNewName: newName)
                         // リフレッシュする
-                        bookListVC.loadReviews(offset: 0)
+                        bookReviewListVC.loadReviews(offset: 0)
                         TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "名前が変更されました")
                     } catch let serviceError {
                         TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)

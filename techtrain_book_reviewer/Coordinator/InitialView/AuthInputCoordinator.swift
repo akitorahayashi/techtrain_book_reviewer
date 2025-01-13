@@ -16,18 +16,21 @@ protocol AuthInputCoordinatorProtocol {
 class AuthInputCoordinator: AuthInputCoordinatorProtocol {
     let navigationController: UINavigationController
     // child coordinator
-    private var mainTabBarCoordinator: MainTabBarCoordinator?
+    private var mainTabBarCoordinator: MainTabBarCoordinator
+    private var bookListCoordinator: BookReviewListCoordinator
     
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
+        self.mainTabBarCoordinator = MainTabBarCoordinator(navigationController: self.navigationController)
+        self.bookListCoordinator = BookReviewListCoordinator(navigationController: self.navigationController)
     }
     
     // MainTabBarControllerに進む
     func navigateToMainTabBarView() {
-        let mainTabBarCoordinator = MainTabBarCoordinator(navigationController: self.navigationController)
-        self.mainTabBarCoordinator = mainTabBarCoordinator
-        let mainTabBarController = MainTabBarController(coordinator: mainTabBarCoordinator)
-        mainTabBarController.navigationItem.hidesBackButton = true
+        let mainTabBarController = MainTabBarController(
+            mainTabBarCoordinator: mainTabBarCoordinator,
+            bookReviewListCoordinator: bookListCoordinator
+        )
         navigationController.pushViewController(mainTabBarController, animated: true)
     }
 }

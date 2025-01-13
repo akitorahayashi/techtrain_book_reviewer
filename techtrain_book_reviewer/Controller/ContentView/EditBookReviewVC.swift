@@ -9,12 +9,11 @@ import UIKit
 
 class EditBookReviewVC: UIViewController {
     private let editView: EditBookReviewView?
-    private let bookReviewID: String? // nilの場合は新規作成
-    var onCompliteEditingCompletion: (() -> Void)?
+    private let corrBookReview: BookReview? // nilの場合は新規作成
     
-    init(bookReviewId: String? = nil) {
-        self.bookReviewID = bookReviewId
-        self.editView = EditBookReviewView(bookReviewID: bookReviewID)
+    init(corrBookReview: BookReview? = nil) {
+        self.corrBookReview = corrBookReview
+        self.editView = EditBookReviewView(corrBookReview: corrBookReview)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -33,7 +32,7 @@ class EditBookReviewVC: UIViewController {
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
-        if let id = bookReviewID {
+        if let id = corrBookReview?.id {
             Task {
                 await fetchBookDetailsForEdit(reviewId: id)
             }
@@ -73,7 +72,7 @@ class EditBookReviewVC: UIViewController {
     // MARK: - 保存/投稿処理
     @objc private func saveButtonTapped() {
         Task {
-            if bookReviewID == nil {
+            if corrBookReview == nil {
                 await createReviewAsync() // 新規作成
             } else {
                 await updateReviewAsync() // 編集
@@ -114,7 +113,7 @@ class EditBookReviewVC: UIViewController {
               let title = editView?.titleTextField.text,
               let url = editView?.urlTextField.text,
               let detail = editView?.detailInputField.text,
-              let review = editView?.reviewInputField.text, let id = bookReviewID else { return }
+              let review = editView?.reviewInputField.text, let id = corrBookReview?.id else { return }
         // ローディング開始
         LoadingOverlay.shared.show()
         do {
@@ -126,10 +125,7 @@ class EditBookReviewVC: UIViewController {
                 review: review,
                 token: token
             )
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました") { [weak self] _ in
-                self?.onCompliteEditingCompletion?()
-                self?.navigationController?.popViewController(animated: true)
-            }
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました")
         } catch let serviceError {
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }

@@ -6,7 +6,7 @@
 import UIKit
 
 class EditBookReviewView: UIView, UITextViewDelegate {
-    private var bookReviewID: String?
+    private var corrBookReview: BookReview?
     private let scrollView = UIScrollView()
     private let containerView = UIView()
     
@@ -42,9 +42,9 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         static let oneLineHeight: CGFloat = 20
     }
     
-    init(bookReviewID: String?) {
+    init(corrBookReview: BookReview?) {
         super.init(frame: .zero)
-        self.bookReviewID = bookReviewID
+        self.corrBookReview = corrBookReview
         reviewInputField.delegate = self
         detailInputField.delegate = self
         setupUI()
@@ -93,7 +93,7 @@ class EditBookReviewView: UIView, UITextViewDelegate {
         containerView.addSubview(spacerView)
         
         // ボタンのテキストの設定
-        compliteButton.setTitle(bookReviewID == nil ? "Post" : "Edit", for: .normal)
+        compliteButton.setTitle(corrBookReview?.id == nil ? "Post" : "Edit", for: .normal)
         clearButton.setTitle("Clear", for: .normal)
         
         // ボタンスタックビューの配置

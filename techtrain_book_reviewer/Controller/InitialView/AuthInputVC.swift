@@ -14,13 +14,14 @@ enum EmailAuthMode {
 
 class AuthInputVC: UIViewController {
     private let authMode: EmailAuthMode
-    private var authInputView: AuthInputView?
+    private var authInputView: AuthInputView
     private weak var authInputCoordinator: AuthInputCoordinator?
     
     
     // MARK: - Initializers
     init(authMode: EmailAuthMode, authInputCoordinator: AuthInputCoordinator?) {
         self.authMode = authMode
+        self.authInputView = AuthInputView(authMode: self.authMode)
         self.authInputCoordinator = authInputCoordinator
         super.init(nibName: nil, bundle: nil)
     }
@@ -32,33 +33,32 @@ class AuthInputVC: UIViewController {
     // MARK: - Lifecycle Methods
     override func loadView() {
         super.loadView()
-        authInputView = AuthInputView(authMode: self.authMode)
-        view = authInputView
+        view = self.authInputView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        authInputView?.actionButton.addTarget(self, action: #selector(authButtonAction), for: .touchUpInside)
-        authInputView?.clearButton.addTarget(self, action: #selector(clearInputFields), for: .touchUpInside)
+        authInputView.actionButton.addTarget(self, action: #selector(authButtonAction), for: .touchUpInside)
+        authInputView.clearButton.addTarget(self, action: #selector(clearInputFields), for: .touchUpInside)
         setupKeyboardDismissTapGesture()
     }
     
     // MARK: - 入力フォームをクリアする処理
     @objc func clearInputFields() {
-        self.authInputView?.nameTextField.text = ""
-        self.authInputView?.emailTextField.text = ""
-        self.authInputView?.passwordTextField.text = ""
+        self.authInputView.nameTextField.text = ""
+        self.authInputView.emailTextField.text = ""
+        self.authInputView.passwordTextField.text = ""
     }
     
     // MARK: - 入力検証とエラー表示
     /// 入力値を検証し、エラーがあればアラートを表示。すべてクリアした場合、入力値をタプルで返す。
     private func validateAndShowErrors() -> (email: String, password: String, name: String?)? {
-        guard let email = authInputView?.emailTextField.text,
-              let password = authInputView?.passwordTextField.text else {
+        guard let email = authInputView.emailTextField.text,
+              let password = authInputView.passwordTextField.text else {
             return nil
         }
         
-        let name = authInputView?.nameTextField.text
+        let name = authInputView.nameTextField.text
         let validationErrorMessages = TBRAuthInputValidator.validateAuthInput(email: email, password: password, name: name, mode: authMode)
         
         // エラーがある場合、最初のエラーをアラートで表示
