@@ -21,8 +21,6 @@ class BookDetailView: UIView {
     private let urlHeader = UILabel()
     let urlContent = UILabel()
     // buttons
-    let openUrlButton = TBRCardButton()
-    let backButton = TBRCardButton()
     let editButton = TBRCardButton()
     let deleteButton = TBRCardButton()
     
@@ -85,7 +83,7 @@ class BookDetailView: UIView {
             (titleHeader, "- Title -"),
             (detailHeader, "- Detail -"),
             (reviewHeader, "- Review -"),
-            (urlHeader, "- Url -")
+            (urlHeader, "- URL -")
         ]
 
         let contents: [(label: UILabel, font: UIFont, color: UIColor?, lines: Int)] = [
@@ -116,20 +114,20 @@ class BookDetailView: UIView {
         }
         
         // それぞれの要素のレイアウトをする
-        let elements: [(header: UIView, content: UIView, spacing: CGFloat)] = [
+        let elements: [(header: UIView, content: UIView, topPadding: CGFloat)] = [
             (titleHeader, titleContent, 16),
             (detailHeader, detailContent, 32),
             (reviewHeader, reviewContent, 12),
             (urlHeader, urlContent, 12)
         ]
 
-        var previousContent: UIView? = nil
+        var lastContent: UIView? = nil
 
         // 繰り返し処理で要素を配置
         for (header, content, spacing) in elements {
             NSLayoutConstraint.activate([
                 // Header の制約
-                header.topAnchor.constraint(equalTo: previousContent?.bottomAnchor ?? contentView.topAnchor, constant: spacing),
+                header.topAnchor.constraint(equalTo: lastContent?.bottomAnchor ?? contentView.topAnchor, constant: spacing),
                 header.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
                 header.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
                 
@@ -138,8 +136,8 @@ class BookDetailView: UIView {
                 content.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
                 content.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16)
             ])
-            // 次の要素のために現在の Content を記録
-            previousContent = content
+            // 最後の要素を記録するため
+            lastContent = content
         }
 
         // SpacerView を配置
@@ -148,7 +146,7 @@ class BookDetailView: UIView {
         contentView.addSubview(spacerView)
 
         NSLayoutConstraint.activate([
-            spacerView.topAnchor.constraint(equalTo: previousContent?.bottomAnchor ?? contentView.topAnchor, constant: 16),
+            spacerView.topAnchor.constraint(equalTo: lastContent?.bottomAnchor ?? contentView.topAnchor, constant: 16),
             spacerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             spacerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             spacerView.heightAnchor.constraint(equalToConstant: 200),
@@ -156,36 +154,25 @@ class BookDetailView: UIView {
         ])
     }
     
-    private func setupButtons(in contentView: UIView) {
-        let buttonStack = UIStackView(arrangedSubviews: [deleteButton, editButton])
-        let navButtonStack = UIStackView(arrangedSubviews: [backButton, openUrlButton])
+    private func setupButtons(in containerView: UIView) {
+        let bottomNavButtonStack = UIStackView(arrangedSubviews: [deleteButton, editButton])
         
-        [buttonStack, navButtonStack].forEach {
-            $0.axis = .horizontal
-            $0.spacing = 16
-            $0.alignment = .center
-            $0.distribution = .fillEqually
-            $0.translatesAutoresizingMaskIntoConstraints = false
-            addSubview($0)
-        }
+        bottomNavButtonStack.axis = .horizontal
+        bottomNavButtonStack.spacing = 16
+        bottomNavButtonStack.alignment = .center
+        bottomNavButtonStack.distribution = .fillEqually
+        bottomNavButtonStack.translatesAutoresizingMaskIntoConstraints = false
+        containerView.addSubview(bottomNavButtonStack)
         
         // Cannot infer contextual base in reference to member 'normal'
-        self.openUrlButton.setTitle("Check", for: .normal)
-        self.backButton.setTitle("Back", for: .normal)
         self.editButton.setTitle("Edit", for: .normal)
         self.deleteButton.setTitle("Delete", for: .normal)
         
         NSLayoutConstraint.activate([
-            buttonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            buttonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            buttonStack.heightAnchor.constraint(equalToConstant: 44),
-            
-            navButtonStack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
-            navButtonStack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            navButtonStack.heightAnchor.constraint(equalToConstant: 44),
-            navButtonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            
-            buttonStack.bottomAnchor.constraint(equalTo: navButtonStack.topAnchor, constant: -16)
+            bottomNavButtonStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
+            bottomNavButtonStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            bottomNavButtonStack.heightAnchor.constraint(equalToConstant: 44),
+            bottomNavButtonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])
     }
     

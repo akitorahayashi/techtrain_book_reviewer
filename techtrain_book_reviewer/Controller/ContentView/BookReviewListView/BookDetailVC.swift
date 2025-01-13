@@ -63,19 +63,18 @@ class BookDetailVC: UIViewController {
     
     // MARK: - Setup Actions
     private func setupButtonActions() {
-        detailView.openUrlButton.addTarget(self, action: #selector(openInBrowserTapped), for: .touchUpInside)
-        detailView.backButton.addTarget(self, action: #selector(backToListTapped), for: .touchUpInside)
         detailView.editButton.addTarget(self, action: #selector(navigateToEditView), for: .touchUpInside)
         detailView.deleteButton.addTarget(self, action: #selector(confirmAndDeleteBookReview), for: .touchUpInside)
         
-//        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(openInBrowserTapped))
-//        detailView?.urlContent.isUserInteractionEnabled = true
-//        detailView?.urlContent.addGestureRecognizer(tapGesture)
+        // urlをタップした時にブラウザで該当のコンテンツを開く設定
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(urlContentTapped))
+        detailView.urlContent.isUserInteractionEnabled = true
+        detailView.urlContent.addGestureRecognizer(tapGesture)
     }
     
     
     // MARK: - Button Actions
-    @objc private func openInBrowserTapped() {
+    @objc private func urlContentTapped() {
         guard let urlString = detailView.urlContent.text, let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) else {
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "エラー", message: "URLが無効です")
             return
