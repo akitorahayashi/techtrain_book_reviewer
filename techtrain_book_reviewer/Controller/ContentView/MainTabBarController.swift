@@ -58,17 +58,12 @@ class MainTabBarController: UITabBarController, UITabBarControllerDelegate {
         }
     }
     
-    // MARK: - Custom Methods
+    // MARK: - UIのセットアップ
     
     // ナビゲーションバーを設定するメソッド
     private func setupTopNavigationBar() {
         // 中央のタイトル設定
-        let navigationBarTitleLabel = UILabel()
-        navigationBarTitleLabel.text = "Book Reviewer"
-        navigationBarTitleLabel.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        navigationBarTitleLabel.textAlignment = .center
-        navigationBarTitleLabel.textColor = UIColor.accent
-        navigationItem.titleView = navigationBarTitleLabel
+        navigationItem.titleView = TBRNavigationBarTitle(title: "Book Reviewer")
         
         // ナビゲーションバーのbackボタンを消す
         navigationItem.hidesBackButton = true

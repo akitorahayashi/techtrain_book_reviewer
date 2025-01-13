@@ -88,8 +88,6 @@ class BookDetailVC: UIViewController {
     
     @objc private func navigateToEditView() {
         self.bookDetailCoordinator?.navigateEditBookReview(corrBookReview: corrBookReview)
-        let editVC = EditBookReviewVC(corrBookReview: corrBookReview)
-        navigationController?.pushViewController(editVC, animated: true)
     }
     
     @objc private func confirmAndDeleteBookReview() {
