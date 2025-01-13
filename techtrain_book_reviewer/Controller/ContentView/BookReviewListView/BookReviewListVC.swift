@@ -30,18 +30,17 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
         view = bookReviewListView
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        loadReviews(offset: 0)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         setupRefreshControl()
         loadReviews(offset: 0)
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        bookReviewListView?.reloadData()
-    }
-    
     // MARK: - Setup Methods
     private func setupTableView() {
         bookReviewListView?.tableView.delegate = self

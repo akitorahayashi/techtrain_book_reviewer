@@ -8,6 +8,7 @@
 import UIKit
 
 class EditBookReviewVC: UIViewController {
+    private weak var editBookReviewCoordinator: EditBookReviewCoordinatorProtocol?
     private let editView: EditBookReviewView
     private let corrBookReview: BookReview? // nilの場合は新規作成
     
@@ -114,7 +115,7 @@ class EditBookReviewVC: UIViewController {
         // ローディング開始
         LoadingOverlay.shared.show()
         do {
-            let _ = try await BookReviewService.shared.updateAndReturnBookReview(
+            let updatedBookReview = try await BookReviewService.shared.updateAndReturnBookReview(
                 id: id,
                 title: title,
                 url: url,
@@ -122,8 +123,12 @@ class EditBookReviewVC: UIViewController {
                 review: review,
                 token: token
             )
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました")
+            LoadingOverlay.shared.hide()
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました") { [weak self] _ in
+                self?.editBookReviewCoordinator?.navigateBookDetailAfterEditing(corrBookReview: updatedBookReview)
+            }
         } catch let serviceError {
+            LoadingOverlay.shared.hide()
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
         }
     }

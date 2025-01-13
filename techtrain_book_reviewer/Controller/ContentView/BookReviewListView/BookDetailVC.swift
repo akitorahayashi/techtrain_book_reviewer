@@ -9,7 +9,7 @@ import UIKit
 
 class BookDetailVC: UIViewController {
     private weak var bookDetailCoordinator: BookDetailCoordinatorProtocol?
-    private let corrBookReview: BookReview
+    private var corrBookReview: BookReview
     private var detailView: BookDetailView
     var isUpdated: Bool = false
     
@@ -29,27 +29,30 @@ class BookDetailVC: UIViewController {
         view = detailView
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        loadBookDetail()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupButtonActions()
     }
     
     // MARK: - Setup View
-//    private func loadBookDetail()  {
-//        // ローディング開始
-//        LoadingOverlay.shared.show()
-//        Task {
-//            guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
-//            do {
-//                let bookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: bookId, token: token)
-//                self.updateUI(with: bookDetail)
-//            } catch let serviceError {
-//                TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
-//            }
-//            // ローディング終了
-//            LoadingOverlay.shared.hide()
-//        }
-//    }
+    private func loadBookDetail()  {
+        Task {
+            guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
+            do {
+                let fetchedBookDetail = try await BookReviewService.shared.fetchAndReturnBookReviewDetail(id: corrBookReview.id, token: token)
+                self.corrBookReview = fetchedBookDetail
+                self.updateUI(with: self.corrBookReview)
+            } catch let serviceError {
+                TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)
+            }
+            // ローディング終了
+            LoadingOverlay.shared.hide()
+        }
+    }
     
     private func updateUI(with bookReview: BookReview) {
         detailView.updateUI(
