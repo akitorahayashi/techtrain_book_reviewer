@@ -8,7 +8,7 @@
 import UIKit
 
 class EditBookReviewVC: UIViewController {
-    private let editView: EditBookReviewView?
+    private let editView: EditBookReviewView
     private let corrBookReview: BookReview? // nilの場合は新規作成
     
     init(corrBookReview: BookReview? = nil) {
@@ -27,25 +27,22 @@ class EditBookReviewVC: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.hidesBackButton = true
         setupEditBookReviewViewButtonAction()
         setupKeyboardDismissTapGesture()
         
         // 編集の場合はデータ取得、新規作成の場合はUI設定
-        if let id = corrBookReview?.id {
-            Task {
-                await fetchBookDetailsForEdit(reviewId: id)
-            }
+        if let review = self.corrBookReview {
+            self.populateFields(with: review)
         }
     }
     
     // MARK: - EditBookReviewViewのボタンのセットアップ
     private func setupEditBookReviewViewButtonAction() {
-        editView?.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
-        editView?.clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
+        editView.compliteButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
+        editView.clearButton.addTarget(self, action: #selector(clearButtonTapped), for: .touchUpInside)
     }
     
-    // MARK: - データ取得
+    // MARK: - 編集時データ取得
     private func fetchBookDetailsForEdit(reviewId: String) async {
         guard let token = await SecureTokenService.shared.getTokenAfterLoad(on: self) else { return }
         // ローディング開始
@@ -63,10 +60,10 @@ class EditBookReviewVC: UIViewController {
     }
     
     private func populateFields(with bookReview: BookReview) {
-        editView?.titleTextField.text = bookReview.title
-        editView?.urlTextField.text = bookReview.url
-        editView?.detailInputField.text = bookReview.detail
-        editView?.reviewInputField.text = bookReview.review
+        editView.titleTextField.text = bookReview.title
+        editView.urlTextField.text = bookReview.url
+        editView.detailInputField.text = bookReview.detail
+        editView.reviewInputField.text = bookReview.review
     }
     
     // MARK: - 保存/投稿処理
@@ -83,10 +80,10 @@ class EditBookReviewVC: UIViewController {
     private func createReviewAsync() async {
         guard validateInputs(),
               let token = await SecureTokenService.shared.getTokenAfterLoad(on: self),
-              let title = editView?.titleTextField.text,
-              let url = editView?.urlTextField.text,
-              let detail = editView?.detailInputField.text,
-              let review = editView?.reviewInputField.text else { return }
+              let title = editView.titleTextField.text,
+              let url = editView.urlTextField.text,
+              let detail = editView.detailInputField.text,
+              let review = editView.reviewInputField.text else { return }
         // ローディング開始
         LoadingOverlay.shared.show()
         do {
@@ -110,10 +107,10 @@ class EditBookReviewVC: UIViewController {
     private func updateReviewAsync() async {
         guard validateInputs(),
               let token = await SecureTokenService.shared.getTokenAfterLoad(on: self),
-              let title = editView?.titleTextField.text,
-              let url = editView?.urlTextField.text,
-              let detail = editView?.detailInputField.text,
-              let review = editView?.reviewInputField.text, let id = corrBookReview?.id else { return }
+              let title = editView.titleTextField.text,
+              let url = editView.urlTextField.text,
+              let detail = editView.detailInputField.text,
+              let review = editView.reviewInputField.text, let id = corrBookReview?.id else { return }
         // ローディング開始
         LoadingOverlay.shared.show()
         do {
@@ -153,27 +150,27 @@ class EditBookReviewVC: UIViewController {
     }
     
     private func clearFields() {
-        editView?.titleTextField.text = ""
-        editView?.urlTextField.text = ""
-        editView?.detailInputField.text = ""
-        editView?.reviewInputField.text = ""
+        editView.titleTextField.text = ""
+        editView.urlTextField.text = ""
+        editView.detailInputField.text = ""
+        editView.reviewInputField.text = ""
     }
     
     // MARK: - 入力バリデーション
     private func validateInputs() -> Bool {
-        if isBlank(text: editView?.titleTextField.text) {
+        if isBlank(text: editView.titleTextField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "タイトルを入力してください")
             return false
         }
-        if isBlank(text: editView?.urlTextField.text) {
+        if isBlank(text: editView.urlTextField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "URLを入力してください")
             return false
         }
-        if isBlank(text: editView?.detailInputField.text) {
+        if isBlank(text: editView.detailInputField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "詳細を入力してください")
             return false
         }
-        if isBlank(text: editView?.reviewInputField.text) {
+        if isBlank(text: editView.reviewInputField.text) {
             TBRAlertHelper.showErrorAlert(on: self, message: "レビューを入力してください")
             return false
         }
