@@ -74,7 +74,7 @@ class BookDetailView: UIView {
         // テキスト関連の設定
         setupLabelsAndSpacer(in: containerView)
         // ボタン関連の設定
-        setupButtons(in: containerView)
+        setupButtons()
     }
     
     private func setupLabelsAndSpacer(in contentView: UIView) {
@@ -154,7 +154,7 @@ class BookDetailView: UIView {
         ])
     }
     
-    private func setupButtons(in containerView: UIView) {
+    private func setupButtons() {
         let bottomNavButtonStack = UIStackView(arrangedSubviews: [deleteButton, editButton])
         
         bottomNavButtonStack.axis = .horizontal
@@ -162,15 +162,14 @@ class BookDetailView: UIView {
         bottomNavButtonStack.alignment = .center
         bottomNavButtonStack.distribution = .fillEqually
         bottomNavButtonStack.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(bottomNavButtonStack)
+        addSubview(bottomNavButtonStack)
         
-        // Cannot infer contextual base in reference to member 'normal'
         self.editButton.setTitle("Edit", for: .normal)
         self.deleteButton.setTitle("Delete", for: .normal)
         
         NSLayoutConstraint.activate([
-            bottomNavButtonStack.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 16),
-            bottomNavButtonStack.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -16),
+            bottomNavButtonStack.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            bottomNavButtonStack.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -16),
             bottomNavButtonStack.heightAnchor.constraint(equalToConstant: 44),
             bottomNavButtonStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -16)
         ])

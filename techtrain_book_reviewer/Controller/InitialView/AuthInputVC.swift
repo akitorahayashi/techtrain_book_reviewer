@@ -141,9 +141,7 @@ class AuthInputVC: UIViewController {
             try await UserProfileService().fetchUserProfileAndSetSelfAccount(withToken: token)
             let message = isSignUp ? "登録が完了しました！" : "ログインしました！"
             TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: message) { [weak self] _ in
-                Task {
-                    await self?.authInputCoordinator?.navigateToMainTabBarView()
-                }
+                    self?.authInputCoordinator?.navigateToMainTabBarView()
             }
         } catch let serviceError {
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)

@@ -124,9 +124,7 @@ class EditBookReviewVC: UIViewController {
                 token: token
             )
             LoadingOverlay.shared.hide()
-            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました") { [weak self] _ in
-                self?.editBookReviewCoordinator?.navigateBookDetailAfterEditing(corrBookReview: updatedBookReview)
-            }
+            TBRAlertHelper.showSingleOKOptionAlert(on: self, title: "成功", message: "レビューが更新されました")
         } catch let serviceError {
             LoadingOverlay.shared.hide()
             TBRAlertHelper.showErrorAlert(on: self, message: serviceError.localizedDescription)

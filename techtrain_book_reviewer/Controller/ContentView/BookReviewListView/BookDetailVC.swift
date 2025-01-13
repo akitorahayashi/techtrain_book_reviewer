@@ -85,10 +85,6 @@ class BookDetailVC: UIViewController {
         UIApplication.shared.open(url)
     }
     
-    @objc private func backToListTapped() {
-        navigationController?.popViewController(animated: true)
-    }
-    
     @objc private func navigateToEditView() {
         self.bookDetailCoordinator?.navigateEditBookReview(corrBookReview: corrBookReview)
     }

@@ -9,13 +9,14 @@ import UIKit
 
 class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDelegate {
     private weak var bookReviewListCoordinator: BookReviewListCoordinator?
-    private var bookReviewListView: BookReviewListView?
+    private var bookReviewListView: BookReviewListView
     private var bookReviews: [BookReview] = []
     private var currentOffset = 0
     private let refreshControl = UIRefreshControl()
     
     init(bookReviewListCoordinator: BookReviewListCoordinator) {
         self.bookReviewListCoordinator = bookReviewListCoordinator
+        self.bookReviewListView = BookReviewListView()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -26,7 +27,6 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
     // MARK: - Lifecycle methods
     override func loadView() {
         super.loadView()
-        self.bookReviewListView = BookReviewListView()
         view = bookReviewListView
     }
     
@@ -43,13 +43,13 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
     }
     // MARK: - Setup Methods
     private func setupTableView() {
-        bookReviewListView?.tableView.delegate = self
-        bookReviewListView?.tableView.dataSource = self
+        bookReviewListView.tableView.delegate = self
+        bookReviewListView.tableView.dataSource = self
     }
     
     private func setupRefreshControl() {
         refreshControl.addTarget(self, action: #selector(refreshReviews), for: .valueChanged)
-        bookReviewListView?.tableView.refreshControl = refreshControl
+        bookReviewListView.tableView.refreshControl = refreshControl
     }
     
     // MARK: - Data Methods
@@ -65,7 +65,7 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
                 }
                 currentOffset = offset + fetchedReviews.count
                 await MainActor.run {
-                    self.bookReviewListView?.reloadData()
+                    self.bookReviewListView.reloadData()
                 }
             } catch {
                 print("Failed to load reviews: \(error.localizedDescription)")
@@ -95,7 +95,6 @@ class BookReviewListVC: UIViewController, UITableViewDataSource, UITableViewDele
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let review = bookReviews[indexPath.row]
-        print(bookReviewListCoordinator)
         bookReviewListCoordinator?.navigateToBookDetailView(corrBookReview: review)
     }
     
